@@ -1739,7 +1739,7 @@ export default function WeatherDashboard() {
 
             {/* ==================== LEFT: SEARCH BAR ==================== */}
             <form
-              className="flex-1 min-w-0 max-w-full sm:max-w-xs md:max-w-md lg:max-w-xl xl:max-w-2xl relative group"
+              className="order-1 w-full sm:w-auto flex-1 min-w-0 max-w-full sm:max-w-xs md:max-w-md lg:max-w-xl xl:max-w-2xl relative group"
               onSubmit={(e) => { e.preventDefault(); void refreshWeather() }}
             >
               <div className="absolute left-3 md:left-4 top-1/2 -translate-y-1/2 z-20">
@@ -1756,19 +1756,19 @@ export default function WeatherDashboard() {
             </form>
 
             {/* ==================== RIGHT: ACTIONS ==================== */}
-            <div className="flex items-center gap-1.5 md:gap-2 lg:gap-3 xl:gap-4 flex-shrink-0 mt-2 sm:mt-0">
+            <div className="order-2 w-full sm:w-auto flex items-center gap-1.5 md:gap-2 lg:gap-3 xl:gap-4 flex-shrink-0 mt-2 sm:mt-0 justify-start sm:justify-end">
 
               {/* 📍✅ USE MY LOCATION BUTTON - As shown in your image */}
               <button
                 onClick={fetchByGeolocation}
-                className="flex items-center gap-1 md:gap-2 px-2 sm:px-3 md:px-4 py-1.5 md:py-2 bg-gradient-to-r from-blue-500/90 to-cyan-500/80 hover:from-blue-500 hover:to-cyan-400 text-white rounded-lg md:rounded-xl font-semibold text-[10px] md:text-xs lg:text-sm border border-blue-400/30 shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 hover:scale-105 active:scale-95 transition-all duration-300 relative overflow-hidden group"
+                className="flex items-center gap-2 px-3 sm:px-4 md:px-4 py-2 bg-gradient-to-r from-blue-500/90 to-cyan-500/80 hover:from-blue-500 hover:to-cyan-400 text-white rounded-lg md:rounded-xl font-semibold text-[12px] md:text-xs lg:text-sm border border-blue-400/30 shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 hover:scale-105 active:scale-95 transition-all duration-300 relative overflow-hidden group"
               >
                 {/* Shimmer effect */}
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
 
-                <MapPin className="w-3 h-3 md:w-4 md:h-4 relative z-10 group-hover:animate-pulse" />
+                <MapPin className="w-4 h-4 md:w-5 md:h-5 relative z-10 group-hover:animate-pulse" />
 
-                <span className="relative z-10 whitespace-nowrap hidden sm:inline-block">
+                <span className="relative z-10 whitespace-nowrap">
                   Use My Location
                 </span>
               </button>
@@ -1816,7 +1816,7 @@ export default function WeatherDashboard() {
                 </span>
 
                 {/* ✅ "LIVE" TEXT - Inside the green button as you wanted! */}
-                <span className="relative z-10 font-bold tracking-wide drop-shadow-md whitespace-nowrap hidden sm:inline-block">
+                <span className="relative z-10 font-bold tracking-wide drop-shadow-md whitespace-nowrap">
                   Live
                 </span>
 
