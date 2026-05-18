@@ -1013,61 +1013,8 @@ const AnimatedMoonPhaseIcon = memo(({ size = 'md' }: { size?: 'sm' | 'md' | 'lg'
 })
 
 // ==================== UTILITY FUNCTIONS ====================
-function getWeatherIcon(iconCode: string | number | undefined, isDay: boolean = true): string {
-  if (iconCode === undefined || iconCode === null) {
-    return isDay ? '01d' : '01n'
-  }
-
-  const rawCode = String(iconCode).trim().toLowerCase()
-  if (rawCode === '') {
-    return isDay ? '01d' : '01n'
-  }
-
-  if (/^\d{2}[dn]$/.test(rawCode)) {
-    return rawCode
-  }
-
-  const numericCode = Number(rawCode)
-  if (!Number.isNaN(numericCode)) {
-    const mapping: Record<number, string> = {
-      0: '01', 1: '02', 2: '03', 3: '04',
-      45: '50', 48: '50',
-      51: '09', 53: '09', 55: '09',
-      61: '10', 63: '10', 65: '10',
-      71: '13', 73: '13', 75: '13',
-      80: '09', 81: '09', 82: '09',
-      95: '11', 96: '11', 99: '11'
-    }
-    return `${mapping[numericCode] || '01'}${isDay ? 'd' : 'n'}`
-  }
-
-  // If iconCode is a descriptive string like "Thunderstorm", map keywords to icons
-  const keywordMap: Record<string, string> = {
-    'thunder': '11',
-    'storm': '11',
-    'rain': '10',
-    'drizzle': '09',
-    'shower': '09',
-    'snow': '13',
-    'sleet': '13',
-    'fog': '50',
-    'mist': '50',
-    'haze': '50',
-    'cloud': '03',
-    'overcast': '04',
-    'partly': '02',
-    'clear': '01',
-    'sun': '01',
-    'sunny': '01'
-  }
-
-  for (const key of Object.keys(keywordMap)) {
-    if (rawCode.includes(key)) {
-      return `${keywordMap[key]}${isDay ? 'd' : 'n'}`
-    }
-  }
-
-  return isDay ? '01d' : '01n'
+function getWeatherIcon(iconCode: string | undefined): string {
+  return iconCode || '01d'
 }
 
 function formatTime(dateStr: string | undefined | null, index: number = 0): string {
@@ -1254,7 +1201,7 @@ const WorldWeatherMap = memo<WorldWeatherMapProps>(({ weatherData, unit }) => {
   const location = weatherData?.location
   const current = weatherData?.current
   const baseTemp = current?.temp ?? 27
-  const baseIcon = getWeatherIcon(current?.weather_code ?? current?.icon, current?.is_day !== undefined && current?.is_day !== null ? Boolean(current?.is_day) : true)
+  const baseIcon = getWeatherIcon(current?.icon)
 
   useEffect(() => {
     setIsClient(true)
@@ -1542,17 +1489,7 @@ export default function WeatherDashboard() {
   const windSpeed = current?.wind_speed ?? 10
   const visibility = current?.visibility ?? 10
   const description = current?.description ?? 'Overcast'
-  const iconCode = current?.weather_code ?? current?.icon
-  const currentIsDay = (() => {
-    if (current?.is_day !== undefined && current?.is_day !== null) return Boolean(current.is_day)
-    try {
-      const ts = weatherData?.timestamp ? new Date(weatherData.timestamp) : new Date()
-      const hour = ts.getHours()
-      return hour >= 6 && hour < 19
-    } catch {
-      return false
-    }
-  })()
+  const iconCode = current?.icon
 
   const [isInitialLoading, setIsInitialLoading] = useState(true)
 
@@ -1779,7 +1716,7 @@ export default function WeatherDashboard() {
 
           {/* Header Content */}
           {/* ==================== ✅ FIXED HEADER - With Location Button + Live Text ==================== */}
-          <div className="flex flex-wrap items-center justify-between w-full relative z-10 gap-2 md:gap-4">
+          <div className="flex items-center justify-between w-full relative z-10 gap-2 md:gap-4 flex-wrap">
             {/* HAMBURGER BUTTON FOR MOBILE - BLUE ANIMATED WITH BLACKY EFFECT */}
             {responsive.isMobile && (
               <button
@@ -1802,7 +1739,7 @@ export default function WeatherDashboard() {
 
             {/* ==================== LEFT: SEARCH BAR ==================== */}
             <form
-              className="flex-1 min-w-0 w-full max-w-full md:max-w-md lg:max-w-xl xl:max-w-2xl relative group"
+              className="flex-1 min-w-0 max-w-full sm:max-w-xs md:max-w-md lg:max-w-xl xl:max-w-2xl relative group"
               onSubmit={(e) => { e.preventDefault(); void refreshWeather() }}
             >
               <div className="absolute left-3 md:left-4 top-1/2 -translate-y-1/2 z-20">
@@ -1814,17 +1751,17 @@ export default function WeatherDashboard() {
                 placeholder={responsive.isMobile ? "🔍 Search..." : "🔍 Search any location worldwide..."}
                 value={city}
                 onChange={(e) => changeCity(e.target.value)}
-                className="w-full pl-9 md:pl-11 pr-14 sm:pr-20 md:pr-28 lg:pr-36 py-2 md:py-2.5 lg:py-3 lg:py-3.5 bg-white/[0.08] backdrop-blur-md border border-white/15 rounded-xl md:rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:bg-white/[0.12] focus:border-blue-400/40 transition-all duration-300 text-white placeholder-gray-400 font-medium text-xs md:text-sm"
+                className="w-full pl-9 md:pl-11 pr-3 md:pr-4 py-2 md:py-2.5 lg:py-3 lg:py-3.5 bg-white/[0.08] backdrop-blur-md border border-white/15 rounded-xl md:rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:bg-white/[0.12] focus:border-blue-400/40 transition-all duration-300 text-white placeholder-gray-400 font-medium text-xs md:text-sm"
               />
             </form>
 
             {/* ==================== RIGHT: ACTIONS ==================== */}
-            <div className="flex flex-wrap items-center justify-end gap-1.5 md:gap-2 lg:gap-3 xl:gap-4 flex-shrink-0 min-w-0 z-30">
+            <div className="flex items-center gap-1.5 md:gap-2 lg:gap-3 xl:gap-4 flex-shrink-0 mt-2 sm:mt-0">
 
               {/* 📍✅ USE MY LOCATION BUTTON - As shown in your image */}
               <button
                 onClick={fetchByGeolocation}
-                className="flex items-center gap-1.5 md:gap-2 px-3 md:px-4 lg:px-5 py-1.5 md:py-2 lg:py-2.5 bg-gradient-to-r from-blue-500/90 to-cyan-500/80 hover:from-blue-500 hover:to-cyan-400 text-white rounded-lg md:rounded-xl font-semibold text-[10px] md:text-xs lg:text-sm border border-blue-400/30 shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 hover:scale-105 active:scale-95 transition-all duration-300 relative overflow-hidden group z-40"
+                className="flex items-center gap-1.5 md:gap-2 px-3 md:px-4 lg:px-5 py-1.5 md:py-2 lg:py-2.5 bg-gradient-to-r from-blue-500/90 to-cyan-500/80 hover:from-blue-500 hover:to-cyan-400 text-white rounded-lg md:rounded-xl font-semibold text-[10px] md:text-xs lg:text-sm border border-blue-400/30 shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 hover:scale-105 active:scale-95 transition-all duration-300 relative overflow-hidden group"
               >
                 {/* Shimmer effect */}
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
@@ -1938,7 +1875,7 @@ export default function WeatherDashboard() {
                     <div className="flex flex-col sm:flex-row items-center justify-between mb-4 md:mb-6 lg:mb-8 gap-3 md:gap-4">
                       <div className="flex items-center gap-3 md:gap-4 lg:gap-8">
                         <div className="drop-shadow-xl md:drop-shadow-2xl animate-float">
-                          <AnimatedWeatherIcon type={getWeatherIcon(iconCode, currentIsDay)} size={responsive.isMobile ? 'md' : 'lg'} />
+                          <AnimatedWeatherIcon type={getWeatherIcon(iconCode)} size={responsive.isMobile ? 'md' : 'lg'} />
                         </div>
                         <div className="text-center sm:text-left">
                           <div className="text-4xl md:text-5xl lg:text-7xl font-bold tracking-tight drop-shadow-lg">
@@ -2113,7 +2050,7 @@ export default function WeatherDashboard() {
                           {/* Weather Icon & Description */}
                           <div className="flex items-center gap-1.5 md:gap-2 lg:gap-3 flex-1 px-1 md:px-2 min-w-0">
                             <div className="w-10 md:w-12 lg:w-16 flex-shrink-0 flex justify-center">
-                              <AnimatedWeatherIcon type={typeof d.weather?.[0]?.icon === 'string' ? d.weather[0].icon : getWeatherIcon(d.weather?.[0]?.icon, true)} size="sm" />
+                              <AnimatedWeatherIcon type={typeof d.weather?.[0]?.icon === 'string' ? d.weather[0].icon : getWeatherIcon(d.weather?.[0]?.icon)} size="sm" />
                             </div>
                             <p className="text-[10px] md:text-xs lg:text-sm font-medium text-white/80 hidden sm:block capitalize truncate">
                               {d.weather?.[0]?.desc}
@@ -2398,8 +2335,8 @@ export default function WeatherDashboard() {
 
                     {/* Weather Icon - Hidden on mobile, visible on larger screens */}
                     <div className="hidden lg:block ml-4">
-                        <div className="w-24 h-24 md:w-32 md:h-32 relative">
-                        <AnimatedWeatherIcon type={getWeatherIcon(iconCode, currentIsDay)} size="md" />
+                      <div className="w-24 h-24 md:w-32 md:h-32 relative">
+                        <AnimatedWeatherIcon type={getWeatherIcon(iconCode)} size="md" />
                       </div>
                     </div>
                   </div>
@@ -2704,4 +2641,4 @@ export default function WeatherDashboard() {
       `}</style>
     </div>
   )
-}
+} 
