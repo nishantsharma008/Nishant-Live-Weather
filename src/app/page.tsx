@@ -1716,7 +1716,7 @@ export default function WeatherDashboard() {
 
           {/* Header Content */}
           {/* ==================== ✅ FIXED HEADER - With Location Button + Live Text ==================== */}
-          <div className="flex items-center justify-between w-full relative z-10 gap-2 md:gap-4 flex-wrap">
+          <div className="w-full relative z-10 grid items-center gap-2 md:gap-4" style={{ gridTemplateColumns: 'auto minmax(160px, 1fr) auto' }}>
             {/* HAMBURGER BUTTON FOR MOBILE - BLUE ANIMATED WITH BLACKY EFFECT */}
             {responsive.isMobile && (
               <button
@@ -1739,7 +1739,7 @@ export default function WeatherDashboard() {
 
             {/* ==================== LEFT: SEARCH BAR ==================== */}
             <form
-              className="order-1 w-full sm:w-auto min-w-0 max-w-full sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl relative group"
+              className="min-w-0 max-w-full sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl relative group"
               onSubmit={(e) => { e.preventDefault(); void refreshWeather() }}
             >
               <div className="absolute left-3 md:left-4 top-1/2 -translate-y-1/2 z-20">
@@ -1751,24 +1751,24 @@ export default function WeatherDashboard() {
                 placeholder={responsive.isMobile ? "🔍 Search..." : "🔍 Search any location worldwide..."}
                 value={city}
                 onChange={(e) => changeCity(e.target.value)}
-                className="w-full pl-9 md:pl-11 pr-3 md:pr-4 py-2 md:py-2.5 lg:py-3 lg:py-3.5 bg-white/[0.08] backdrop-blur-md border border-white/15 rounded-xl md:rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:bg-white/[0.12] focus:border-blue-400/40 transition-all duration-300 text-white placeholder-gray-400 font-medium text-xs md:text-sm"
+                className="w-full min-w-0 pl-9 md:pl-11 pr-3 md:pr-4 py-2 md:py-2.5 lg:py-3 bg-white/[0.08] backdrop-blur-md border border-white/15 rounded-xl md:rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:bg-white/[0.12] focus:border-blue-400/40 transition-all duration-300 text-sm md:text-base text-white placeholder-gray-400 font-medium"
               />
             </form>
 
             {/* ==================== RIGHT: ACTIONS ==================== */}
-            <div className="order-2 w-full sm:w-auto flex items-center gap-1.5 md:gap-2 lg:gap-3 xl:gap-4 flex-shrink-0 mt-2 sm:mt-0 justify-start sm:justify-end">
+            <div className="flex items-center gap-1.5 md:gap-2 lg:gap-3 xl:gap-4 justify-end">
 
               {/* 📍✅ USE MY LOCATION BUTTON - As shown in your image */}
               <button
                 onClick={fetchByGeolocation}
-                className="flex items-center gap-2 px-3 sm:px-4 md:px-4 py-2 bg-gradient-to-r from-blue-500/90 to-cyan-500/80 hover:from-blue-500 hover:to-cyan-400 text-white rounded-lg md:rounded-xl font-semibold text-[12px] md:text-xs lg:text-sm border border-blue-400/30 shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 hover:scale-105 active:scale-95 transition-all duration-300 relative overflow-hidden group"
+                className="flex items-center gap-2 px-3 md:px-4 py-2 bg-gradient-to-r from-blue-500/90 to-cyan-500/80 hover:from-blue-500 hover:to-cyan-400 text-white rounded-lg md:rounded-xl font-semibold text-[12px] md:text-sm lg:text-sm border border-blue-400/30 shadow-md hover:shadow-blue-500/30 active:scale-95 transition-all duration-200 relative overflow-hidden group"
               >
                 {/* Shimmer effect */}
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
 
                 <MapPin className="w-4 h-4 md:w-5 md:h-5 relative z-10 group-hover:animate-pulse" />
 
-                <span className="relative z-10 whitespace-nowrap">
+                <span className="relative z-10 whitespace-nowrap text-sm md:text-base">
                   Use My Location
                 </span>
               </button>
