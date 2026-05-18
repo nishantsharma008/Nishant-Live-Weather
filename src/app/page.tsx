@@ -1761,14 +1761,14 @@ export default function WeatherDashboard() {
               {/* 📍✅ USE MY LOCATION BUTTON - As shown in your image */}
               <button
                 onClick={fetchByGeolocation}
-                className="flex items-center gap-1.5 md:gap-2 px-3 md:px-4 lg:px-5 py-1.5 md:py-2 lg:py-2.5 bg-gradient-to-r from-blue-500/90 to-cyan-500/80 hover:from-blue-500 hover:to-cyan-400 text-white rounded-lg md:rounded-xl font-semibold text-[10px] md:text-xs lg:text-sm border border-blue-400/30 shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 hover:scale-105 active:scale-95 transition-all duration-300 relative overflow-hidden group"
+                className="flex items-center gap-1 md:gap-2 px-2 sm:px-3 md:px-4 py-1.5 md:py-2 bg-gradient-to-r from-blue-500/90 to-cyan-500/80 hover:from-blue-500 hover:to-cyan-400 text-white rounded-lg md:rounded-xl font-semibold text-[10px] md:text-xs lg:text-sm border border-blue-400/30 shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 hover:scale-105 active:scale-95 transition-all duration-300 relative overflow-hidden group"
               >
                 {/* Shimmer effect */}
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
 
                 <MapPin className="w-3 h-3 md:w-4 md:h-4 relative z-10 group-hover:animate-pulse" />
 
-                <span className="relative z-10 whitespace-nowrap">
+                <span className="relative z-10 whitespace-nowrap hidden sm:inline-block">
                   Use My Location
                 </span>
               </button>
@@ -1816,7 +1816,7 @@ export default function WeatherDashboard() {
                 </span>
 
                 {/* ✅ "LIVE" TEXT - Inside the green button as you wanted! */}
-                <span className="relative z-10 font-bold tracking-wide drop-shadow-md whitespace-nowrap">
+                <span className="relative z-10 font-bold tracking-wide drop-shadow-md whitespace-nowrap hidden sm:inline-block">
                   Live
                 </span>
 
