@@ -1739,7 +1739,7 @@ export default function WeatherDashboard() {
 
             {/* ==================== LEFT: SEARCH BAR ==================== */}
             <form
-              className="order-1 w-full sm:w-auto flex-1 min-w-0 max-w-full sm:max-w-xs md:max-w-md lg:max-w-xl xl:max-w-2xl relative group"
+              className="order-1 w-full sm:w-auto min-w-0 max-w-full sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl relative group"
               onSubmit={(e) => { e.preventDefault(); void refreshWeather() }}
             >
               <div className="absolute left-3 md:left-4 top-1/2 -translate-y-1/2 z-20">
