@@ -1543,7 +1543,16 @@ export default function WeatherDashboard() {
   const visibility = current?.visibility ?? 10
   const description = current?.description ?? 'Overcast'
   const iconCode = current?.weather_code ?? current?.icon
-  const currentIsDay = current?.is_day !== undefined && current?.is_day !== null ? Boolean(current.is_day) : true
+  const currentIsDay = (() => {
+    if (current?.is_day !== undefined && current?.is_day !== null) return Boolean(current.is_day)
+    try {
+      const ts = weatherData?.timestamp ? new Date(weatherData.timestamp) : new Date()
+      const hour = ts.getHours()
+      return hour >= 6 && hour < 19
+    } catch {
+      return false
+    }
+  })()
 
   const [isInitialLoading, setIsInitialLoading] = useState(true)
 
