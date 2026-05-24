@@ -1,18 +1,21 @@
 ﻿'use client'
-
 import React, { useState, useEffect, useCallback, useRef, useMemo, memo } from 'react'
 import {
+  // Original imports
   Search, Bell, ChevronDown, Home, Map, Calendar,
   Wind, Flower2, Video, Settings, Heart, MapPin,
   Navigation, Droplets, Eye, Gauge, CloudRain,
   Thermometer, Layers, ZoomIn, ZoomOut, RotateCcw,
-  Loader2, RefreshCw, Sun, Moon, Cloud, CloudRain as RainIcon,
+  Loader2, RefreshCw, Sun, Moon, Cloud,
   CloudLightning, Snowflake, CloudFog, AlertTriangle,
-  Menu, X, Maximize2, Minimize2
+  Menu, X, Maximize2, Minimize2,
+  // 👇 NEW - Welcome Page Icons
+  Zap, Globe, Check, ArrowRight, Activity, Target, Database
 } from 'lucide-react'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 
 // ==================== GOOGLE SIGN-IN HOOK ====================
 interface UserProfile {
@@ -201,6 +204,7 @@ function useResponsive() {
     isLaptop: windowSize.width >= 1024 && windowSize.width < 1280,
     isDesktop: windowSize.width >= 1280 && windowSize.width < 1536,
     isUltraWide: windowSize.width >= 1536,
+    isMediumMobile: windowSize.width >= 412 && windowSize.width < 640,
     width: windowSize.width,
     height: windowSize.height,
   }
@@ -507,9 +511,6 @@ const AnimatedHourlyWeatherIcon = memo(({ type, size = 'md', className = '' }: {
 AnimatedHourlyWeatherIcon.displayName = 'AnimatedHourlyWeatherIcon'
 
 // ==================== IMPROVED ANIMATED WEATHER ICON COMPONENT ====================
-// ⚠️ NOTE: This component has the same SVG syntax errors that need fixing!
-// The pattern is identical - replace all } with " in SVG attributes
-
 const AnimatedWeatherIcon = memo(({ type, size = 'lg', className = '' }: { type: string; size?: 'sm' | 'md' | 'lg' | 'xl'; className?: string }) => {
 
   const sizeClasses = {
@@ -609,7 +610,153 @@ const AnimatedWeatherIcon = memo(({ type, size = 'lg', className = '' }: { type:
     )
   }
 
-  // ... [REST OF THE COMPONENTS WITH SAME FIXES APPLIED] ...
+  // PARTLY CLOUDY DAY (02d)
+  if (type === '02d') {
+    return (
+      <div className={`${sizeClasses[size]} relative flex items-center justify-center ${className}`}>
+        <div className="absolute inset-0 bg-gradient-radial from-yellow-400/30 via-orange-300/20 to-transparent rounded-full scale-150" />
+        <svg viewBox="0 0 120 120" className="w-full h-full drop-shadow-2xl animate-float-slow">
+          <defs>
+            <linearGradient id="partlyCloudGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="#FFFFFF" />
+              <stop offset="100%" stopColor="#E2E8F0" />
+            </linearGradient>
+          </defs>
+
+          <g style={{ animation: 'sunPulse 3s ease-in-out infinite' }}>
+            <circle cx="45" cy="40" r="18" fill="#FBBF24" style={{ filter: 'drop-shadow(0 0 12px rgba(251, 191, 36, 0.7))' }}>
+              <animate attributeName="opacity" values="0.85;1;0.85" dur="3s" repeatCount="indefinite" />
+            </circle>
+
+            <g style={{ animation: 'sunRotate 20s linear infinite', transformOrigin: '45px 40px' }}>
+              {[0, 60, 120, 180, 240, 300].map((angle, i) => {
+                const rad = angle * Math.PI / 180
+                return (
+                  <line key={i}
+                    x1={45 + Math.cos(rad) * 22} y1={40 + Math.sin(rad) * 22}
+                    x2={45 + Math.cos(rad) * 28} y2={40 + Math.sin(rad) * 28}
+                    stroke="#FBBF24" strokeWidth="3" strokeLinecap="round" opacity="0.8" />
+                )
+              })}
+            </g>
+          </g>
+
+          <g style={{ animation: 'cloudFloat 4s ease-in-out infinite' }}>
+            <ellipse cx="70" cy="75" rx="22" ry="14" fill="url(#partlyCloudGrad)" opacity="0.95" />
+            <ellipse cx="58" cy="78" rx="17" ry="10" fill="#F8FAFC" opacity="0.92" />
+            <circle cx="80" cy="72" r="12" fill="#FFFFFF" opacity="0.98" />
+          </g>
+        </svg>
+      </div>
+    )
+  }
+
+  // CLOUDY ICONS (03d, 03n, 04d, 04n)
+  if (['03d', '03n', '04d', '04n'].includes(type)) {
+    return (
+      <div className={`${sizeClasses[size]} relative flex items-center justify-center ${className}`}>
+        <svg viewBox="0 0 120 120" className="w-full h-full drop-shadow-2xl">
+          <g style={{ animation: 'cloudFloat 4s ease-in-out infinite' }}>
+            <ellipse cx="60" cy="65" rx="28" ry="18" fill="#E2E8F0" opacity="0.9" />
+            <ellipse cx="50" cy="68" rx="22" ry="13" fill="#CBD5E1" opacity="0.85" />
+            <circle cx="70" cy="62" r="16" fill="#F1F5F9" opacity="0.95" />
+            <circle cx="45" cy="64" r="13" fill="#FFFFFF" opacity="0.98" />
+          </g>
+        </svg>
+      </div>
+    )
+  }
+
+  // RAIN ICONS (09d, 09n, 10d, 10n)
+  if (['09d', '09n', '10d', '10n'].includes(type)) {
+    return (
+      <div className={`${sizeClasses[size]} relative flex items-center justify-center ${className}`}>
+        <svg viewBox="0 0 120 120" className="w-full h-full drop-shadow-2xl">
+          <defs>
+            <linearGradient id="rainCloudGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="#64748B" />
+              <stop offset="100%" stopColor="#475569" />
+            </linearGradient>
+          </defs>
+
+          <g>
+            <ellipse cx="60" cy="35" rx="28" ry="16" fill="url(#rainCloudGrad)" />
+            <ellipse cx="78" cy="32" rx="18" ry="12" fill="#374151" />
+            <ellipse cx="44" cy="38" rx="22" ry="14" fill="#1F2937" />
+          </g>
+
+          {[35, 55, 85].map((x, i) => (
+            <line key={i} x1={x} y1="58" x2={x - 8} y2="88"
+              stroke="#60A5FA" strokeWidth="4" strokeLinecap="round" opacity="0.85">
+              <animate attributeName="y1" values="58;88;58" dur={`${0.8 + i * 0.2}s`} begin={`${i * 0.3}s`} repeatCount="indefinite" />
+              <animate attributeName="y2" values="88;118;88" dur={`${0.8 + i * 0.2}s`} begin={`${i * 0.3}s`} repeatCount="indefinite" />
+              <animate attributeName="opacity" values="0.85;0.4;0.85" dur={`${0.8 + i * 0.2}s`} begin={`${i * 0.3}s`} repeatCount="indefinite" />
+            </line>
+          ))}
+        </svg>
+      </div>
+    )
+  }
+
+  // THUNDERSTORM ICON (11d, 11n)
+  if (['11d', '11n'].includes(type)) {
+    return (
+      <div className={`${sizeClasses[size]} relative flex items-center justify-center ${className}`}>
+        <svg viewBox="0 0 120 120" className="w-full h-full drop-shadow-2xl">
+          <g>
+            <ellipse cx="60" cy="32" rx="28" ry="16" fill="#1F2937" />
+            <ellipse cx="78" cy="28" rx="18" ry="12" fill="#111827" />
+            <ellipse cx="44" cy="36" rx="22" ry="14" fill="#030712" />
+          </g>
+
+          <path d="M66 48 L52 72 L60 72 L54 100 L76 68 L66 68 Z" fill="#FBBF24"
+            style={{ filter: 'drop-shadow(0 0 12px rgba(251, 191, 36, 0.9))' }}>
+            <animate attributeName="opacity" values="1;0.3;1;0.5;1" dur="2s" repeatCount="indefinite" />
+          </path>
+        </svg>
+      </div>
+    )
+  }
+
+  // SNOW ICON (13d, 13n)
+  if (['13d', '13n'].includes(type)) {
+    return (
+      <div className={`${sizeClasses[size]} relative flex items-center justify-center ${className}`}>
+        <svg viewBox="0 0 120 120" className="w-full h-full drop-shadow-2xl">
+          <g>
+            <ellipse cx="60" cy="35" rx="28" ry="16" fill="#E2E8F0" />
+            <ellipse cx="78" cy="32" rx="18" ry="12" fill="#CBD5E1" />
+            <ellipse cx="44" cy="38" rx="22" ry="14" fill="#94A3B8" />
+          </g>
+
+          {[38, 60, 82].map((x, i) => (
+            <circle key={i} cx={x} cy="78" r="6" fill="#BFDBFE"
+              style={{ filter: 'drop-shadow(0 3px 5px rgba(186, 230, 253, 0.6))' }}>
+              <animate attributeName="cy" values="68;94;68" dur={`${2.5 + i * 0.4}s`} begin={`${i * 0.5}s`} repeatCount="indefinite" />
+              <animate attributeName="opacity" values="1;0.5;1" dur={`${2.5 + i * 0.4}s`} begin={`${i * 0.5}s`} repeatCount="indefinite" />
+            </circle>
+          ))}
+        </svg>
+      </div>
+    )
+  }
+
+  // MIST/FOG ICON (50d, 50n)
+  if (['50d', '50n'].includes(type)) {
+    return (
+      <div className={`${sizeClasses[size]} relative flex items-center justify-center ${className}`}>
+        <svg viewBox="0 0 120 120" className="w-full h-full">
+          {[35, 50, 65, 80, 95].map((y, i) => (
+            <line key={i} x1="15" y1={y} x2="105" y2={y}
+              stroke="#CBD5E1" strokeWidth="6" strokeLinecap="round" opacity={0.2 + (i * 0.12)}>
+              <animate attributeName="x1" values="15;25;15" dur={`${6 + i * 1.2}s`} repeatCount="indefinite" />
+              <animate attributeName="x2" values="105;115;105" dur={`${6 + i * 1.2}s`} repeatCount="indefinite" />
+            </line>
+          ))}
+        </svg>
+      </div>
+    )
+  }
 
   // DEFAULT: Return large sun icon ✅ FIXED
   return (
@@ -644,10 +791,6 @@ const AnimatedWeatherIcon = memo(({ type, size = 'lg', className = '' }: { type:
     </div>
   )
 })
-
-AnimatedWeatherIcon.displayName = 'AnimatedWeatherIcon'
-
-// ... [REST OF YOUR CODE REMAINS THE SAME - Just fix all SVG attributes] ...
 
 AnimatedWeatherIcon.displayName = 'AnimatedWeatherIcon'
 
@@ -1012,6 +1155,8 @@ const AnimatedMoonPhaseIcon = memo(({ size = 'md' }: { size?: 'sm' | 'md' | 'lg'
   )
 })
 
+AnimatedMoonPhaseIcon.displayName = 'AnimatedMoonPhaseIcon'
+
 // ==================== UTILITY FUNCTIONS ====================
 function getWeatherIcon(iconCode: string | undefined): string {
   return iconCode || '01d'
@@ -1293,13 +1438,13 @@ const WorldWeatherMap = memo<WorldWeatherMapProps>(({ weatherData, unit }) => {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-3 md:mb-4 gap-2 flex-shrink-0">
             <div className="flex items-center gap-2 md:gap-3">
               <div className="relative"><MapPin className="w-4 h-4 md:w-5 md:h-5 lg:w-6 lg:h-6 text-green-400" /><span className="absolute -top-1 -right-1 w-1.5 h-1.5 md:w-2 md:h-2 bg-green-400 rounded-full animate-pulse" /></div>
-              <div><h3 className="text-sm md:text-base lg:text-xl font-bold text-white drop-shadow">Interactive World Map</h3><p className="text-[8px] md:text-[10px] lg:text-xs text-gray-400 flex items-center gap-1"><Navigation className="w-2.5 h-2.5 md:w-3 md:h-3" />{location?.city ? `${location.city}, ${location.country}` : 'Global View'}</p></div>
+              <div><h3 className="text-sm md:text-base lg:text-xl font-bold text-white drop-shadow"> Interactive World Map</h3><p className="text-[8px] md:text-[10px] lg:text-xs text-gray-400 flex items-center gap-1"><Navigation className="w-2.5 h-2.5 md:w-3 md:h-3" />{location?.city ? `${location.city}, ${location.country}` : 'Global View'}</p></div>
             </div>
             <div className="flex items-center gap-2 self-end sm:self-auto">
               <div className="flex items-center gap-1 bg-green-500/90 backdrop-blur-sm px-1.5 md:px-2 py-0.5 md:py-1 rounded-full text-[8px] md:text-[10px] font-semibold animate-pulse border border-green-400/40 shadow-md shadow-green-500/20"><span className="w-1 h-1 md:w-1.5 md:h-1.5 bg-white rounded-full animate-pulse" />LIVE TRACKING</div>
             </div>
           </div>
-          <div className="relative flex-1 min-h-[200px] md:min-h-[280px] lg:min-h-[350px] rounded-xl md:rounded-2xl overflow-hidden border border-white/20 z-0 bg-gradient-to-br from-green-900/30 to-blue-800/20 flex items-center justify-center">
+          <div className="relative flex-1 w-full min-h-[250px] sm:min-h-[300px] md:min-h-[350px] lg:min-h-[400px] aspect-video max-h-[50vh] lg:max-h-none rounded-xl md:rounded-2xl overflow-hidden border border-white/20 z-0 bg-gradient-to-br from-green-900/30 to-blue-800/20 flex items-center justify-center">
             {mapError ? (<div className="text-center text-red-400 p-4"><div className="text-3xl md:text-4xl mb-2">⚠️</div><p className="font-semibold text-sm md:text-base">{mapError}</p></div>) : (<div className="text-center"><Loader2 className="w-10 h-10 md:w-12 md:h-12 text-green-400 animate-spin mx-auto mb-3" /><p className="text-white font-medium text-sm md:text-base">Loading Interactive Map...</p><p className="text-gray-400 text-xs mt-1">Preparing map components</p></div>)}
           </div>
         </div>
@@ -1312,39 +1457,83 @@ const WorldWeatherMap = memo<WorldWeatherMapProps>(({ weatherData, unit }) => {
       <div id="live-map-section" className="group relative flex flex-col">
         <div className="absolute inset-0 bg-gradient-to-br from-green-500/20 to-emerald-600/20 rounded-2xl md:rounded-3xl blur-xl opacity-[0.4]" />
         <div className="relative bg-white/[0.04] backdrop-blur-xl rounded-2xl md:rounded-3xl p-3 md:p-4 lg:p-6 border border-white/15 hover:border-white/25 transition-all flex-1 flex flex-col">
+
+          {/* HEADER */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-3 md:mb-4 gap-2 flex-shrink-0">
             <div className="flex items-center gap-2 md:gap-3">
-              <div className="relative"><MapPin className="w-4 h-4 md:w-5 md:h-5 lg:w-6 lg:h-6 text-green-400" /><span className="absolute -top-1 -right-1 w-1.5 h-1.5 md:w-2 md:h-2 bg-green-400 rounded-full animate-pulse" /></div>
-              <div><h3 className="text-sm md:text-base lg:text-xl font-bold text-white drop-shadow">Interactive World Map</h3><p className="text-[8px] md:text-[10px] lg:text-xs text-gray-400 flex items-center gap-1"><Navigation className="w-2.5 h-2.5 md:w-3 md:h-3" />{location?.city ? `${location.city}, ${location.country}` : 'Global View'}</p></div>
+              <div className="relative">
+                <MapPin className="w-4 h-4 md:w-5 md:h-5 lg:w-6 lg:h-6 text-green-400" />
+                <span className="absolute -top-1 -right-1 w-1.5 h-1.5 md:w-2 md:h-2 bg-green-400 rounded-full animate-pulse" />
+              </div>
+              <div>
+                <h3 className="text-sm md:text-base lg:text-xl font-bold text-white drop-shadow">
+                  Interactive World Map
+                </h3>
+                <p className="text-[8px] md:text-[10px] lg:text-xs text-gray-400 flex items-center gap-1">
+                  <Navigation className="w-2.5 h-2.5 md:w-3 md:h-3" />
+                  {location?.city ? `${location.city}, ${location.country}` : 'Global View'}
+                </p>
+              </div>
             </div>
+
             <div className="flex items-center gap-2 self-end sm:self-auto">
-              <div className="flex items-center gap-1 bg-green-500/90 backdrop-blur-sm px-1.5 md:px-2 py-0.5 md:py-1 rounded-full text-[8px] md:text-[10px] font-semibold animate-pulse border border-green-400/40 shadow-md shadow-green-500/20"><span className="w-1 h-1 md:w-1.5 md:h-1.5 bg-white rounded-full animate-pulse" />LIVE TRACKING</div>
-              {/* ✅ FIXED CODE - VISIBLE ON ALL SCREENS */}
+              {/* Live Tracking Badge */}
+              <div className="flex items-center gap-1 bg-green-500/90 backdrop-blur-sm px-1.5 md:px-2 py-0.5 md:py-1 rounded-full text-[8px] md:text-[10px] font-semibold animate-pulse border border-green-400/40 shadow-md shadow-green-500/20">
+                <span className="w-1 h-1 md:w-1.5 md:h-1.5 bg-white rounded-full animate-pulse" />
+                LIVE TRACKING
+              </div>
+
+              {/* ✅ LOCATE ME BUTTON - SMALLER SIZE */}
               <button
                 onClick={() => {
                   if (leafletMap && location?.lat && location?.lon) {
                     leafletMap.flyTo([location.lat, location.lon], 14, { duration: 2 })
                   }
                 }}
-                className="flex items-center gap-1.5 md:gap-2 px-2 md:px-3 lg:px-4 
-             py-1.5 md:py-2 bg-gradient-to-r from-blue-500/20 to-cyan-500/20 
-             border border-blue-400/40 text-white text-[10px] md:text-xs lg:text-sm 
-             font-medium rounded-lg md:rounded-xl hover:from-blue-500/30 
-             hover:to-cyan-500/30 hover:border-blue-300/60 transition-all 
-             duration-300 shadow-lg shadow-blue-900/50 hover:shadow-blue-800/70 
-             whitespace-nowrap"
+                className="relative flex items-center gap-1 
+                  px-2 sm:px-2.5 md:px-3 
+                  py-1 sm:py-1.5 md:py-1.5 
+                  bg-gradient-to-r from-blue-500/95 to-cyan-400/95 
+                  hover:from-blue-400 hover:to-cyan-300
+                  text-white rounded-lg md:rounded-xl font-bold 
+                  text-[10px] sm:text-xs md:text-sm 
+                  border-2 border-blue-200/70 
+                  shadow-[0_0_15px_rgba(59,130,246,0.6),0_0_30px_rgba(59,130,246,0.35)]
+                  hover:shadow-[0_0_20px_rgba(96,165,250,0.8),0_0_40px_rgba(59,130,246,0.5)]
+                  transition-all duration-300 
+                  whitespace-nowrap flex-shrink-0 
+                  overflow-hidden group
+                  transform hover:scale-105 active:scale-95"
+                aria-label="Locate me on map"
               >
-                <Navigation className="w-3 h-3 md:w-4 md:h-4" />
-                <span className="hidden xs:inline">Locate Me</span>
-                <span className="xs:hidden">Locate Me</span>
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-300/40 to-cyan-200/40 
+                  opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-xl" />
+
+                <Navigation className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 relative z-10 
+                  group-hover:animate-pulse drop-shadow-[0_0_6px_rgba(255,255,255,0.9)]" />
+
+                <span className="relative z-10 font-bold tracking-wide">
+                  Locate Me
+                </span>
               </button>
             </div>
           </div>
 
-          <div className="flex items-center gap-1.5 md:gap-2 mb-2 md:mb-3 overflow-x-auto pb-1 md:pb-2 flex-shrink-0">
-            <span className="text-[10px] md:text-xs font-semibold text-gray-300 whitespace-nowrap mr-1 flex items-center gap-1"><Layers className="w-2.5 h-2.5 md:w-3 md:h-3" />Layers:</span>
+          {/* LAYER BUTTONS */}
+          <div className="flex items-center gap-1.5 md:gap-2 mb-2 md:mb-3 overflow-x-auto overflow-y-hidden pb-1 md:pb-2 flex-shrink-0 snap-x snap-mandatory scrollbar-hide -mx-1 px-1">
+            <span className="text-[10px] md:text-xs font-semibold text-gray-300 whitespace-nowrap mr-1 flex items-center gap-1">
+              <Layers className="w-2.5 h-2.5 md:w-3 md:h-3" />
+              Layers:
+            </span>
             {['Temperature', 'Precipitation', 'Wind Speed'].map((layer) => (
-              <button key={layer} onClick={() => setActiveLayer(layer)} className={`flex items-center gap-1 md:gap-1.5 px-2 md:px-3 lg:px-4 py-1 md:py-1.5 lg:py-2 rounded-lg font-medium text-[10px] md:text-xs whitespace-nowrap transition-all duration-300 border active:scale-95 ${activeLayer === layer ? 'bg-gradient-to-r from-orange-500/90 to-red-500/90 text-white shadow-lg backdrop-blur-sm border-white/20' : 'bg-white/[0.06] text-gray-300 hover:text-white hover:bg-white/[0.12] border-white/10 hover:scale-105'}`}>
+              <button
+                key={layer}
+                onClick={() => setActiveLayer(layer)}
+                className={`flex items-center gap-1 md:gap-1.5 px-3 md:px-3 lg:px-4 py-1.5 md:py-1.5 lg:py-2 rounded-lg font-medium text-[10px] md:text-xs whitespace-nowrap transition-all duration-300 border active:scale-95 snap-start flex-shrink-0 ${activeLayer === layer
+                  ? 'bg-gradient-to-r from-orange-500/95 to-red-500/95 text-white shadow-lg backdrop-blur-sm border-orange-300/50 font-bold'
+                  : 'bg-white/[0.08] text-gray-300 hover:text-white hover:bg-white/[0.15] border-white/15 hover:scale-105'
+                  }`}
+              >
                 {layer === 'Temperature' && <Thermometer className="w-2.5 h-2.5 md:w-3 md:h-3" />}
                 {layer === 'Precipitation' && <Droplets className="w-2.5 h-2.5 md:w-3 md:h-3" />}
                 {layer === 'Wind Speed' && <Wind className="w-2.5 h-2.5 md:w-3 md:h-3" />}
@@ -1353,13 +1542,14 @@ const WorldWeatherMap = memo<WorldWeatherMapProps>(({ weatherData, unit }) => {
             ))}
           </div>
 
-          <div className="relative flex-1 min-h-[200px] md:min-h-[280px] lg:min-h-[350px] rounded-xl md:rounded-2xl overflow-hidden border border-white/20 z-0">
+          {/* MAP CONTAINER WITH ALL OVERLAYS */}
+          <div className="relative w-full flex-1 min-h-[250px] sm:min-h-[300px] md:min-h-[350px] lg:min-h-[400px] aspect-video max-h-[50vh] lg:max-h-none rounded-xl md:rounded-2xl overflow-hidden border border-white/20 z-0">
             <MapContainer
               center={mapCenter}
               zoom={zoom}
               zoomControl={false}
               scrollWheelZoom={true}
-              style={{ height: '100%', width: '100%' }}
+              style={{ height: '100%', width: '100%', minHeight: '250px' }}
               ref={(mapInstance: any) => {
                 if (mapInstance && !leafletMap) {
                   setLeafletMap(mapInstance)
@@ -1401,56 +1591,89 @@ const WorldWeatherMap = memo<WorldWeatherMapProps>(({ weatherData, unit }) => {
               ))}
             </MapContainer>
 
-            {/* Zoom Controls */}
-            <div className="absolute top-2 right-2 md:top-3 md:right-3 flex flex-col gap-1 md:gap-1.5 z-[1000]">
-              <button onClick={handleZoomIn} disabled={!leafletMap} className={`w-8 h-8 md:w-9 md:h-9 lg:w-10 lg:h-10 rounded-lg shadow-lg border flex items-center justify-center transition-all ${leafletMap ? 'bg-white/90 hover:bg-blue-50 cursor-pointer hover:scale-110 active:scale-95' : 'bg-gray-200 cursor-not-allowed opacity-60'} border-white/40`} title="Zoom In (+)">
-                <ZoomIn className={`w-3.5 h-3.5 md:w-4 md:h-4 ${leafletMap ? 'text-gray-700 hover:text-blue-600' : 'text-gray-400'}`} />
-              </button>
-
-              <div className="bg-white/95 px-1.5 md:px-2 py-0.5 md:py-1 rounded-lg text-center shadow-md border border-gray-300 mx-auto">
-                <span className="text-[10px] md:text-xs font-bold text-gray-700">{zoom}x</span>
-              </div>
-
-              <button onClick={handleZoomOut} disabled={!leafletMap} className={`w-8 h-8 md:w-9 md:h-9 lg:w-10 lg:h-10 rounded-lg shadow-lg border flex items-center justify-center transition-all ${leafletMap ? 'bg-white/90 hover:bg-blue-50 cursor-pointer hover:scale-110 active:scale-95' : 'bg-gray-200 cursor-not-allowed opacity-60'} border-white/40`} title="Zoom Out (-)">
-                <ZoomOut className={`w-3.5 h-3.5 md:w-4 md:h-4 ${leafletMap ? 'text-gray-700 hover:text-blue-600' : 'text-gray-400'}`} />
-              </button>
-
-              <div className="h-px w-6 md:w-8 bg-gray-300 mx-auto my-0.5 md:my-1" />
-
-              <button onClick={handleResetView} disabled={!leafletMap} className={`w-8 h-8 md:w-9 md:h-9 lg:w-10 lg:h-10 rounded-lg shadow-lg border flex items-center justify-center transition-all ${leafletMap ? 'bg-white/90 hover:bg-green-50 cursor-pointer hover:scale-110 active:scale-95' : 'bg-gray-200 cursor-not-allowed opacity-60'} border-white/40 hover:border-green-300`} title="Reset to Location">
-                <RotateCcw className={`w-3.5 h-3.5 md:w-4 md:h-4 ${leafletMap ? 'text-gray-700 hover:text-green-600' : 'text-gray-400'}`} />
-              </button>
-            </div>
-
-            {/* Legend */}
-            <div className="absolute bottom-2 left-2 md:bottom-3 md:left-3 bg-white/90 backdrop-blur-md rounded-lg md:rounded-xl p-2 md:p-3 shadow-lg border border-white/40 z-[1000] max-w-[120px] md:max-w-[160px] hidden sm:block">
-              <h5 className="font-bold text-[10px] md:text-xs text-gray-800 mb-1.5 md:mb-2 flex items-center gap-1">🌡️ {activeLayer}</h5>
-              <div className="space-y-1 md:space-y-1.5">
-                {activeLayer === 'Temperature' && [{ cls: 'bg-red-500', label: 'Hot ≥36°' }, { cls: 'bg-orange-500', label: 'Warm 33-35°' }, { cls: 'bg-yellow-500', label: 'Mild 30-32°' }, { cls: 'bg-green-500', label: 'Cool <30°' }].map((item, i) => (<div key={i} className="flex items-center gap-1.5 md:gap-2 text-[9px] md:text-[11px]"><div className={`w-2.5 h-2.5 md:w-3 md:h-3 ${item.cls} rounded-full shadow-sm`} /><span className="text-gray-700 font-medium">{item.label}</span></div>))}
-                {activeLayer === 'Precipitation' && [{ color: '#3b82f6', label: 'Heavy >70%' }, { color: '#60a5fa', label: 'Moderate 40-70%' }, { color: '#93c5fd', label: 'Light 10-40%' }, { color: '#dbeafe', label: 'Dry <10%' }].map((item, i) => (<div key={i} className="flex items-center gap-1.5 md:gap-2 text-[9px] md:text-[11px]"><div className="w-2.5 h-2.5 md:w-3 md:h-3 rounded-full shadow-sm" style={{ backgroundColor: item.color }} /><span className="text-gray-700 font-medium">{item.label}</span></div>))}
-                {activeLayer === 'Wind Speed' && [{ color: '#ef4444', label: 'Strong >25 km/h' }, { color: '#f97316', label: 'Moderate 15-25' }, { color: '#eab308', label: 'Light 5-15 km/h' }, { color: '#22c55e', label: 'Calm <5 km/h' }].map((item, i) => (<div key={i} className="flex items-center gap-1.5 md:gap-2 text-[9px] md:text-[11px]"><div className="w-2.5 h-2.5 md:w-3 md:h-3 rounded-full shadow-sm" style={{ backgroundColor: item.color }} /><span className="text-gray-700 font-medium">{item.label}</span></div>))}
-              </div>
-            </div>
-
-            {/* Coordinates Display */}
-            <div className="absolute top-2 left-2 md:top-3 md:left-3 bg-black/70 backdrop-blur-md rounded-lg px-1.5 md:px-2 py-0.5 md:py-1 text-[8px] md:text-[10px] text-white/80 font-mono z-[1000] border border-white/20">
+            {/* COORDINATES DISPLAY */}
+            <div className="absolute top-2 left-2 sm:top-3 sm:left-3 bg-black/85 backdrop-blur-md rounded-lg px-2 sm:px-3 py-1.5 sm:py-2 text-[9px] sm:text-[11px] md:text-xs text-white font-mono font-semibold z-[1000] border border-white/25 shadow-lg whitespace-nowrap">
               Lat: {(location?.lat || 30.7811).toFixed(4)} | Lon: {(location?.lon || 76.6168).toFixed(4)}
+            </div>
+
+            {/* ZOOM CONTROLS */}
+            <div className="absolute top-2 right-2 sm:top-3 sm:right-3 flex flex-col gap-1.5 sm:gap-2 z-[1000]">
+              <button onClick={handleZoomIn} disabled={!leafletMap} className={`w-9 h-9 sm:w-9 sm:h-9 md:w-10 md:h-10 lg:w-10 lg:h-10 rounded-lg shadow-lg border-2 flex items-center justify-center transition-all ${leafletMap ? 'bg-white/95 hover:bg-blue-50 cursor-pointer hover:scale-110 active:scale-95 border-gray-200' : 'bg-gray-200 cursor-not-allowed opacity-60'}`} title="Zoom In (+)" aria-label="Zoom in">
+                <ZoomIn className={`w-4 h-4 sm:w-4 sm:h-4 md:w-4 md:h-4 ${leafletMap ? 'text-gray-700 hover:text-blue-600' : 'text-gray-400'}`} />
+              </button>
+
+              <button onClick={handleZoomOut} disabled={!leafletMap} className={`w-9 h-9 sm:w-9 sm:h-9 md:w-10 md:h-10 lg:w-10 lg:h-10 rounded-lg shadow-lg border-2 flex items-center justify-center transition-all ${leafletMap ? 'bg-white/95 hover:bg-blue-50 cursor-pointer hover:scale-110 active:scale-95 border-gray-200' : 'bg-gray-200 cursor-not-allowed opacity-60'}`} title="Zoom Out (-)" aria-label="Zoom out">
+                <ZoomOut className={`w-4 h-4 sm:w-4 sm:h-4 md:w-4 md:h-4 ${leafletMap ? 'text-gray-700 hover:text-blue-600' : 'text-gray-400'}`} />
+              </button>
+
+              <div className="h-px w-7 sm:w-8 bg-gray-300 mx-auto my-1" />
+
+              <button onClick={handleResetView} disabled={!leafletMap} className={`w-9 h-9 sm:w-9 sm:h-9 md:w-10 md:h-10 lg:w-10 lg:h-10 rounded-lg shadow-lg border-2 flex items-center justify-center transition-all ${leafletMap ? 'bg-white/95 hover:bg-green-50 cursor-pointer hover:scale-110 active:scale-95 border-gray-200' : 'bg-gray-200 cursor-not-allowed opacity-60'}`} title="Reset to Location" aria-label="Reset view">
+                <RotateCcw className={`w-4 h-4 sm:w-4 sm:h-4 md:w-4 md:h-4 ${leafletMap ? 'text-gray-700 hover:text-green-600' : 'text-gray-400'}`} />
+              </button>
+            </div>
+
+            {/* ✅✅✅ WHITE LEGEND CARD - ANCHORED TO BOTTOM-LEFT CORNER ✅✅✅ */}
+            <div className="absolute bottom-3 left-2 sm:bottom-4 sm:left-3 bg-white/98 backdrop-blur-md rounded-xl shadow-2xl border border-gray-300 z-[1000] w-[160px] sm:w-[185px] p-2.5 sm:p-3">
+              <h5 className="font-bold text-[11px] sm:text-sm text-purple-700 mb-1.5 sm:mb-2 flex items-center gap-1.5 pb-1.5 border-b border-gray-200">
+                <span className="text-sm">🌡️</span>
+                {activeLayer}
+              </h5>
+              <div className="space-y-1.5">
+                {activeLayer === 'Temperature' && [
+                  { color: '#ef4444', label: 'Hot ≥36°' },
+                  { color: '#f97316', label: 'Warm 33-35°' },
+                  { color: '#eab308', label: 'Mild 30-32°' },
+                  { color: '#22c55e', label: 'Cool <30°' }
+                ].map((item, i) => (
+                  <div key={i} className="flex items-center gap-2 text-[9px] sm:text-[10px]">
+                    <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full shadow-sm flex-shrink-0" style={{ backgroundColor: item.color }} />
+                    <span className="text-gray-800 font-medium">{item.label}</span>
+                  </div>
+                ))}
+
+                {activeLayer === 'Precipitation' && [
+                  { color: '#3b82f6', label: 'Heavy >70%' },
+                  { color: '#60a5fa', label: 'Moderate 40-70%' },
+                  { color: '#93c5fd', label: 'Light 10-40%' },
+                  { color: '#dbeafe', label: 'Dry <10%' }
+                ].map((item, i) => (
+                  <div key={i} className="flex items-center gap-2 text-[9px] sm:text-[10px]">
+                    <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full shadow-sm flex-shrink-0" style={{ backgroundColor: item.color }} />
+                    <span className="text-gray-800 font-medium">{item.label}</span>
+                  </div>
+                ))}
+
+                {activeLayer === 'Wind Speed' && [
+                  { color: '#ef4444', label: 'Strong >25 km/h' },
+                  { color: '#f97316', label: 'Moderate 15-25' },
+                  { color: '#eab308', label: 'Light 5-15 km/h' },
+                  { color: '#22c55e', label: 'Calm <5 km/h' }
+                ].map((item, i) => (
+                  <div key={i} className="flex items-center gap-2 text-[9px] sm:text-[10px]">
+                    <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full shadow-sm flex-shrink-0" style={{ backgroundColor: item.color }} />
+                    <span className="text-gray-800 font-medium">{item.label}</span>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
 
-          {/* Footer Stats */}
-          <div className="mt-2 md:mt-3 grid grid-cols-3 gap-1.5 md:gap-2 flex-shrink-0">
-            <div className="bg-white/[0.06] rounded-lg p-1.5 md:p-2 text-center border border-white/10">
-              <p className="text-[8px] md:text-[10px] text-gray-400">Zoom Level</p>
-              <p className="text-xs md:text-sm font-bold text-white">{zoom}x</p>
+          {/* FOOTER STATS - Only 3 Cards */}
+          <div className="mt-2 md:mt-3 grid grid-cols-3 gap-1.5 sm:gap-2 md:gap-3 flex-shrink-0">
+            <div className="bg-white/[0.06] rounded-lg md:rounded-xl p-2 md:p-3 text-center border border-white/10 hover:bg-white/[0.1] hover:border-white/20 transition-all min-w-0">
+              <p className="text-[9px] sm:text-[10px] md:text-xs text-gray-400 truncate font-medium">Zoom Level</p>
+              <p className="text-sm sm:text-base md:text-lg font-bold text-white">{zoom}x</p>
             </div>
-            <div className="bg-white/[0.06] rounded-lg p-1.5 md:p-2 text-center border border-white/10">
-              <p className="text-[8px] md:text-[10px] text-gray-400">Active Markers</p>
-              <p className="text-xs md:text-sm font-bold text-white">{1 + nearbyPoints.length}</p>
+
+            <div className="bg-white/[0.06] rounded-lg md:rounded-xl p-2 md:p-3 text-center border border-white/10 hover:bg-white/[0.1] hover:border-white/20 transition-all min-w-0">
+              <p className="text-[9px] sm:text-[10px] md:text-xs text-gray-400 truncate font-medium">Active Markers</p>
+              <p className="text-sm sm:text-base md:text-lg font-bold text-white">{1 + nearbyPoints.length}</p>
             </div>
-            <div className="bg-white/[0.06] rounded-lg p-1.5 md:p-2 text-center border border-white/10">
-              <p className="text-[8px] md:text-[10px] text-gray-400">Layer</p>
-              <p className="text-xs md:text-sm font-bold text-white truncate">{activeLayer.split(' ')[0]}</p>
+
+            <div className="bg-white/[0.06] rounded-lg md:rounded-xl p-2 md:p-3 text-center border border-white/10 hover:bg-white/[0.1] hover:border-white/20 transition-all min-w-0">
+              <p className="text-[9px] sm:text-[10px] md:text-xs text-gray-400 truncate font-medium">Layer</p>
+              <p className="text-sm sm:text-base md:text-lg font-bold text-white truncate">{activeLayer.split(' ')[0]}</p>
             </div>
           </div>
         </div>
@@ -1467,6 +1690,92 @@ WorldWeatherMap.displayName = 'WorldWeatherMap'
 
 // ==================== MAIN DASHBOARD COMPONENT ====================
 export default function WeatherDashboard() {
+  // ============================================
+  // 🎬 WELCOME PAGE INTEGRATION
+  // ============================================
+  const [showWelcome, setShowWelcome] = useState(true);
+  const [welcomeProgress, setWelcomeProgress] = useState(0);
+  const [isExiting, setIsExiting] = useState(false);
+  const [currentPhase, setCurrentPhase] = useState<'loading' | 'ready' | 'transitioning'>('loading');
+  const [showContent, setShowContent] = useState(false);
+
+  // ✅ NEW: Get search params to check for skipWelcome
+  const searchParams = useSearchParams();
+
+  // ✅ NEW: Skip welcome if coming from another page
+  useEffect(() => {
+    const shouldSkip = searchParams.get('skipWelcome');
+    if (shouldSkip === 'true') {
+      setShowWelcome(false);
+    }
+  }, [searchParams]);
+
+  // ============================================
+  // 📱 RESPONSIVE HOOK FOR WELCOME PAGE
+  // ============================================
+
+  const [screenSize, setScreenSize] = useState({
+    width: typeof window !== 'undefined' ? window.innerWidth : 1024,
+    height: typeof window !== 'undefined' ? window.innerHeight : 768,
+  });
+
+  useEffect(() => {
+    const handleResize = () => {
+      setScreenSize({
+        width: window.innerWidth,
+        height: window.innerHeight,
+      });
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const isMobileView = screenSize.width < 768;
+  const isTabletView = screenSize.width >= 768 && screenSize.width < 1024;
+  const isDesktopView = screenSize.width >= 1024;
+
+
+  useEffect(() => {
+    if (!showWelcome) return;
+
+    // Phase 1: Show content after short delay
+    const contentTimer = setTimeout(() => setShowContent(true), 300);
+
+    // Phase 2: Progress animation ✅ SLOW VERSION
+    const timer = setInterval(() => {
+      setWelcomeProgress(prev => {
+        if (prev >= 100) {
+          clearInterval(timer);
+          setCurrentPhase('ready');
+
+          // Phase 3: Start exit after brief pause
+          setTimeout(() => {
+            setCurrentPhase('transitioning');
+            setIsExiting(true);
+
+            // Complete hide after fade-out
+            setTimeout(() => setShowWelcome(false), 1200);
+          }, 800);
+
+          return 100;
+        }
+
+        // ✅✅✅ REDUCED SPEED ✅✅✅
+        const increment = Math.random() * 1.8 + 0.7;  // ← CHANGED: Was 4 + 1.5
+        return Math.min(prev + increment, 100);
+      });
+    }, 280); // ← CHANGED: Was 180
+
+    return () => {
+      clearInterval(timer);
+      clearTimeout(contentTimer);
+    };
+  }, [showWelcome]);
+
+  // ============================================
+  // END WELCOME PAGE INTEGRATION
+  // ============================================
   const [unit, setUnit] = useState<'C' | 'F'>('C')
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false)
   const router = useRouter()
@@ -1490,12 +1799,6 @@ export default function WeatherDashboard() {
   const visibility = current?.visibility ?? 10
   const description = current?.description ?? 'Overcast'
   const iconCode = current?.icon
-
-  const [isInitialLoading, setIsInitialLoading] = useState(true)
-
-  useEffect(() => {
-    setTimeout(() => setIsInitialLoading(false), 1500)
-  }, [])
 
   // Close sidebar on escape key
   useEffect(() => {
@@ -1534,32 +1837,1394 @@ export default function WeatherDashboard() {
       return new Date().toLocaleTimeString()
     }
   }, [weatherData?.timezone])
+  // ============================================
+  // 🎬 SHOW WELCOME OVERLAY OR MAIN DASHBOARD
+  // ============================================
+  // ============================================
+  // 🎬 ULTRA PREMIUM WELCOME PAGE - FINAL VERSION
+  // ============================================
 
-  if (isInitialLoading || loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-black">
-        <div className="text-center px-4">
-          <Loader2 className="w-12 h-12 md:w-16 md:h-16 text-blue-400 animate-spin mx-auto mb-4" />
-          <h2 className="text-xl md:text-2xl font-bold text-white">Loading Weather Dashboard...</h2>
-          <p className="text-blue-200 mt-2 text-sm md:text-base">Preparing your weather experience</p>
+  // ============================================
+  // 🎬 WELCOME PAGE - ERROR-FREE MINIMAL VERSION  
+  // ============================================
+
+  // ============================================
+  // 🎬 SHOW WELCOME OVERLAY OR MAIN DASHBOARD
+  // ============================================
+
+  if (showWelcome) {
+    if (isDesktopView) {
+      // ============================================
+      // ✅ DESKTOP VIEW - FULL ANIMATIONS
+      // ============================================
+      return (
+        <div style={{
+          position: 'fixed',
+          inset: 0,
+          zIndex: 99999,
+          transition: 'all 1s ease-in-out',
+          opacity: isExiting ? 0 : 1,
+          transform: isExiting ? 'scale(1.02)' : 'scale(1)',
+          filter: isExiting ? 'blur(8px)' : 'blur(0)',
+        }}>
+          <style>{`
+          @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            50% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+          }
+          @keyframes gradientMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+          }
+          @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+          }
+          @keyframes pulse {
+            0%, 100% { opacity: 0.7; }
+            50% { opacity: 1; }
+          }
+          @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+          }
+          @keyframes fadeInOut {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+          }
+
+          /* Desktop Icon Animations */
+          @keyframes desktopSunRotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+          }
+          
+          @keyframes desktopCloudFloat {
+            0%, 100% { transform: translateY(0px) translateX(0px); }
+            50% { transform: translateY(-4px) translateX(3px); }
+          }
+          
+          @keyframes desktopSunPulse {
+            0%, 100% { 
+              transform: scale(1);
+              filter: drop-shadow(0 0 10px rgba(251, 191, 36, 0.6));
+            }
+            50% { 
+              transform: scale(1.08);
+              filter: drop-shadow(0 0 18px rgba(251, 191, 36, 0.9));
+            }
+          }
+          
+          @keyframes desktopRayPulse {
+            0%, 100% { opacity: 0.65; stroke-width: 2.5; }
+            50% { opacity: 1; stroke-width: 3.5; }
+          }
+
+          @keyframes desktopIconBreath {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+          }
+
+          @keyframes desktopShimmerSweep {
+            0% { transform: translateX(-150%) skewX(-12deg); }
+            100% { transform: translateX(250%) skewX(-12deg); }
+          }
+
+          @keyframes desktopGlowRing {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.12); opacity: 0.85; }
+          }
+        `}</style>
+
+          <div style={{
+            width: '100%',
+            height: '100%',
+            background: '#000000',
+            position: 'relative',
+            overflow: 'hidden',
+          }}>
+
+            {/* Background */}
+            <div style={{ position: 'absolute', inset: 0 }}>
+              <div style={{
+                position: 'absolute', inset: 0,
+                background: 'radial-gradient(circle at center, #0a1628 0%, #000000 100%)',
+              }} />
+
+              <div style={{
+                position: 'absolute',
+                top: '-10%',
+                left: '-10%',
+                width: '120%',
+                height: '60%',
+                background: 'radial-gradient(circle, rgba(59,130,246,0.08) 0%, transparent 70%)',
+                filter: 'blur(80px)',
+              }} />
+
+              <div style={{
+                position: 'absolute',
+                bottom: '-10%',
+                right: '-10%',
+                width: '120%',
+                height: '50%',
+                background: 'radial-gradient(circle, rgba(99,102,241,0.06) 0%, transparent 70%)',
+                filter: 'blur(70px)',
+              }} />
+            </div>
+
+            {/* Content */}
+            <div style={{
+              position: 'relative',
+              zIndex: 20,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'flex-start',
+              minHeight: '100vh',
+              padding: '8vh 3rem 4rem',
+              opacity: showContent ? 1 : 0,
+              transform: showContent ? 'translateY(0)' : 'translateY(30px)',
+              transition: 'all 0.8s ease-out',
+            }}>
+
+              {/* Logo Container - CENTERED */}
+              <div style={{
+                textAlign: 'center',
+                marginBottom: welcomeProgress >= 100 ? '1.5rem' : '2.5rem',
+                transition: 'all 0.8s ease',
+                transform: welcomeProgress >= 100 ? 'scale(0.95)' : 'scale(1)',
+                opacity: welcomeProgress >= 100 ? 0.9 : 1,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '100%',
+              }}>
+
+                {/* Icon Card - CENTERED WITH ANIMATIONS */}
+                <div style={{
+                  marginBottom: '1.5rem',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  width: '100%',
+                }}>
+                  <div style={{
+                    position: 'relative',
+                    width: '160px',
+                    height: '160px',
+                  }}>
+
+                    {/* Outer Glow Ring */}
+                    <div style={{
+                      position: 'absolute',
+                      inset: '-10px',
+                      borderRadius: '42px',
+                      background: 'radial-gradient(circle, rgba(251,191,36,0.2) 0%, transparent 70%)',
+                      animation: 'desktopGlowRing 3s ease-in-out infinite',
+                      pointerEvents: 'none',
+                      zIndex: 0,
+                    }} />
+
+                    {/* Glass Card */}
+                    <div style={{
+                      position: 'relative',
+                      width: '100%',
+                      height: '100%',
+                      borderRadius: '32px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      background: 'rgba(255,255,255,0.05)',
+                      backdropFilter: 'blur(20px)',
+                      border: '1px solid rgba(255,255,255,0.15)',
+                      boxShadow: '0 8px 32px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.1)',
+                      overflow: 'hidden',
+                      zIndex: 1,
+                    }}>
+
+                      {/* ✅ FULLY ANIMATED SVG ICON - DESKTOP */}
+                      <svg viewBox="0 0 100 100" style={{
+                        width: '100%',
+                        height: '100%',
+                        animation: 'desktopIconBreath 4s ease-in-out infinite',
+                        transformOrigin: 'center',
+                      }}>
+                        <defs>
+                          <linearGradient id="sunGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stopColor="#FFE066">
+                              <animate attributeName="stop-color" values="#FFE066;#FFF176;#FFE066" dur="3s" repeatCount="indefinite" />
+                            </stop>
+                            <stop offset="100%" stopColor="#FBBF24">
+                              <animate attributeName="stop-color" values="#FBBF24;#FBC02D;#FBBF24" dur="3s" repeatCount="indefinite" />
+                            </stop>
+                          </linearGradient>
+
+                          <linearGradient id="cloudGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stopColor="#FFFFFF" />
+                            <stop offset="100%" stopColor="#E8F0FE" />
+                          </linearGradient>
+
+                          <filter id="desktopSunGlow" x="-50%" y="-50%" width="200%" height="200%">
+                            <feGaussianBlur stdDeviation="3" result="blur" />
+                            <feMerge>
+                              <feMergeNode in="blur" />
+                              <feMergeNode in="SourceGraphic" />
+                            </feMerge>
+                          </filter>
+
+                          <filter id="desktopCloudShadow" x="-20%" y="-20%" width="140%" height="140%">
+                            <feDropShadow dx="0" dy="2" stdDeviation="2.5" floodColor="#000" floodOpacity="0.25" />
+                          </filter>
+                        </defs>
+
+                        {/* ✅ CLOUD GROUP - FLOATING ANIMATION */}
+                        <g style={{
+                          animation: 'desktopCloudFloat 4s ease-in-out infinite',
+                          filter: 'url(#desktopCloudShadow)',
+                        }}>
+                          <ellipse cx="52" cy="62" rx="26" ry="14" fill="url(#cloudGrad)" opacity="0.95">
+                            <animate attributeName="opacity" values="0.92;1;0.92" dur="4s" repeatCount="indefinite" />
+                          </ellipse>
+                          <circle cx="32" cy="64" r="10" fill="white" opacity="0.92" />
+                          <circle cx="72" cy="63" r="9" fill="white" opacity="0.88" />
+                          <circle cx="52" cy="53" r="11" fill="white" opacity="0.9" />
+                          <ellipse cx="48" cy="57" rx="14" ry="6" fill="white" opacity="0.28" />
+                        </g>
+
+                        {/* ✅ SUN GROUP - ROTATION + PULSE + RAYS */}
+                        <g style={{
+                          animation: 'desktopSunRotate 20s linear infinite',
+                          transformOrigin: '52px 48px',
+                        }}>
+                          <circle cx="52" cy="48" r="20" fill="url(#sunGrad)" filter="url(#desktopSunGlow)">
+                            <animate attributeName="r" values="20;21.5;20" dur="2s" repeatCount="indefinite" />
+                            <animate attributeName="opacity" values="1;0.93;1" dur="2s" repeatCount="indefinite" />
+                          </circle>
+
+                          {/* Sun Rays - Animated */}
+                          {[0, 45, 90, 135, 180, 225, 270, 315].map((angle, i) => {
+                            const rad = angle * Math.PI / 180;
+                            return (
+                              <line
+                                key={i}
+                                x1={52 + Math.cos(rad) * 24}
+                                y1={48 + Math.sin(rad) * 24}
+                                x2={52 + Math.cos(rad) * 33}
+                                y2={48 + Math.sin(rad) * 33}
+                                stroke="white"
+                                strokeWidth="2.5"
+                                strokeLinecap="round"
+                                opacity="0.82"
+                              >
+                                <animate
+                                  attributeName="opacity"
+                                  values="0.5;1;0.5"
+                                  dur={`${2 + i * 0.2}s`}
+                                  repeatCount="indefinite"
+                                />
+                                <animate
+                                  attributeName="strokeWidth"
+                                  values="2;3.5;2"
+                                  dur={`${1.5 + i * 0.15}s`}
+                                  repeatCount="indefinite"
+                                />
+                              </line>
+                            );
+                          })}
+
+                          {/* Inner Bright Spot */}
+                          <circle cx="49" cy="45" r="8" fill="#FFFFFF" opacity="0.45">
+                            <animate attributeName="opacity" values="0.3;0.55;0.3" dur="3s" repeatCount="indefinite" />
+                            <animate attributeName="r" values="7;9;7" dur="2.5s" repeatCount="indefinite" />
+                          </circle>
+
+                          <circle cx="54" cy="51" r="4" fill="#FEFCE8" opacity="0.3">
+                            <animate attributeName="opacity" values="0.2;0.4;0.2" dur="2s" repeatCount="indefinite" />
+                          </circle>
+                        </g>
+                      </svg>
+
+                      {/* Shimmer Effect */}
+                      <div style={{
+                        position: 'absolute',
+                        inset: 0,
+                        background: 'linear-gradient(135deg, transparent 40%, rgba(255,255,255,0.1) 50%, transparent 60%)',
+                        borderRadius: '32px',
+                        animation: 'shimmer 3s infinite',
+                        pointerEvents: 'none',
+                        zIndex: 2,
+                      }} />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Title */}
+                <h1 style={{
+                  fontSize: welcomeProgress >= 100 ? '3.5rem' : '4.5rem',
+                  fontWeight: 900,
+                  letterSpacing: '-0.03em',
+                  lineHeight: 1,
+                  marginBottom: '1rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '0.3em',
+                  flexWrap: 'wrap',
+                }}>
+                  <span style={{ color: 'white' }}>Weather</span>
+                  <span style={{
+                    background: 'linear-gradient(135deg, #60A5FA 0%, #A78BFA 50%, #FB923C 100%)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    backgroundSize: '200% 200%',
+                    animation: 'gradientMove 5s ease infinite',
+                  }}>Live</span>
+                </h1>
+
+                {/* Subtitle */}
+                <p style={{
+                  fontSize: '1.1rem',
+                  fontWeight: 300,
+                  letterSpacing: '0.25em',
+                  textTransform: 'uppercase',
+                  color: '#94A3B8',
+                  marginBottom: '1rem',
+                }}>
+                  Real-time Weather Dashboard
+                </p>
+
+                {/* Tagline */}
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.75rem',
+                  flexWrap: 'wrap',
+                  justifyContent: 'center'
+                }}>
+                  <Zap size={14} color="#3B82F6" style={{ animation: 'pulse 2s infinite' }} />
+                  <span style={{
+                    fontSize: '0.9rem',
+                    fontWeight: 500,
+                    color: '#60A5FA',
+                    letterSpacing: '0.05em'
+                  }}>
+                    AI-Powered • Global Coverage • Live Updates
+                  </span>
+                  <Globe size={14} color="#3B82F6" style={{ animation: 'pulse 2s infinite 1s' }} />
+                </div>
+              </div>
+
+              {/* Progress Bar */}
+              <div style={{
+                width: '100%',
+                maxWidth: '500px',
+                marginTop: welcomeProgress >= 100 ? '1.5rem' : '2rem',
+                opacity: welcomeProgress >= 100 ? 0 : 1,
+                maxHeight: welcomeProgress >= 100 ? '0' : '200px',
+                overflow: 'hidden',
+                transition: 'all 0.8s ease',
+              }}>
+                <div style={{
+                  position: 'relative',
+                  height: '18px',
+                  background: 'rgba(15,23,42,0.6)',
+                  borderRadius: '9999px',
+                  border: '1px solid rgba(148,163,184,0.12)',
+                  overflow: 'hidden',
+                  marginBottom: '0.75rem',
+                }}>
+                  <div style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    height: '100%',
+                    width: `${welcomeProgress}%`,
+                    background: 'linear-gradient(90deg, #22C55E 0%, #06B6D4 50%, #8B5CF6 100%)',
+                    borderRadius: '9999px',
+                    boxShadow: '0 0 20px rgba(34,197,94,0.4)',
+                    transition: 'width 0.5s ease',
+                  }}>
+                    <div style={{
+                      position: 'absolute',
+                      inset: 0,
+                      background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent)',
+                      animation: 'shimmer 2s infinite',
+                    }} />
+                  </div>
+
+                  <div style={{
+                    position: 'absolute',
+                    top: '50%',
+                    left: `calc(${welcomeProgress}% - 6px)`,
+                    transform: 'translateY(-50%)',
+                    width: '12px',
+                    height: '12px',
+                    borderRadius: '50%',
+                    background: 'white',
+                    boxShadow: '0 0 20px 5px white',
+                    transition: 'left 0.5s ease',
+                  }} />
+                </div>
+
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  padding: '0 0.5rem',
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                    {welcomeProgress < 100 ? (
+                      <>
+                        <Loader2 size={18} color="#06B6D4" style={{ animation: 'spin 1s linear infinite' }} />
+                        <span style={{ color: 'white', fontWeight: 600, fontSize: '0.95rem' }}>
+                          {welcomeProgress < 30 ? 'Initializing...' :
+                            welcomeProgress < 60 ? 'Loading Data...' :
+                              welcomeProgress < 90 ? 'Preparing...' : 'Almost Ready...'}
+                        </span>
+                      </>
+                    ) : (
+                      <>
+                        <Check size={16} color="#22C55E" strokeWidth={3} />
+                        <span style={{ color: '#4ADE80', fontWeight: 700, fontSize: '0.95rem' }}>
+                          System Ready!
+                        </span>
+                      </>
+                    )}
+                  </div>
+
+                  <span style={{
+                    fontFamily: 'monospace',
+                    fontSize: '1.4rem',
+                    fontWeight: 800,
+                    color: welcomeProgress >= 100 ? '#4ADE80' : '#06B6D4'
+                  }}>
+                    {Math.round(welcomeProgress)}%
+                  </span>
+                </div>
+              </div>
+
+              {/* Feature Cards */}
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(3, 1fr)',
+                gap: '1.25rem',
+                width: '100%',
+                maxWidth: '520px',
+                marginTop: welcomeProgress >= 100 ? '1.5rem' : '1rem',
+                opacity: welcomeProgress >= 100 ? 1 : 0,
+                transform: welcomeProgress >= 100 ? 'translateY(0)' : 'translateY(30px)',
+                transition: 'all 0.8s ease 0.3s',
+              }}>
+                {[
+                  { Icon: Globe, title: 'Global Data', desc: 'Worldwide coverage', color: '#60A5FA', bg: 'rgba(96,165,250,0.15)' },
+                  { Icon: Activity, title: 'Real-time', desc: 'Live updates every minute', color: '#FB923C', bg: 'rgba(251,146,60,0.15)' },
+                  { Icon: Target, title: 'Precise', desc: 'AI-powered accuracy', color: '#A78BFA', bg: 'rgba(167,122,250,0.15)' },
+                ].map((feature, i) => (
+                  <div key={i} style={{
+                    background: 'rgba(15,23,42,0.5)',
+                    backdropFilter: 'blur(16px)',
+                    border: '1px solid rgba(148,163,184,0.1)',
+                    borderRadius: '16px',
+                    padding: '1.5rem 1rem',
+                    textAlign: 'center',
+                    transition: 'all 0.4s ease',
+                    animation: `slideUp 0.6s ease ${0.2 + i * 0.15}s both`,
+                  }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.transform = 'translateY(-8px)';
+                      e.currentTarget.style.borderColor = 'rgba(148,163,184,0.25)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.transform = 'translateY(0)';
+                      e.currentTarget.style.borderColor = 'rgba(148,163,184,0.1)';
+                    }}
+                  >
+                    <div style={{
+                      width: '56px',
+                      height: '56px',
+                      margin: '0 auto 0.875rem',
+                      borderRadius: '12px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      background: feature.bg,
+                      color: feature.color,
+                    }}>
+                      <feature.Icon size={26} strokeWidth={1.5} />
+                    </div>
+                    <p style={{
+                      fontSize: '1rem',
+                      fontWeight: 700,
+                      color: 'white',
+                      marginBottom: '0.25rem'
+                    }}>{feature.title}</p>
+                    <p style={{
+                      fontSize: '0.8rem',
+                      color: '#64748B'
+                    }}>{feature.desc}</p>
+                  </div>
+                ))}
+              </div>
+
+              {/* Bottom Hint */}
+              {welcomeProgress >= 100 && (
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  marginTop: '2rem',
+                  color: '#64748B',
+                  fontSize: '0.875rem',
+                  animation: 'fadeInOut 2s infinite',
+                }}>
+                  <ArrowRight size={14} style={{ animation: 'pulse 1.5s infinite' }} />
+                  <span>Entering Dashboard...</span>
+                </div>
+              )}
+            </div>
+
+            {/* Vignette */}
+            <div style={{
+              position: 'absolute',
+              inset: 0,
+              pointerEvents: 'none',
+              background: 'radial-gradient(circle at center, transparent 30%, rgba(0,0,0,0.8) 100%)',
+            }} />
+          </div>
         </div>
-      </div>
-    )
+      );
+
+    } else {
+      // ============================================
+      // ✅ MOBILE VIEW - FULL ANIMATIONS (FIXED!)
+      // ============================================
+
+      return (
+        <div style={{
+          position: 'fixed',
+          inset: 0,
+          zIndex: 99999,
+          transition: 'all 1s ease-in-out',
+          opacity: isExiting ? 0 : 1,
+          transform: isExiting ? 'scale(1.03)' : 'scale(1)',
+        }}>
+          <style>{`
+          /* Mobile-Specific Animation Keyframes */
+          @keyframes mobileSunRotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+          }
+          
+          @keyframes mobileCloudFloat {
+            0%, 100% { transform: translateY(0px) translateX(0px); }
+            50% { transform: translateY(-3px) translateX(2px); }
+          }
+          
+          @keyframes mobileSunPulse {
+            0%, 100% { 
+              transform: scale(1);
+              filter: drop-shadow(0 0 8px rgba(251, 191, 36, 0.6));
+            }
+            50% { 
+              transform: scale(1.08);
+              filter: drop-shadow(0 0 14px rgba(251, 191, 36, 0.9));
+            }
+          }
+          
+          @keyframes mobileRayPulse {
+            0%, 100% { opacity: 0.6; stroke-width: 2; }
+            50% { opacity: 1; stroke-width: 3; }
+          }
+          
+          @keyframes mobileIconBreath {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.04); }
+          }
+          
+          @keyframes mobileShimmerSweep {
+            0% { transform: translateX(-150%) skewX(-12deg); }
+            100% { transform: translateX(250%) skewX(-12deg); }
+          }
+          
+          @keyframes mobileGlowRing {
+            0%, 100% { transform: scale(1); opacity: 0.6; }
+            50% { transform: scale(1.15); opacity: 0.9; }
+          }
+
+          @keyframes gradientMove {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+          }
+
+          @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+          }
+
+          @keyframes fadeInOut {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+          }
+
+          @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+          }
+
+          @keyframes pulse {
+            0%, 100% { opacity: 0.7; }
+            50% { opacity: 1; }
+          }
+
+          @keyframes mobileAurora {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            33% { transform: translate(30px, 20px) rotate(2deg); }
+            66% { transform: translate(-20px, -15px) rotate(-1deg); }
+          }
+
+          @keyframes mobileOrbFloat {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(-40px, 30px); }
+          }
+        `}</style>
+
+          <div style={{
+            width: '100%',
+            height: '100%',
+            background: '#000000',
+            position: 'relative',
+            overflow: 'hidden',
+          }}>
+
+            {/* Mobile Background */}
+            <div style={{ position: 'absolute', inset: 0 }}>
+              <div style={{
+                position: 'absolute', inset: 0,
+                background: 'radial-gradient(circle at center, #0c1929 0%, #000000 100%)',
+              }} />
+
+              <div style={{
+                position: 'absolute',
+                top: '-15%',
+                left: '-15%',
+                width: '130%',
+                height: '55%',
+                background: 'radial-gradient(circle, rgba(59,130,246,0.06) 0%, transparent 70%)',
+                filter: 'blur(60px)',
+                animation: 'mobileAurora 8s ease-in-out infinite',
+              }} />
+
+              <div style={{
+                position: 'absolute',
+                bottom: '10%',
+                right: '-10%',
+                width: '300px',
+                height: '300px',
+                borderRadius: '50%',
+                background: 'radial-gradient(circle, rgba(99,102,241,0.05) 0%, transparent 70%)',
+                filter: 'blur(50px)',
+                animation: 'mobileOrbFloat 12s ease-in-out infinite',
+              }} />
+            </div>
+
+            {/* Mobile Content */}
+            <div style={{
+              position: 'relative',
+              zIndex: 20,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              minHeight: '100vh',
+              padding: '2rem 1.5rem',
+              opacity: showContent ? 1 : 0,
+              transform: showContent ? 'translateY(0)' : 'translateY(20px)',
+              transition: 'all 0.8s ease-out',
+            }}>
+
+              {/* ============================================ */}
+              {/* ✅✅✅ MOBILE ICON - FULL ANIMATIONS (SAME AS DESKTOP!) ✅✅✅ */}
+              {/* ============================================ */}
+              <div style={{ marginBottom: '2rem' }}>
+                <div style={{
+                  position: 'relative',
+                  width: '140px',
+                  height: '140px',
+                }}>
+
+                  {/* Outer Glow Ring - Animated */}
+                  <div style={{
+                    position: 'absolute',
+                    inset: '-8px',
+                    borderRadius: '36px',
+                    background: 'radial-gradient(circle, rgba(251,191,36,0.2) 0%, transparent 70%)',
+                    animation: 'mobileGlowRing 3s ease-in-out infinite',
+                    pointerEvents: 'none',
+                    zIndex: 0,
+                  }} />
+
+                  <div style={{
+                    position: 'relative',
+                    width: '100%',
+                    height: '100%',
+                    borderRadius: '28px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    background: 'rgba(255,255,255,0.05)',
+                    backdropFilter: 'blur(16px)',
+                    border: '1px solid rgba(255,255,255,0.12)',
+                    boxShadow: '0 8px 32px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.1)',
+                    overflow: 'hidden',
+                    zIndex: 1,
+                  }}>
+
+                    {/* ✅ FULLY ANIMATED SVG ICON (IDENTICAL TO DESKTOP!) */}
+                    <svg viewBox="0 0 100 100" style={{
+                      width: '100%',
+                      height: '100%',
+                      animation: 'mobileIconBreath 4s ease-in-out infinite',
+                      transformOrigin: 'center',
+                    }}>
+                      <defs>
+                        {/* Sun Gradient with Color Animation */}
+                        <linearGradient id="mSunGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                          <stop offset="0%" stopColor="#FFE066">
+                            <animate attributeName="stop-color" values="#FFE066;#FFF176;#FFE066" dur="3s" repeatCount="indefinite" />
+                          </stop>
+                          <stop offset="100%" stopColor="#FBBF24">
+                            <animate attributeName="stop-color" values="#FBBF24;#FBC02D;#FBBF24" dur="3s" repeatCount="indefinite" />
+                          </stop>
+                        </linearGradient>
+
+                        {/* Cloud Gradient */}
+                        <linearGradient id="mCloudGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                          <stop offset="0%" stopColor="#FFFFFF" />
+                          <stop offset="100%" stopColor="#E8F0FE" />
+                        </linearGradient>
+
+                        {/* Sun Glow Filter */}
+                        <filter id="mSunGlow" x="-50%" y="-50%" width="200%" height="200%">
+                          <feGaussianBlur stdDeviation="3" result="blur" />
+                          <feMerge>
+                            <feMergeNode in="blur" />
+                            <feMergeNode in="SourceGraphic" />
+                          </feMerge>
+                        </filter>
+
+                        {/* Cloud Shadow for Depth */}
+                        <filter id="mCloudShadow" x="-20%" y="-20%" width="140%" height="140%">
+                          <feDropShadow dx="0" dy="2" stdDeviation="2" floodColor="#000" floodOpacity="0.2" />
+                        </filter>
+                      </defs>
+
+                      {/* ✅ CLOUD GROUP - FLOATING ANIMATION (Same as Desktop!) */}
+                      <g style={{
+                        animation: 'mobileCloudFloat 4s ease-in-out infinite',
+                        filter: 'url(#mCloudShadow)',
+                      }}>
+                        {/* Main Cloud Body */}
+                        <ellipse cx="52" cy="62" rx="26" ry="14" fill="url(#mCloudGrad)" opacity="0.95">
+                          <animate attributeName="opacity" values="0.9;1;0.9" dur="4s" repeatCount="indefinite" />
+                        </ellipse>
+
+                        {/* Cloud Puffs */}
+                        <circle cx="32" cy="64" r="10" fill="white" opacity="0.92" />
+                        <circle cx="72" cy="63" r="9" fill="white" opacity="0.88" />
+                        <circle cx="52" cy="53" r="11" fill="white" opacity="0.9" />
+
+                        {/* Cloud Highlight */}
+                        <ellipse cx="48" cy="57" rx="14" ry="6" fill="white" opacity="0.28" />
+                      </g>
+
+                      {/* ✅ SUN GROUP - ROTATION + PULSE + RAYS (Same as Desktop!) */}
+                      <g style={{
+                        animation: 'mobileSunRotate 20s linear infinite',
+                        transformOrigin: '52px 48px',
+                      }}>
+                        {/* Main Sun Circle with Glow */}
+                        <circle cx="52" cy="48" r="20" fill="url(#mSunGrad)" filter="url(#mSunGlow)">
+                          {/* Pulsing Size Animation */}
+                          <animate attributeName="r" values="20;21.5;20" dur="2s" repeatCount="indefinite" />
+                          <animate attributeName="opacity" values="1;0.92;1" dur="2s" repeatCount="indefinite" />
+                        </circle>
+
+                        {/* ✅ SUN RAYS - INDIVIDUALLY ANIMATED (Same as Desktop!) */}
+                        {[0, 45, 90, 135, 180, 225, 270, 315].map((angle, i) => {
+                          const rad = angle * Math.PI / 180;
+                          return (
+                            <line
+                              key={i}
+                              x1={52 + Math.cos(rad) * 24}
+                              y1={48 + Math.sin(rad) * 24}
+                              x2={52 + Math.cos(rad) * 33}
+                              y2={48 + Math.sin(rad) * 33}
+                              stroke="white"
+                              strokeWidth="2.5"
+                              strokeLinecap="round"
+                              opacity="0.85"
+                            >
+                              {/* Individual Ray Opacity Pulse */}
+                              <animate
+                                attributeName="opacity"
+                                values="0.5;1;0.5"
+                                dur={`${2 + i * 0.2}s`}
+                                repeatCount="indefinite"
+                              />
+                              {/* Individual Ray Width Pulse */}
+                              <animate
+                                attributeName="strokeWidth"
+                                values="2;3.5;2"
+                                dur={`${1.5 + i * 0.15}s`}
+                                repeatCount="indefinite"
+                              />
+                            </line>
+                          );
+                        })}
+
+                        {/* Inner Bright Spot (Sun Center Glow) */}
+                        <circle cx="49" cy="45" r="8" fill="#FFFFFF" opacity="0.45">
+                          <animate
+                            attributeName="opacity"
+                            values="0.3;0.55;0.3"
+                            dur="3s"
+                            repeatCount="indefinite"
+                          />
+                          <animate
+                            attributeName="r"
+                            values="7;9;7"
+                            dur="2.5s"
+                            repeatCount="indefinite"
+                          />
+                        </circle>
+
+                        {/* Secondary Inner Glow */}
+                        <circle cx="54" cy="51" r="4" fill="#FEFCE8" opacity="0.3">
+                          <animate
+                            attributeName="opacity"
+                            values="0.2;0.4;0.2"
+                            dur="2s"
+                            repeatCount="indefinite"
+                          />
+                        </circle>
+                      </g>
+                    </svg>
+
+                    {/* Shimmer Effect Overlay */}
+                    <div style={{
+                      position: 'absolute',
+                      inset: 0,
+                      background: 'linear-gradient(135deg, transparent 40%, rgba(255,255,255,0.1) 50%, transparent 60%)',
+                      borderRadius: '28px',
+                      animation: 'mobileShimmerSweep 3s infinite',
+                      pointerEvents: 'none',
+                      zIndex: 2,
+                    }} />
+                  </div>
+                </div>
+              </div>
+
+              {/* ============================================ */}
+              {/* MOBILE TITLE SECTION                       */}
+              {/* ============================================ */}
+              <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+                <h1 style={{
+                  fontSize: '2.5rem',
+                  fontWeight: 900,
+                  lineHeight: 1.1,
+                  marginBottom: '0.75rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '0.25em',
+                  flexWrap: 'wrap',
+                }}>
+                  <span style={{ color: 'white' }}>Weather</span>
+                  <span style={{
+                    background: 'linear-gradient(135deg, #60A5FA 0%, #A78BFA 50%, #FB923C 100%)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    backgroundSize: '200% 200%',
+                    animation: 'gradientMove 5s ease infinite',
+                  }}>Live</span>
+                </h1>
+
+                <p style={{
+                  fontSize: '0.8rem',
+                  fontWeight: 300,
+                  letterSpacing: '0.2em',
+                  textTransform: 'uppercase',
+                  color: '#94A3B8',
+                  marginBottom: '0.75rem',
+                }}>
+                  Real-time Weather Dashboard
+                </p>
+
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  justifyContent: 'center',
+                  flexWrap: 'wrap'
+                }}>
+                  <Zap size={11} color="#3B82F6" style={{ animation: 'pulse 2s infinite' }} />
+                  <span style={{ fontSize: '0.72rem', fontWeight: 500, color: '#60A5FA' }}>
+                    AI-Powered • Live Updates
+                  </span>
+                  <Globe size={11} color="#3B82F6" style={{ animation: 'pulse 2s infinite 1s' }} />
+                </div>
+              </div>
+
+              {/* ============================================ */}
+              {/* MOBILE PROGRESS BAR                        */}
+              {/* ============================================ */}
+              <div style={{
+                width: '100%',
+                maxWidth: '320px',
+                marginBottom: '1.5rem',
+              }}>
+                <div style={{
+                  height: '14px',
+                  background: 'rgba(15,23,42,0.6)',
+                  borderRadius: '9999px',
+                  border: '1px solid rgba(148,163,184,0.1)',
+                  overflow: 'hidden',
+                  marginBottom: '0.625rem',
+                }}>
+                  <div style={{
+                    height: '100%',
+                    width: `${welcomeProgress}%`,
+                    background: 'linear-gradient(90deg, #22C55E 0%, #06B6D4 50%, #8B5CF6 100%)',
+                    borderRadius: '9999px',
+                    boxShadow: '0 0 15px rgba(34,197,94,0.4)',
+                    transition: 'width 0.4s ease',
+                    position: 'relative',
+                  }}>
+                    {/* Progress shimmer effect */}
+                    <div style={{
+                      position: 'absolute',
+                      inset: 0,
+                      background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent)',
+                      animation: 'mobileShimmerSweep 2s infinite',
+                    }} />
+                  </div>
+                </div>
+
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  padding: '0 0.25rem',
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    {welcomeProgress < 100 ? (
+                      <>
+                        <Loader2 size={15} color="#06B6D4" style={{ animation: 'spin 1s linear infinite' }} />
+                        <span style={{ color: 'white', fontSize: '0.85rem', fontWeight: 600 }}>
+                          {welcomeProgress < 33 ? 'Loading...' :
+                            welcomeProgress < 66 ? 'Preparing...' : 'Almost ready...'}
+                        </span>
+                      </>
+                    ) : (
+                      <>
+                        <Check size={13} color="#22C55E" strokeWidth={3} />
+                        <span style={{ color: '#4ADE80', fontSize: '0.85rem', fontWeight: 700 }}>Ready!</span>
+                      </>
+                    )}
+                  </div>
+
+                  <span style={{
+                    fontFamily: 'monospace',
+                    fontSize: '1.2rem',
+                    fontWeight: 800,
+                    color: welcomeProgress >= 100 ? '#4ADE80' : '#06B6D4'
+                  }}>
+                    {Math.round(welcomeProgress)}%
+                  </span>
+                </div>
+              </div>
+
+              {/* ============================================ */}
+              {/* MOBILE FEATURE CARDS                       */}
+              {/* ============================================ */}
+              <div style={{
+                width: '100%',
+                maxWidth: '320px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '0.75rem',
+                opacity: welcomeProgress >= 100 ? 1 : 0,
+                transform: welcomeProgress >= 100 ? 'translateY(0)' : 'translateY(20px)',
+                transition: 'all 0.7s ease 0.2s',
+              }}>
+                {[
+                  { Icon: Globe, label: 'Global Data', sub: 'Worldwide coverage', iconBg: 'rgba(96,165,250,0.15)', iconColor: '#60A5FA' },
+                  { Icon: Activity, label: 'Real-time', sub: 'Live updates', iconBg: 'rgba(251,146,60,0.15)', iconColor: '#FB923C' },
+                  { Icon: Target, label: 'Precise', sub: 'AI accuracy', iconBg: 'rgba(167,122,250,0.15)', iconColor: '#A78BFA' },
+                ].map((item, i) => (
+                  <div key={i} style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.875rem',
+                    background: 'rgba(15,23,42,0.5)',
+                    backdropFilter: 'blur(12px)',
+                    border: '1px solid rgba(148,163,184,0.08)',
+                    borderRadius: '12px',
+                    padding: '0.875rem 1rem',
+                    transition: 'all 0.35s ease',
+                    animation: `slideUp 0.5s ease ${0.3 + i * 0.1}s both`,
+                  }}>
+                    <div style={{
+                      width: '38px',
+                      height: '38px',
+                      borderRadius: '10px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      background: item.iconBg,
+                      color: item.iconColor,
+                      flexShrink: 0,
+                    }}>
+                      <item.Icon size={19} strokeWidth={1.5} />
+                    </div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <p style={{ fontSize: '0.875rem', fontWeight: 700, color: 'white' }}>{item.label}</p>
+                      <p style={{ fontSize: '0.7rem', color: '#64748B' }}>{item.sub}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Bottom Hint */}
+              {welcomeProgress >= 100 && (
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  marginTop: '1.5rem',
+                  color: '#64748B',
+                  fontSize: '0.8rem',
+                  animation: 'fadeInOut 2s infinite',
+                }}>
+                  <ArrowRight size={13} style={{ animation: 'pulse 1.5s infinite' }} />
+                  <span>Entering Dashboard...</span>
+                </div>
+              )}
+            </div>
+
+            {/* Vignette */}
+            <div style={{
+              position: 'absolute',
+              inset: 0,
+              pointerEvents: 'none',
+              background: 'radial-gradient(circle at center, transparent 25%, rgba(0,0,0,0.85) 100%)',
+            }} />
+          </div>
+        </div>
+      );
+    }
   }
 
+  // ===== MAIN DASHBOARD STARTS HERE =====
   return (
     <div className="flex h-screen overflow-hidden relative">
-      {/* Background */}
-      <div className="fixed inset-0 overflow-hidden bg-black">
-        <div className="absolute inset-0 bg-cover bg-center bg-no-repeat animate-cinematic-zoom" style={{ backgroundImage: "url('https://z-cdn-media.chatglm.cn/files/53f0dbcf-f62e-4632-9882-a4ffc7456fa9.png?auth_key=1878608277-4c4ce73eb109448da9368b468a751854-0-1190469a97c5c06575452ec194eab90b')", backgroundSize: 'cover', backgroundPosition: 'center' }} />
-        <div className="absolute inset-0 bg-gradient-to-b from-slate-900/70 via-slate-800/50 to-slate-900/80" />
-        <div className="absolute top-0 left-0 w-[250%] h-[70%] opacity-25 animate-clouds-drift pointer-events-none">
-          <div className="absolute w-[500px] h-[350px] bg-gray-700/40 rounded-full blur-3xl" style={{ top: '5%', left: '5%' }} />
-          <div className="absolute w-[600px] h-[300px] bg-gray-600/30 rounded-full blur-3xl" style={{ top: '20%', left: '35%' }} />
-          <div className="absolute w-[450px] h-[320px] bg-gray-800/35 rounded-full blur-3xl" style={{ top: '12%', left: '65%' }} />
-          <div className="absolute w-[380px] h-[280px] bg-gray-700/30 rounded-full blur-3xl" style={{ top: '28%', left: '90%' }} />
+      {/* ============================================ */}
+      {/* 🎩✨ MAGIC UI BACKGROUND - YELLOW & BLACK     */}
+      {/* ============================================ */}
+      {/* ============================================ */}
+      {/* 🎩✨ MAGIC UI BACKGROUND - HYDRATION SAFE   */}
+      {/* ============================================ */}
+      <div className="fixed inset-0 overflow-hidden bg-black" id="magic-container">
+
+        {/* ============================== */}
+        {/* 🌑 DEEP BLACK BASE LAYER      */}
+        {/* ============================== */}
+        <div
+          className="absolute inset-0"
+          style={{
+            background: 'radial-gradient(ellipse at 50% 50%, #0a0a0a 0%, #000000 50%, #050505 100%)',
+          }}
+        />
+
+        {/* ============================== */}
+        {/* ✨ GOLDEN MYSTICAL AURA        */}
+        {/* ============================== */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background: 'radial-gradient(ellipse at 30% 20%, rgba(255, 215, 0, 0.15) 0%, transparent 50%)',
+            animation: 'magicAura1 8s ease-in-out infinite',
+            zIndex: 2,
+          }}
+        />
+
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background: 'radial-gradient(ellipse at 70% 80%, rgba(255, 193, 7, 0.12) 0%, transparent 45%)',
+            animation: 'magicAura2 10s ease-in-out infinite 2s',
+            zIndex: 2,
+          }}
+        />
+
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background: 'radial-gradient(ellipse at 80% 30%, rgba(255, 235, 59, 0.08) 0%, transparent 40%)',
+            animation: 'magicAura3 12s ease-in-out infinite 4s',
+            zIndex: 2,
+          }}
+        />
+
+        {/* ============================== */}
+        {/* 🔮 FLOATING MAGIC ORBS (Fixed Positions) */}
+        {/* ============================== */}
+
+        {/* Large Golden Orb - Top Left */}
+        <div
+          className="absolute w-[500px] h-[500px] rounded-full pointer-events-none"
+          style={{
+            top: '-10%',
+            left: '-5%',
+            background: 'radial-gradient(circle, rgba(255, 215, 0, 0.25) 0%, rgba(255, 193, 7, 0.15) 40%, transparent 70%)',
+            filter: 'blur(60px)',
+            animation: 'floatOrbMagic1 15s ease-in-out infinite',
+            zIndex: 3,
+          }}
+        />
+
+        {/* Amber Orb - Bottom Right */}
+        <div
+          className="absolute w-[600px] h-[600px] rounded-full pointer-events-none"
+          style={{
+            bottom: '-15%',
+            right: '-10%',
+            background: 'radial-gradient(circle, rgba(255, 152, 0, 0.2) 0%, rgba(245, 124, 0, 0.12) 50%, transparent 70%)',
+            filter: 'blur(70px)',
+            animation: 'floatOrbMagic2 18s ease-in-out infinite 3s',
+            zIndex: 3,
+          }}
+        />
+
+        {/* Small Bright Gold Orb - Center Right */}
+        <div
+          className="absolute w-[350px] h-[350px] rounded-full pointer-events-none"
+          style={{
+            top: '40%',
+            right: '20%',
+            background: 'radial-gradient(circle, rgba(255, 235, 59, 0.3) 0%, rgba(255, 215, 0, 0.15) 40%, transparent 70%)',
+            filter: 'blur(50px)',
+            animation: 'floatOrbMagic3 12s ease-in-out infinite 1s',
+            zIndex: 3,
+          }}
+        />
+
+        {/* Dark Mystery Orb - Left Center */}
+        <div
+          className="absolute w-[400px] h-[400px] rounded-full pointer-events-none"
+          style={{
+            top: '30%',
+            left: '10%',
+            background: 'radial-gradient(circle, rgba(139, 69, 19, 0.25) 0%, rgba(0, 0, 0, 0.4) 60%, transparent 70%)',
+            filter: 'blur(55px)',
+            animation: 'floatOrbMagic4 20s ease-in-out infinite 5s',
+            zIndex: 3,
+          }}
+        />
+
+        {/* ============================== */}
+        {/* ⭐ MAGICAL SPARKLE PARTICLES (Fixed Positions - No Random!) */}
+        {/* ============================== */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden" style={{ zIndex: 6 }}>
+
+          {/* Large bright stars - Fixed positions */}
+          <div className="absolute" style={{ left: '15%', top: '20%', width: '4px', height: '4px', borderRadius: '50%', background: 'radial-gradient(circle, #FFD700 0%, #FFA500 50%, transparent 100%)', boxShadow: '0 0 8px 2px rgba(255, 215, 0, 0.8), 0 0 16px 4px rgba(255, 193, 7, 0.5)', animation: 'magicSparkle 3s ease-in-out infinite 0s' }} />
+          <div className="absolute" style={{ left: '85%', top: '15%', width: '5px', height: '5px', borderRadius: '50%', background: 'radial-gradient(circle, #FFD700 0%, #FFA500 50%, transparent 100%)', boxShadow: '0 0 10px 2.5px rgba(255, 215, 0, 0.8), 0 0 20px 5px rgba(255, 193, 7, 0.5)', animation: 'magicSparkle 4s ease-in-out infinite 1.5s' }} />
+          <div className="absolute" style={{ left: '75%', top: '75%', width: '4px', height: '4px', borderRadius: '50%', background: 'radial-gradient(circle, #FFD700 0%, #FFA500 50%, transparent 100%)', boxShadow: '0 0 8px 2px rgba(255, 215, 0, 0.8), 0 0 16px 4px rgba(255, 193, 7, 0.5)', animation: 'magicSparkle 3.5s ease-in-out infinite 0.8s' }} />
+          <div className="absolute" style={{ left: '25%', top: '85%', width: '6px', height: '6px', borderRadius: '50%', background: 'radial-gradient(circle, #FFD700 0%, #FFA500 50%, transparent 100%)', boxShadow: '0 0 12px 3px rgba(255, 215, 0, 0.8), 0 0 24px 6px rgba(255, 193, 7, 0.5)', animation: 'magicSparkle 4.5s ease-in-out infinite 2s' }} />
+          <div className="absolute" style={{ left: '50%', top: '10%', width: '5px', height: '5px', borderRadius: '50%', background: 'radial-gradient(circle, #FFD700 0%, #FFA500 50%, transparent 100%)', boxShadow: '0 0 10px 2.5px rgba(255, 215, 0, 0.8), 0 0 20px 5px rgba(255, 193, 7, 0.5)', animation: 'magicSparkle 3.2s ease-in-out infinite 1s' }} />
+
+          {/* Medium stars */}
+          <div className="absolute" style={{ left: '35%', top: '45%', width: '3px', height: '3px', borderRadius: '50%', background: 'radial-gradient(circle, #FFD700 0%, #FFA500 50%, transparent 100%)', boxShadow: '0 0 6px 1.5px rgba(255, 215, 0, 0.8), 0 0 12px 3px rgba(255, 193, 7, 0.5)', animation: 'magicSparkle 3.8s ease-in-out infinite 2.5s' }} />
+          <div className="absolute" style={{ left: '65%', top: '35%', width: '3px', height: '3px', borderRadius: '50%', background: 'radial-gradient(circle, #FFD700 0%, #FFA500 50%, transparent 100%)', boxShadow: '0 0 6px 1.5px rgba(255, 215, 0, 0.8), 0 0 12px 3px rgba(255, 193, 7, 0.5)', animation: 'magicSparkle 3.3s ease-in-out infinite 0.5s' }} />
+          <div className="absolute" style={{ left: '20%', top: '60%', width: '3px', height: '3px', borderRadius: '50%', background: 'radial-gradient(circle, #FFD700 0%, #FFA500 50%, transparent 100%)', boxShadow: '0 0 6px 1.5px rgba(255, 215, 0, 0.8), 0 0 12px 3px rgba(255, 193, 7, 0.5)', animation: 'magicSparkle 4.2s ease-in-out infinite 3s' }} />
+          <div className="absolute" style={{ left: '80%', top: '55%', width: '3px', height: '3px', borderRadius: '50%', background: 'radial-gradient(circle, #FFD700 0%, #FFA500 50%, transparent 100%)', boxShadow: '0 0 6px 1.5px rgba(255, 215, 0, 0.8), 0 0 12px 3px rgba(255, 193, 7, 0.5)', animation: 'magicSparkle 3.6s ease-in-out infinite 1.8s' }} />
+          <div className="absolute" style={{ left: '45%', top: '80%', width: '4px', height: '4px', borderRadius: '50%', background: 'radial-gradient(circle, #FFD700 0%, #FFA500 50%, transparent 100%)', boxShadow: '0 0 8px 2px rgba(255, 215, 0, 0.8), 0 0 16px 4px rgba(255, 193, 7, 0.5)', animation: 'magicSparkle 3.9s ease-in-out infinite 2.2s' }} />
+
+          {/* Small twinkling stars */}
+          <div className="absolute" style={{ left: '10%', top: '40%', width: '2px', height: '2px', borderRadius: '50%', background: 'radial-gradient(circle, #FFD700 0%, #FFA500 50%, transparent 100%)', boxShadow: '0 0 4px 1px rgba(255, 215, 0, 0.8)', animation: 'magicSparkle 2.8s ease-in-out infinite 0.3s' }} />
+          <div className="absolute" style={{ left: '90%', top: '45%', width: '2px', height: '2px', borderRadius: '50%', background: 'radial-gradient(circle, #FFD700 0%, #FFA500 50%, transparent 100%)', boxShadow: '0 0 4px 1px rgba(255, 215, 0, 0.8)', animation: 'magicSparkle 2.5s ease-in-out infinite 1.2s' }} />
+          <div className="absolute" style={{ left: '55%', top: '65%', width: '2px', height: '2px', borderRadius: '50%', background: 'radial-gradient(circle, #FFD700 0%, #FFA500 50%, transparent 100%)', boxShadow: '0 0 4px 1px rgba(255, 215, 0, 0.8)', animation: 'magicSparkle 3.1s ease-in-out infinite 2.8s' }} />
+          <div className="absolute" style={{ left: '40%', top: '25%', width: '2px', height: '2px', borderRadius: '50%', background: 'radial-gradient(circle, #FFD700 0%, #FFA500 50%, transparent 100%)', boxShadow: '0 0 4px 1px rgba(255, 215, 0, 0.8)', animation: 'magicSparkle 2.9s ease-in-out infinite 0.7s' }} />
+          <div className="absolute" style={{ left: '70%', top: '90%', width: '2px', height: '2px', borderRadius: '50%', background: 'radial-gradient(circle, #FFD700 0%, #FFA500 50%, transparent 100%)', boxShadow: '0 0 4px 1px rgba(255, 215, 0, 0.8)', animation: 'magicSparkle 2.7s ease-in-out infinite 1.9s' }} />
+
+          {/* Extra tiny sparkles */}
+          <div className="absolute" style={{ left: '5%', top: '75%', width: '1.5px', height: '1.5px', borderRadius: '50%', background: '#FFD700', boxShadow: '0 0 3px 1px rgba(255, 215, 0, 0.6)', animation: 'magicSparkle 2.3s ease-in-out infinite 1.1s' }} />
+          <div className="absolute" style={{ left: '95%', top: '25%', width: '1.5px', height: '1.5px', borderRadius: '50%', background: '#FFD700', boxShadow: '0 0 3px 1px rgba(255, 215, 0, 0.6)', animation: 'magicSparkle 2.6s ease-in-out infinite 2.4s' }} />
+          <div className="absolute" style={{ left: '60%', top: '50%', width: '1.5px', height: '1.5px', borderRadius: '50%', background: '#FFD700', boxShadow: '0 0 3px 1px rgba(255, 215, 0, 0.6)', animation: 'magicSparkle 2.4s ease-in-out infinite 0.9s' }} />
+          <div className="absolute" style={{ left: '30%', top: '70%', width: '1.5px', height: '1.5px', borderRadius: '50%', background: '#FFD700', boxShadow: '0 0 3px 1px rgba(255, 215, 0, 0.6)', animation: 'magicSparkle 2.8s ease-in-out infinite 1.6s' }} />
+          <div className="absolute" style={{ left: '88%', top: '68%', width: '1.5px', height: '1.5px', borderRadius: '50%', background: '#FFD700', boxShadow: '0 0 3px 1px rgba(255, 215, 0, 0.6)', animation: 'magicSparkle 2.5s ease-in-out infinite 2.1s' }} />
         </div>
-        <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.75) 100%)' }} />
+
+        {/* ============================== */}
+        {/* 🌟 SHOOTING STARS / COMETS (Fixed) */}
+        {/* ============================== */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden" style={{ zIndex: 5 }}>
+
+          {/* Shooting Star 1 */}
+          <div
+            className="absolute"
+            style={{
+              top: '10%',
+              left: '-10%',
+              width: '150px',
+              height: '2px',
+              background: 'linear-gradient(to right, transparent, rgba(255, 215, 0, 0), rgba(255, 215, 0, 0.8), #FFFFFF)',
+              transform: 'rotate(-25deg)',
+              animation: 'shootingStar1 8s linear infinite',
+              boxShadow: '0 0 10px 2px rgba(255, 215, 0, 0.6), 0 0 20px 4px rgba(255, 193, 7, 0.3)',
+            }}
+          />
+
+          {/* Shooting Star 2 */}
+          <div
+            className="absolute"
+            style={{
+              top: '25%',
+              left: '-15%',
+              width: '120px',
+              height: '1.5px',
+              background: 'linear-gradient(to right, transparent, rgba(255, 235, 59, 0), rgba(255, 235, 59, 0.7), #FFFACD)',
+              transform: 'rotate(-35deg)',
+              animation: 'shootingStar2 12s linear infinite 3s',
+              boxShadow: '0 0 8px 2px rgba(255, 235, 59, 0.5)',
+            }}
+          />
+
+          {/* Shooting Star 3 */}
+          <div
+            className="absolute"
+            style={{
+              top: '60%',
+              left: '-8%',
+              width: '100px',
+              height: '1px',
+              background: 'linear-gradient(to right, transparent, rgba(255, 152, 0, 0), rgba(255, 152, 0, 0.6), #FFE4B5)',
+              transform: 'rotate(-20deg)',
+              animation: 'shootingStar3 15s linear infinite 7s',
+              boxShadow: '0 0 6px 1px rgba(255, 152, 0, 0.4)',
+            }}
+          />
+        </div>
+
+        {/* ============================== */}
+        {/* 💫 GOLDEN DUST PARTICLES (Client-Side Only!) */}
+        {/* ============================== */}
+        {typeof window !== 'undefined' && (
+          <div className="absolute inset-0 pointer-events-none overflow-hidden" style={{ zIndex: 4 }}>
+            {/* These will only render on client side to avoid hydration mismatch */}
+          </div>
+        )}
+
+        {/* ============================== */}
+        {/* 🔥 MYSTICAL FLAME/WISP EFFECTS (Fixed) */}
+        {/* ============================== */}
+        <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 4 }}>
+
+          {/* Flame Wisp 1 - Top Center */}
+          <div
+            className="absolute"
+            style={{
+              top: '5%',
+              left: '45%',
+              width: '80px',
+              height: '120px',
+              background: 'radial-gradient(ellipse at 50% 100%, rgba(255, 200, 0, 0.4) 0%, rgba(255, 140, 0, 0.2) 40%, transparent 70%)',
+              filter: 'blur(8px)',
+              animation: 'flameWisp1 4s ease-in-out infinite',
+              transformOrigin: 'bottom center',
+            }}
+          />
+
+          {/* Flame Wisp 2 - Right Side */}
+          <div
+            className="absolute"
+            style={{
+              top: '15%',
+              right: '10%',
+              width: '60px',
+              height: '90px',
+              background: 'radial-gradient(ellipse at 50% 100%, rgba(255, 180, 0, 0.35) 0%, rgba(255, 120, 0, 0.15) 50%, transparent 70%)',
+              filter: 'blur(6px)',
+              animation: 'flameWisp2 5s ease-in-out infinite 1.5s',
+              transformOrigin: 'bottom center',
+            }}
+          />
+        </div>
+
+        {/* ============================== */}
+        {/* 🌀 SWIRLING MAGIC ENERGY (Fixed) */}
+        {/* ============================== */}
+        <div className="absolute inset-0 pointer-events-none flex items-center justify-center" style={{ zIndex: 3 }}>
+          <div
+            className="w-[800px] h-[800px] rounded-full"
+            style={{
+              background: 'conic-gradient(from 0deg at 50% 50%, transparent, rgba(255, 215, 0, 0.03), transparent, rgba(255, 193, 7, 0.03), transparent, rgba(255, 152, 0, 0.02), transparent)',
+              animation: 'swirlEnergy 30s linear infinite',
+              filter: 'blur(40px)',
+            }}
+          />
+        </div>
+
+        {/* ============================== */}
+        {/* 🖱️ INTERACTIVE MOUSE GLOW     */}
+        {/* ============================== */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background: 'radial-gradient(400px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(255, 215, 0, 0.08), transparent 40%)',
+            zIndex: 7,
+            transition: 'background 0.3s ease',
+          }}
+          id="mouse-glow-magic"
+        />
+
+        {/* ============================== */}
+        {/* 🎭 VIGNETTE & DEPTH EFFECTS   */}
+        {/* ============================== */}
+
+        {/* Dark Edges Vignette */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background: 'radial-gradient(ellipse at center, transparent 20%, rgba(0, 0, 0, 0.7) 100%)',
+            zIndex: 10,
+          }}
+        />
+
+        {/* Golden Frame Glow */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            boxShadow: 'inset 0 0 150px 50px rgba(255, 215, 0, 0.05), inset 0 0 300px 100px rgba(255, 193, 7, 0.03)',
+            zIndex: 11,
+          }}
+        />
+
+        {/* Subtle Noise Texture */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
+            opacity: 0.04,
+            mixBlendMode: 'overlay',
+            zIndex: 12,
+          }}
+        />
+
       </div>
 
       {/* Mobile Overlay */}
@@ -1578,13 +3243,15 @@ export default function WeatherDashboard() {
   h-screen max-h-screen overflow-hidden
   flex flex-col 
   transition-all duration-300 ease-in-out
-  bg-black/30 backdrop-blur-xl
+  bg-black/40 backdrop-blur-2xl
+  border-r border-white/10
+  shadow-2xl shadow-black/50
   ${responsive.isMobile && !isMobileSidebarOpen ? '' : 'flex-shrink-0'}
 `}>
         <div className="h-full flex flex-col relative">
 
-          {/* Right Border */}
-          <div className="absolute top-0 right-0 bottom-0 w-[1px] bg-gradient-to-b from-transparent via-white/15 to-transparent" />
+          {/* Right Border - Enhanced Glass Effect */}
+          <div className="absolute top-0 right-0 bottom-0 w-[1px] bg-gradient-to-b from-transparent via-blue-500/30 to-transparent" />
 
           {/* Logo Section */}
           <div className="p-4 md:p-5 lg:p-6 flex items-center gap-2 md:gap-3 relative z-10">
@@ -1611,10 +3278,10 @@ export default function WeatherDashboard() {
           {/* Navigation */}
           <nav className="flex-1 px-2 md:px-3 space-y-0.5 md:space-y-1 mt-2 md:mt-4 overflow-y-auto scrollbar-thin relative z-10 min-h-0">
             {[
-              { icon: Home, label: 'Dashboard', active: true },
-              { icon: Map, label: 'Live Map' },  // ← REMOVED action property
+              { icon: Home, label: 'Home', active: true },
+              { icon: Map, label: 'Live Map' },
               { icon: Calendar, label: 'Forecast' },
-              { icon: Bell, label: 'Alerts', badge: 2 },
+              { icon: Bell, label: 'Alerts' },
               { icon: Wind, label: 'Air Quality' },
               {
                 icon: Flower2,
@@ -1622,22 +3289,27 @@ export default function WeatherDashboard() {
                 isLink: true,
                 href: `/poll?city=${encodeURIComponent(location?.city || '')}&lat=${location?.lat || ''}&lon=${location?.lon || ''}`
               },
-              { icon: Video, label: 'News & Videos' },
-              { icon: Settings, label: 'Settings' },
+              {
+                icon: Video,
+                label: 'News & Videos',
+                isLink: true,
+                href: 'https://weather.com/en-IN/weather/today/l/INXX0096:1:IN?Goto=Redirected'
+              },
               { icon: Heart, label: 'Favorites' }
             ].map((item) => {
               if (item.isLink) {
                 return (
-                  <Link
+                  <a
                     key={item.label}
                     href={item.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full flex items-center gap-2 md:gap-3 px-3 md:px-4 py-2.5 md:py-3 rounded-xl transition-all duration-200 group text-gray-300 hover:bg-white/[0.08] hover:text-white hover:backdrop-blur-sm hover:translate-x-1 border border-transparent hover:border-white/10 hover:bg-gradient-to-r hover:from-blue-500/10 hover:to-cyan-500/10"
                     onClick={() => responsive.isMobile && setIsMobileSidebarOpen(false)}
-                    className="w-full flex items-center gap-2 md:gap-3 px-3 md:px-4 py-2.5 md:py-3 rounded-xl transition-all duration-200 group text-gray-300 hover:bg-white/[0.06] hover:text-white hover:backdrop-blur-sm hover:translate-x-1 border border-transparent hover:border-white/10"
                   >
                     <item.icon className="w-4 h-4 md:w-5 md:h-5 transition-transform group-hover:scale-110 flex-shrink-0" />
                     <span className="font-medium text-sm md:text-base truncate">{item.label}</span>
-                    <span className="ml-auto text-xs opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">↗</span>
-                  </Link>
+                  </a>
                 )
               }
 
@@ -1645,60 +3317,127 @@ export default function WeatherDashboard() {
                 <button
                   key={item.label}
                   onClick={() => {
-                    // Step 1: Close mobile sidebar first (if open)
                     if (responsive.isMobile) {
                       setIsMobileSidebarOpen(false)
                     }
 
-                    // Step 2: Special action for "Live Map" button only
-                    if (item.label === 'Live Map') {
-                      // Wait for sidebar to close (300ms on mobile), then scroll
+                    // ✅ ALERTS BUTTON
+                    if (item.label === 'Alerts') {
                       setTimeout(() => {
-                        // Find the REAL element by its ID
-                        const mapElement = document.getElementById('live-map-section')
-
-                        // If element exists, scroll to it smoothly
-                        if (mapElement) {
-                          mapElement.scrollIntoView({
-                            behavior: 'smooth',    // Smooth animation
-                            block: 'start'        // Align to top of viewport
+                        const alertElement = document.getElementById('weather-alerts-card')
+                        if (alertElement) {
+                          alertElement.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
                           })
                         }
-                      }, responsive.isMobile ? 300 : 0)  // Mobile: wait 300ms, Desktop: immediate
-                    } else {
-                      // Default behavior for all other buttons
+                      }, responsive.isMobile ? 300 : 0)
+                    }
+                    // ✅ AIR QUALITY BUTTON - NEW!
+                    else if (item.label === 'Air Quality') {
+                      setTimeout(() => {
+                        const airQualityElement = document.getElementById('air-quality-section')
+                        if (airQualityElement) {
+                          airQualityElement.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                          })
+                        }
+                      }, responsive.isMobile ? 300 : 0)
+                    }
+                    // ✅ LIVE MAP BUTTON
+                    else if (item.label === 'Live Map') {
+                      setTimeout(() => {
+                        const mapElement = document.getElementById('live-map-section')
+                        if (mapElement) {
+                          mapElement.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                          })
+                        }
+                      }, responsive.isMobile ? 300 : 0)
+                    }
+                    // ✅ FORECAST BUTTON - NEW!
+                    else if (item.label === 'Forecast') {
+                      setTimeout(() => {
+                        const forecastElement = document.getElementById('forecast-section')
+                        if (forecastElement) {
+                          forecastElement.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                          })
+                        }
+                      }, responsive.isMobile ? 300 : 0)
+                    }
+                    // ✅ FAVORITES/HIGHLIGHTS BUTTON - NEW!
+                    else if (item.label === 'Favorites') {
+                      setTimeout(() => {
+                        const highlightsElement = document.getElementById('highlights-section')
+                        if (highlightsElement) {
+                          highlightsElement.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                          })
+                        }
+                      }, responsive.isMobile ? 300 : 0)
+                    }
+                    // ✅ OTHER BUTTONS
+                    else {
                       if (responsive.isMobile) setIsMobileSidebarOpen(false)
                     }
                   }}
-                  className={`w-full flex items-center gap-2 md:gap-3 px-3 md:px-4 py-2.5 md:py-3 rounded-xl transition-all duration-200 group cursor-pointer ${item.active ? 'bg-gradient-to-r from-blue-600/80 to-cyan-600/80 text-white shadow-lg shadow-blue-500/20 backdrop-blur-sm border border-blue-400/30' : 'text-gray-300 hover:bg-white/[0.06] hover:text-white hover:backdrop-blur-sm hover:translate-x-1 border border-transparent hover:border-white/10'}`}
+                  className={`w-full flex items-center gap-2 md:gap-3 px-3 md:px-4 py-2.5 md:py-3 rounded-xl transition-all duration-200 group cursor-pointer ${item.active ? 'bg-gradient-to-r from-blue-600/80 to-cyan-600/80 text-white shadow-lg shadow-blue-500/30 backdrop-blur-md border border-blue-400/40' : 'text-gray-300 hover:bg-white/[0.08] hover:text-white hover:backdrop-blur-sm hover:translate-x-1 border border-transparent hover:border-white/10 hover:bg-gradient-to-r hover:from-blue-500/5 hover:to-cyan-500/5'}`}
                 >
                   <item.icon className={`w-4 h-4 md:w-5 md:h-5 transition-transform group-hover:scale-110 flex-shrink-0 ${item.active ? 'text-white' : ''}`} />
                   <span className="font-medium text-sm md:text-base truncate">{item.label}</span>
                   {item.badge && (<span className="ml-auto bg-red-500/80 text-white text-[10px] md:text-xs font-bold px-1.5 md:px-2 py-0.5 rounded-full backdrop-blur-sm animate-pulse border border-red-400/30 flex-shrink-0">{item.badge}</span>)}
-
-                  
                 </button>
               )
             })}
           </nav>
 
-          {/* Location Info Box */}
-          <div className="mx-2 md:mx-3 mb-2 md:mb-3 mt-auto p-3 md:p-4 bg-white/[0.05] backdrop-blur-md rounded-xl border border-white/10 hover:bg-white/[0.08] transition-all relative z-10 flex-shrink-0">
+          {/* Location Info Box - Enhanced Glass */}
+          {/* Location Info Box - Enhanced Glass */}
+          <div className="mx-2 md:mx-3 mb-2 md:mb-3 mt-auto p-3 md:p-4 bg-white/[0.05] backdrop-blur-2xl rounded-xl border border-white/10 hover:bg-white/[0.08] hover:border-blue-400/20 transition-all relative z-10 flex-shrink-0 shadow-lg shadow-black/30">
             <div className="flex items-start gap-2 mb-2 md:mb-3">
               <MapPin className="w-3.5 h-3.5 md:w-4 md:h-4 text-blue-400 mt-0.5 flex-shrink-0" />
-              <div className="flex-1 min-w-0">
+              <div className="flex-1 min-w-0 overflow-visible">
                 <p className="text-[10px] md:text-xs text-gray-400">Current Location</p>
-                <p className="text-xs md:text-sm font-semibold text-white truncate">{location?.city || 'Rayat-Bahra University'}, {location?.state || 'Punjab'}</p>
-                <p className="text-[9px] md:text-xs text-gray-500">Lat {(location?.lat || 30.7811).toFixed(4)}, Lon {(location?.lon || 76.6168).toFixed(4)}</p>
+
+                {/* ✅ FIXED: Full Location Display - Responsive for Both Screens */}
+                <p
+                  className="text-xs md:text-sm font-semibold text-white break-words leading-tight"
+                  title={`${location?.city || 'Rayat-Bahra University'}${location?.state && location?.state !== location?.city ? ', ' + location.state : ''}${location?.country ? ', ' + location.country : ''}`}
+                >
+                  <span className="block sm:inline">
+                    {location?.city || 'Rayat-Bahra University'}
+                    {location?.state && location?.state !== location?.city && (
+                      <span className="hidden sm:inline">, {location.state}</span>
+                    )}
+                    {location?.country && (
+                      <span className={location?.state === location?.city ? 'inline' : 'hidden sm:inline'}>, {location.country}</span>
+                    )}
+                  </span>
+                  {/* Mobile: Show state/country on new line if needed */}
+                  {location?.state && location?.state !== location?.city && (
+                    <span className="sm:hidden block text-[10px] font-normal text-gray-300">
+                      {location.state}{location?.country ? `, ${location.country}` : ''}
+                    </span>
+                  )}
+                </p>
+
+                <p className="text-[9px] md:text-xs text-gray-500 mt-1">
+                  Lat {(location?.lat || 30.7811).toFixed(4)}, Lon {(location?.lon || 76.6168).toFixed(4)}
+                </p>
               </div>
             </div>
 
             <button
               onClick={() => refreshWeather()}
               disabled={loading}
-              className="w-full py-1.5 md:py-2 bg-green-500/20 hover:bg-green-500/30 disabled:bg-green-500/10 text-green-300 rounded-lg text-xs md:text-sm font-medium transition-all border border-green-500/30 flex items-center justify-center gap-2 active:scale-95"
+              className="w-full py-1.5 md:py-2 bg-gradient-to-r from-green-500/20 to-emerald-500/20 hover:from-green-500/30 hover:to-emerald-500/30 disabled:bg-green-500/10 text-green-300 rounded-lg text-xs md:text-sm font-medium transition-all border border-green-500/30 hover:border-green-400/40 flex items-center justify-center gap-2 active:scale-95 backdrop-blur-sm"
             >
-              <RefreshCw className={`w-3.5 h-3.5 md:w-4 md:h-4 ${loading ? ' animate-spin' : ''}`} />
+              <RefreshCw className={`w-3.5 h-3.5 md:w-4 md:h-4 ${loading ? 'animate-spin' : ''}`} />
               {loading ? 'Updating...' : 'Refresh Data'}
             </button>
           </div>
@@ -1707,122 +3446,122 @@ export default function WeatherDashboard() {
 
       {/* Main Content */}
       <div className="relative z-10 flex-1 flex flex-col overflow-hidden">
-        {/* Header */}
-        <header className="relative bg-black/40 backdrop-blur-2xl px-3 md:px-4 lg:px-6 xl:px-8 py-2.5 md:py-3 lg:py-4 flex items-center justify-between flex-shrink-0">
+        {/* Header - ✅ FIXED: Single Row Layout for ALL Screen Sizes Including 412px-729px */}
+        {/* Header - ✅ TRULY RESPONSIVE: Compact Mobile → Large Desktop */}
+        <header className="relative bg-black/50 backdrop-blur-2xl px-2 sm:px-4 md:px-6 lg:px-8 xl:px-8 py-2 md:py-3 lg:py-4 flex items-center justify-between flex-shrink-0 border-b border-white/10" style={{ minHeight: '52px' }}>
 
           {/* Background Effects */}
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-600/10 via-purple-600/5 to-cyan-600/10 opacity-50 pointer-events-none" />
-          <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-900/20 via-purple-900/10 to-cyan-900/20 opacity-60 pointer-events-none" />
+          <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-blue-400/30 to-transparent" />
+          <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent" />
 
-          {/* Header Content */}
-          {/* ==================== ✅ FIXED HEADER - With Location Button + Live Text ==================== */}
-          <div className="w-full relative z-10 grid items-center gap-2 md:gap-4" style={{ gridTemplateColumns: 'auto minmax(160px, 1fr) auto' }}>
-            {/* HAMBURGER BUTTON FOR MOBILE - BLUE ANIMATED WITH BLACKY EFFECT */}
+          {/* Main Container */}
+          <div className="w-full relative z-10 flex flex-row items-center justify-between gap-1.5 sm:gap-2 md:gap-4 flex-nowrap">
+
+            {/* ========================================== */}
+            {/* 🍔 HAMBURGER - Small on Mobile            */}
+            {/* ========================================== */}
             {responsive.isMobile && (
               <button
                 onClick={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
-                className="w-12 h-12 flex items-center justify-center rounded-xl bg-gradient-to-br from-blue-600/20 to-blue-800/30 border border-blue-400/40 backdrop-blur-sm mr-2 hover:from-blue-500/30 hover:to-blue-700/40 hover:border-blue-300/60 transition-all duration-300 shadow-lg shadow-blue-900/50 hover:shadow-blue-800/70 hover:scale-105 active:scale-95"
+                className="flex-shrink-0 flex items-center justify-center rounded-lg bg-gradient-to-br from-blue-600/30 to-blue-800/40 border border-blue-400/40 backdrop-blur-md hover:from-blue-500/40 hover:to-blue-700/50 hover:border-blue-300/60 transition-all duration-300 shadow-lg hover:scale-105 active:scale-95"
+                style={{ width: '38px', height: '38px', minWidth: '38px', minHeight: '38px' }}
+                aria-label="Toggle menu"
               >
-                <div className="flex flex-col gap-[5px] w-6 relative">
-                  <span
-                    className={`h-[3px] bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full shadow-lg shadow-blue-500/50 block transition-all duration-300 ease-in-out ${isMobileSidebarOpen ? 'rotate-[45deg] translate-y-[8px] w-7 from-white to-gray-200 shadow-black/50' : ''}`}
-                  />
-                  <span
-                    className={`h-[3px] bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full shadow-lg shadow-blue-500/50 block transition-all duration-300 ease-in-out ${isMobileSidebarOpen ? 'opacity-0 scale-x-0 -translate-x-4' : ''}`}
-                  />
-                  <span
-                    className={`h-[3px] bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full shadow-lg shadow-blue-500/50 block transition-all duration-300 ease-in-out ${isMobileSidebarOpen ? '-rotate-[45deg] -translate-y-[8px] w-7 from-white to-gray-200 shadow-black/50' : ''}`}
-                  />
+                <div className="flex flex-col gap-[3px] w-5 relative justify-center items-center">
+                  <span className={`h-[2px] bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full block transition-all duration-300 ease-in-out w-full ${isMobileSidebarOpen ? 'rotate-[45deg] translate-y-[5px] from-white to-gray-200' : ''}`} />
+                  <span className={`h-[2px] bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full block transition-all duration-300 ease-in-out w-full ${isMobileSidebarOpen ? 'opacity-0 scale-x-0' : ''}`} />
+                  <span className={`h-[2px] bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full block transition-all duration-300 ease-in-out w-full ${isMobileSidebarOpen ? '-rotate-[45deg] -translate-y-[5px] from-white to-gray-200' : ''}`} />
                 </div>
               </button>
             )}
 
-            {/* ==================== LEFT: SEARCH BAR ==================== */}
+            {/* ========================================== */}
+            {/* 🔍 SEARCH BAR - Responsive Sizing         */}
+            {/* ========================================== */}
             <form
-              className="min-w-0 max-w-full sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl relative group"
+              className="flex-1 relative group mx-1 sm:mx-2"
               onSubmit={(e) => { e.preventDefault(); void refreshWeather() }}
+              style={{ maxWidth: '100%', minWidth: '100px' }}
             >
-              <div className="absolute left-3 md:left-4 top-1/2 -translate-y-1/2 z-20">
-                <Search className="w-4 h-4 md:w-5 md:h-5 text-gray-400 group-focus-within:text-blue-400 transition-colors duration-200" />
+              <div className="absolute left-2 sm:left-3 md:left-4 top-1/2 -translate-y-1/2 z-20">
+                <Search className="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5 text-gray-400 group-focus-within:text-blue-400 transition-colors" />
               </div>
 
               <input
                 type="text"
-                placeholder={responsive.isMobile ? "🔍 Search..." : "🔍 Search any location worldwide..."}
+                placeholder={responsive.isMobile ? "🔍 Search..." : "🔍 Search location..."}
                 value={city}
                 onChange={(e) => changeCity(e.target.value)}
-                className="w-full min-w-0 pl-9 md:pl-11 pr-3 md:pr-4 py-2 md:py-2.5 lg:py-3 bg-white/[0.08] backdrop-blur-md border border-white/15 rounded-xl md:rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:bg-white/[0.12] focus:border-blue-400/40 transition-all duration-300 text-sm md:text-base text-white placeholder-gray-400 font-medium"
+                className="w-full pl-8 sm:pl-9 md:pl-11 pr-3 sm:pr-4 md:pr-6 py-1.5 sm:py-2 md:py-2.5 bg-white/[0.08] backdrop-blur-xl border border-white/15 rounded-lg sm:rounded-xl md:rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:bg-white/[0.12] focus:border-blue-400/40 transition-all text-xs sm:text-sm md:text-base lg:text-lg text-white placeholder-gray-400 font-medium shadow-inner"
+                style={{ minHeight: '36px', height: 'auto' }}
               />
             </form>
 
-            {/* ==================== RIGHT: ACTIONS ==================== */}
-            <div className="flex items-center gap-1.5 md:gap-2 lg:gap-3 xl:gap-4 justify-end">
+            {/* ========================================== */}
+            {/* 🔘 BUTTONS - Scale Up with Screen Size     */}
+            {/* ========================================== */}
+            <div className="flex items-center gap-1 sm:gap-1.5 md:gap-2.5 lg:gap-3 justify-end flex-shrink-0">
 
-              {/* 📍✅ USE MY LOCATION BUTTON - As shown in your image */}
+              {/* 📍 LIVE LOCATION - Responsive Text */}
               <button
                 onClick={fetchByGeolocation}
-                className="flex items-center gap-2 px-3 md:px-4 py-2 bg-gradient-to-r from-blue-500/90 to-cyan-500/80 hover:from-blue-500 hover:to-cyan-400 text-white rounded-lg md:rounded-xl font-semibold text-[12px] md:text-sm lg:text-sm border border-blue-400/30 shadow-md hover:shadow-blue-500/30 active:scale-95 transition-all duration-200 relative overflow-hidden group"
+                className="flex items-center gap-1 sm:gap-1.5 md:gap-2 px-2 sm:px-2.5 md:px-4 lg:px-5 py-1.5 sm:py-2 md:py-2.5 bg-gradient-to-r from-blue-500/90 to-cyan-500/80 hover:from-blue-500 hover:to-cyan-400 text-white rounded-lg sm:rounded-lg md:rounded-xl font-semibold text-[10px] sm:text-xs md:text-sm lg:text-base border border-blue-400/30 shadow-md hover:shadow-blue-500/30 active:scale-95 transition-all relative overflow-hidden group backdrop-blur-sm whitespace-nowrap"
+                style={{ minHeight: '36px', height: 'auto' }}
               >
-                {/* Shimmer effect */}
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
-
-                <MapPin className="w-4 h-4 md:w-5 md:h-5 relative z-10 group-hover:animate-pulse" />
-
-                <span className="relative z-10 whitespace-nowrap text-sm md:text-base">
-                  Use My Location
-                </span>
+                <MapPin className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 lg:w-5 lg:h-5 relative z-10 group-hover:animate-pulse flex-shrink-0" />
+                <span className="relative z-10 font-bold hidden sm:inline">Live Location</span>
+                <span className="relative z-10 sm:hidden">Live Location</span>
               </button>
 
-              {/* 🌡️ TEMPERATURE TOGGLE (°C / °F) */}
-              <div className="flex items-center bg-white/[0.12] backdrop-blur-md rounded-lg md:rounded-xl p-0.5 md:p-1 border border-white/15 shadow-inner">
+              {/* 🌡️ TEMPERATURE TOGGLE - Compact */}
+              <div
+                className="flex items-center bg-white/[0.12] backdrop-blur-xl rounded-lg sm:rounded-lg md:rounded-xl p-[2px] sm:p-[3px] md:p-1 border border-white/15 shadow-inner flex-shrink-0"
+                style={{ minHeight: '36px', height: 'auto' }}
+              >
                 <button
                   onClick={() => setUnit('C')}
-                  className={`px-2 md:px-3 lg:px-3.5 xl:px-4 py-1 md:py-1.5 lg:py-2 rounded-md md:rounded-lg font-bold text-[10px] md:text-xs lg:text-sm transition-all duration-300 ${unit === 'C'
-                    ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg shadow-blue-500/40 scale-105'
-                    : 'text-gray-300 hover:text-white hover:bg-white/10'
-                    }`}
+                  className={`px-1.5 sm:px-2 md:px-3 lg:px-3.5 py-1 sm:py-1 md:py-1.5 rounded-md font-bold text-[10px] sm:text-xs md:text-sm lg:text-base transition-all ${unit === 'C' ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg shadow-blue-500/40 scale-105' : 'text-gray-300 hover:text-white hover:bg-white/10'}`}
+                  style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '30px' }}
                 >
                   °C
                 </button>
 
                 <button
                   onClick={() => setUnit('F')}
-                  className={`px-2 md:px-3 lg:px-3.5 xl:px-4 py-1 md:py-1.5 lg:py-2 rounded-md md:rounded-lg font-bold text-[10px] md:text-xs lg:text-sm transition-all duration-300 ${unit === 'F'
-                    ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg shadow-blue-500/40 scale-105'
-                    : 'text-gray-300 hover:text-white hover:bg-white/10'
-                    }`}
+                  className={`px-1.5 sm:px-2 md:px-3 lg:px-3.5 py-1 sm:py-1 md:py-1.5 rounded-md font-bold text-[10px] sm:text-xs md:text-sm lg:text-base transition-all ${unit === 'F' ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg shadow-blue-500/40 scale-105' : 'text-gray-300 hover:text-white hover:bg-white/10'}`}
+                  style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '30px' }}
                 >
                   °F
                 </button>
               </div>
 
-              {/* Divider - Hidden on mobile */}
-              <div className="hidden sm:block w-[1px] h-8 md:h-10 bg-gradient-to-b from-transparent via-white/20 to-transparent" />
+              {/* Divider (Hidden on small screens) */}
+              <div className="hidden lg:block w-[1px] h-7 bg-gradient-to-b from-transparent via-white/20 to-transparent" />
 
-              {/* 🟢✅ GREEN BUTTON WITH "LIVE" TEXT INSIDE - As requested! */}
-              <button
-                className="green-next-btn group relative inline-flex items-center gap-2 md:gap-2.5 px-4 md:px-6 lg:px-7 xl:px-8 py-2 md:py-2.5 overflow-hidden rounded-full md:rounded-xl font-bold text-[11px] md:text-sm lg:text-base text-white transform hover:scale-105 hover:-translate-y-0.5 active:scale-95 cursor-default"
+              {/* 🟢 LIVE BUTTON - Scales Up */}
+              {/* 🟢 LIVE BUTTON - Links to weather.gov */}
+              <a
+                href="https://www.weather.gov/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="green-next-btn group relative inline-flex items-center gap-1 sm:gap-1.5 md:gap-2 px-2 sm:px-3 md:px-5 lg:px-6 py-1.5 sm:py-2 md:py-2.5 overflow-hidden rounded-lg sm:rounded-lg md:rounded-xl font-bold text-[10px] sm:text-xs md:text-sm lg:text-base text-white transform hover:scale-105 hover:-translate-y-0.5 active:scale-95 cursor-pointer flex-shrink-0 whitespace-nowrap no-underline"
+                style={{ minHeight: '36px', height: 'auto' }}
               >
-                {/* Animated Background Shimmer */}
                 <div className="green-btn-shimmer absolute inset-0 opacity-30"></div>
+                <div className="green-btn-glow absolute -inset-[2px] rounded-lg md:rounded-xl"></div>
 
-                {/* Pulsing Glow Ring */}
-                <div className="green-btn-glow absolute -inset-[2px] rounded-full md:rounded-xl"></div>
-
-                {/* ✅ PULSING DOT INDICATOR */}
-                <span className="relative flex h-2.5 w-2.5 md:h-3 md:w-3">
+                <span className="relative flex h-2 w-2 sm:h-2.5 sm:w-2.5 md:h-3 md:w-3 lg:h-3.5 lg:w-3.5">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75" style={{ animationDuration: '1.5s' }}></span>
-                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 md:h-3 md:w-3 bg-white shadow-lg shadow-green-300/50"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 sm:h-2.5 sm:w-2.5 md:h-3 md:w-3 lg:h-3.5 lg:w-3.5 bg-white shadow-lg shadow-green-300/50"></span>
                 </span>
 
-                {/* ✅ "LIVE" TEXT - Inside the green button as you wanted! */}
-                <span className="relative z-10 font-bold tracking-wide drop-shadow-md whitespace-nowrap">
-                  Live
-                </span>
+                <span className="relative z-10 font-bold tracking-wide drop-shadow-md hidden xs:inline sm:inline">Live</span>
+                <span className="relative z-10 xs:hidden sm:hidden">Live </span>
 
-                {/* Hover Sparkle Effect */}
                 <div className="green-btn-sparkle absolute top-0 left-[-100%] h-full w-[50%] bg-gradient-to-r from-transparent via-white/20 to-transparent skew-x-12"></div>
-              </button>
+              </a>
 
             </div>
           </div>
@@ -1831,12 +3570,24 @@ export default function WeatherDashboard() {
         {/* Main Content Area */}
         <main className="flex-1 overflow-y-auto p-2 md:p-4 lg:p-6 xl:p-8 scrollbar-thin">
           {error && (
-            <div className="mb-3 md:mb-4 bg-red-500/20 border-l-4 border-red-500/50 rounded-xl md:rounded-2xl p-3 md:p-4 flex items-start md:items-center gap-2 md:gap-3">
+            <div className="mb-3 md:mb-4 bg-red-500/20 border-l-4 border-red-500/50 rounded-xl md:rounded-2xl p-3 md:p-4 flex items-start md:items-center gap-2 md:gap-3 backdrop-blur-xl">
               <div className="w-8 h-8 md:w-10 md:h-10 bg-red-500/30 rounded-lg md:rounded-xl flex items-center justify-center text-base md:text-xl flex-shrink-0">⚠️</div>
               <div className="flex-1 min-w-0">
                 <h4 className="font-bold text-red-300 text-sm md:text-base">Error Loading Data</h4>
                 <p className="text-xs md:text-sm text-red-200">{error}</p>
                 <button onClick={() => refreshWeather()} className="mt-2 px-3 md:px-4 py-1 md:py-1.5 bg-red-500/30 hover:bg-red-500/50 rounded-lg text-white font-medium transition-all active:scale-95 text-xs md:text-sm">Try Again</button>
+              </div>
+            </div>
+          )}
+          {/* ⚡ Inline Refresh Indicator */}
+          {loading && !error && (
+            <div className="mb-3 md:mb-4 bg-gradient-to-r from-green-500/15 to-emerald-500/10 border-l-4 border-green-500/50 rounded-xl p-3 md:p-4 flex items-center gap-3 backdrop-blur-sm animate-pulse">
+              <div className="w-8 h-8 md:w-10 md:h-10 bg-green-500/25 rounded-lg flex items-center justify-center flex-shrink-0">
+                <Loader2 className="w-5 h-5 md:w-6 md:h-6 text-green-300 animate-spin" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <h4 className="font-bold text-green-300 text-sm md:text-base">Refreshing Weather Data...</h4>
+                <p className="text-xs md:text-sm text-green-200/70 mt-0.5">Getting latest information for <span className="font-semibold">{city || 'your location'}</span></p>
               </div>
             </div>
           )}
@@ -1846,14 +3597,17 @@ export default function WeatherDashboard() {
             {/* Weather Card + Map Grid */}
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-3 md:gap-4 lg:gap-6 items-stretch">
 
-              {/* Main Weather Card */}
+              {/* Main Weather Card - Enhanced Glass */}
               <div className="group relative flex flex-col">
                 <div className="absolute inset-0 bg-gradient-to-br from-blue-500/30 via-cyan-500/20 to-purple-600/30 rounded-2xl md:rounded-3xl blur-xl md:blur-2xl opacity-[0.6] group-hover:opacity-80 transition-opacity duration-500" />
-                <div className="relative bg-gradient-to-br from-blue-600/25 via-blue-700/20 to-indigo-800/25 backdrop-blur-xl md:backdrop-blur-2xl rounded-2xl md:rounded-3xl p-4 md:p-6 lg:p-8 text-white overflow-hidden border border-white/20 hover:border-white/30 transition-all duration-300 flex-1 flex flex-col">
+                <div className="relative bg-gradient-to-br from-blue-600/20 via-blue-700/15 to-indigo-800/20 backdrop-blur-2xl md:backdrop-blur-3xl rounded-2xl md:rounded-3xl p-4 md:p-6 lg:p-8 text-white overflow-hidden border border-white/20 hover:border-blue-400/40 transition-all duration-300 flex-1 flex flex-col shadow-2xl shadow-black/40">
 
-                  {/* Background Effects */}
+                  {/* Background Effects - Enhanced */}
                   <div className="absolute top-0 right-0 w-32 h-32 md:w-48 md:h-48 lg:w-64 lg:h-64 bg-blue-400/20 rounded-full blur-2xl md:blur-3xl animate-float-slow" />
                   <div className="absolute bottom-0 left-0 w-24 h-24 md:w-32 md:h-32 lg:w-48 lg:h-48 bg-yellow-300/15 rounded-full blur-xl md:blur-2xl animate-float-medium" />
+
+                  {/* Glass Reflection */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/[0.08] to-transparent pointer-events-none" />
 
                   <div className="relative z-10 flex-1 flex flex-col">
 
@@ -1864,7 +3618,7 @@ export default function WeatherDashboard() {
                           <h2 className="text-base md:text-lg lg:text-2xl font-bold drop-shadow-lg truncate">{location?.city || 'Rayat-Bahra University'}</h2>
                         </div>
                         <p className="text-[10px] md:text-xs lg:text-sm text-blue-200/80">{currentDate} | {currentTime}</p>
-                        <div className="inline-flex items-center gap-1 bg-green-500/90 backdrop-blur-sm px-1.5 md:px-2 py-[2px] md:py-[3px] rounded-full text-[8px] md:text-[10px] font-semibold self-start animate-pulse border border-green-400/40 shadow-md shadow-green-500/20 mt-1">
+                        <div className="inline-flex items-center gap-1 bg-green-500/90 backdrop-blur-md px-1.5 md:px-2 py-[2px] md:py-[3px] rounded-full text-[8px] md:text-[10px] font-semibold self-start animate-pulse border border-green-400/40 shadow-md shadow-green-500/20 mt-1">
                           <span className="w-1 h-1 md:w-1.5 md:h-1.5 bg-white rounded-full animate-pulse" />
                           Live
                         </div>
@@ -1893,15 +3647,15 @@ export default function WeatherDashboard() {
                       </p>
                     </div>
 
-                    {/* Stats Grid */}
-                    <div className="mt-auto grid grid-cols-2 lg:grid-cols-4 gap-2 md:gap-3 lg:gap-4 bg-white/[0.08] backdrop-blur-md rounded-xl md:rounded-2xl p-3 md:p-4 lg:p-6 border border-white/10">
+                    {/* Stats Grid - Enhanced Glass */}
+                    <div className="mt-auto grid grid-cols-2 lg:grid-cols-4 gap-2 md:gap-3 lg:gap-4 bg-white/[0.08] backdrop-blur-xl rounded-xl md:rounded-2xl p-3 md:p-4 lg:p-6 border border-white/10 shadow-inner">
                       {[
                         { icon: Droplets, value: `${humidity}%`, label: 'Humidity' },
                         { icon: Wind, value: `${windSpeed} km/h`, label: 'Wind' },
                         { icon: Gauge, value: pressure, label: 'Pressure' },
                         { icon: Eye, value: `${visibility} km`, label: 'Visibility' }
                       ].map((stat, i) => (
-                        <div key={i} className="text-center hover:bg-white/[0.1] rounded-lg md:rounded-xl p-1.5 md:p-2 transition-colors">
+                        <div key={i} className="text-center hover:bg-white/[0.1] rounded-lg md:rounded-xl p-1.5 md:p-2 transition-colors backdrop-blur-sm">
                           <stat.icon className="w-5 h-5 md:w-6 md:h-6 lg:w-7 lg:h-7 mx-auto mb-1 md:mb-2 text-blue-200" />
                           <p className="text-base md:text-xl lg:text-2xl font-bold">{stat.value}</p>
                           <p className="text-[9px] md:text-[10px] lg:text-xs text-blue-200/70">{stat.label}</p>
@@ -1912,7 +3666,7 @@ export default function WeatherDashboard() {
                 </div>
               </div>
 
-              {/* Interactive Map */}
+              {/* Interactive Map - Fully Responsive */}
               <WorldWeatherMap weatherData={weatherData} unit={unit} />
             </div>
 
@@ -1958,8 +3712,8 @@ export default function WeatherDashboard() {
                         })()
 
                     return (
-                      <div key={i} className={`flex flex-col items-center justify-center p-2 md:p-3 lg:p-4 rounded-xl md:rounded-2xl transition-all min-w-[75px] md:min-w-[90px] lg:min-w-[110px] xl:min-w-[120px] hover:scale-105 hover:-translate-y-1 border cursor-pointer ${i === 0 ? 'bg-gradient-to-br from-blue-500/60 to-cyan-500/60 text-white shadow-lg shadow-blue-500/30 border-blue-400/30' : 'bg-white/[0.05] hover:bg-white/[0.1] text-white/90 border border-white/10'}`}
-                        style={{ backdropFilter: 'blur(12px)', transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)' }}
+                      <div key={i} className={`flex flex-col items-center justify-center p-2 md:p-3 lg:p-4 rounded-xl md:rounded-2xl transition-all min-w-[75px] md:min-w-[90px] lg:min-w-[110px] xl:min-w-[120px] hover:scale-105 hover:-translate-y-1 border cursor-pointer backdrop-blur-md ${i === 0 ? 'bg-gradient-to-br from-blue-500/60 to-cyan-500/60 text-white shadow-lg shadow-blue-500/30 border-blue-400/30' : 'bg-white/[0.05] hover:bg-white/[0.1] text-white/90 border border-white/10'}`}
+                        style={{ transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)' }}
                         onMouseEnter={(e) => { e.currentTarget.style.zIndex = '10' }}
                         onMouseLeave={(e) => { e.currentTarget.style.zIndex = '1' }}>
 
@@ -1996,10 +3750,9 @@ export default function WeatherDashboard() {
 
             {/* Bottom Grid: 7-Day Forecast + Air Quality + Highlights */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 md:gap-4 lg:gap-6 items-stretch">
-
               {/* 7-Day Forecast */}
-              <div className="lg:col-span-2 group relative flex flex-col">
-                <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/20 to-blue-600/20 rounded-2xl md:rounded-3xl blur-xl opacity-[0.4]" />
+              <div id="forecast-section" className="lg:col-span-2 group relative flex-col">
+                <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/20 to-blue-600/20 rounded-2xl md:rounded-3xl blur-xl opacity=[0.4]" />
                 <div className="relative bg-white/[0.04] backdrop-blur-xl rounded-2xl md:rounded-3xl p-3 md:p-4 lg:p-6 border border-white/15 hover:border-white/25 transition-all flex-1 flex flex-col">
 
                   {/* Header */}
@@ -2028,7 +3781,7 @@ export default function WeatherDashboard() {
                       const windValue = safeGetWindSpeed(d.wind)
 
                       return (
-                        <div key={i} className={`flex items-center justify-between p-2 md:p-3 lg:p-4 rounded-lg xl:rounded-xl transition-all hover:bg-white/[0.06] hover:scale-[1.01] border ${d.today ? 'bg-gradient-to-r from-blue-500/20 to-purple-500/20 border-blue-400/30' : 'border-white/10'}`}>
+                        <div key={i} className={`flex items-center justify-between p-2 md:p-3 lg:p-4 rounded-lg xl:rounded-xl transition-all hover:bg-white/[0.06] hover:scale-[1.01] border backdrop-blur-sm ${d.today ? 'bg-gradient-to-r from-blue-500/20 to-purple-500/20 border-blue-400/30' : 'border-white/10'}`}>
 
                           {/* Day Info */}
                           <div className="flex items-center gap-2 md:gap-3 lg:gap-4 w-20 md:w-28 lg:w-32">
@@ -2081,8 +3834,12 @@ export default function WeatherDashboard() {
               <div className="flex flex-col space-y-3 md:space-y-4 lg:space-y-4">
 
                 {/* Air Quality */}
+                {/* ✅ BEFORE (Broken): */}
                 <div className="group relative flex-shrink-0">
-                  <div className="absolute inset-0 bg-gradient-to-br from-green-500/20 to-emerald-500/20 rounded-2xl md:rounded-3xl blur-xl opacity=[0.4]" />
+
+                  {/* ✅ AFTER (Fixed): */}
+                  <div id="air-quality-section" className="group relative flex-shrink-0"></div>
+                  <div className="absolute inset-0 bg-gradient-to-br from-green-500/20 to-emerald-500/20 rounded-2xl md:rounded-3xl blur-xl opacity-[0.4]" />
                   <div className="relative bg-white/[0.04] backdrop-blur-xl rounded-2xl md:rounded-3xl p-3 md:p-4 lg:p-5 border border-white/15 hover:border-white/25 transition-all">
 
                     {/* Header */}
@@ -2094,39 +3851,164 @@ export default function WeatherDashboard() {
                       <button className="text-[10px] md:text-xs text-blue-300 hover:text-blue-200 hover:underline font-medium">Details →</button>
                     </div>
 
-                    {/* ✅ FIXED AIR QUALITY CIRCLE - Replace lines 2027-2045 with this: */}
+                    {/* ✅ FIXED: AQI Circle - Perfectly Centered Text */}
                     <div className="flex justify-center mb-2 md:mb-3">
-                      <div className="relative w-24 h-24 md:w-32 md:h-32 lg:w-36 lg:h-36">
-                        <svg className="w-full h-full transform -rotate-90" viewBox="0 0 120 120">
-                          {/* ✅ FIXED: Changed all } to " */}
-                          <circle cx="60" cy="60" r="52" fill="none" stroke="rgb(255 255 255 / 0.1)" strokeWidth="8" />
-
+                      <div className="relative w-28 h-28 md:w-36 md:h-36 lg:w-40 lg:h-40">
+                        <svg
+                          className="w-full h-full"
+                          viewBox="0 0 120 120"
+                          style={{ overflow: 'visible' }}
+                        >
+                          {/* Definitions */}
                           <defs>
-                            <linearGradient id="aqiGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                              <stop offset="0%" stopColor="#10b981" stopOpacity="0.8" />
-                              <stop offset="50%" stopColor="#fbbf24" stopOpacity="0.8" />
-                              <stop offset="100%" stopColor="#ef4444" stopOpacity="0.8" />
+                            {/* Gradient */}
+                            <linearGradient id="aqiGradPerfect" x1="0%" y1="0%" x2="100%" y2="100%">
+                              <stop offset="0%" stopColor="#10b981" stopOpacity="1" />
+                              <stop offset="35%" stopColor="#fbbf24" stopOpacity="1" />
+                              <stop offset="70%" stopColor="#f97316" stopOpacity="1" />
+                              <stop offset="100%" stopColor="#ef4444" stopOpacity="1" />
                             </linearGradient>
+
+                            {/* Glow Filter */}
+                            <filter id="aqiGlowPerfect" x="-50%" y="-50%" width="200%" height="200%">
+                              <feGaussianBlur in="SourceAlpha" stdDeviation="2" result="blur" />
+                              <feFlood floodColor="#10b981" floodOpacity="0.3" result="color" />
+                              <feComposite in="color" in2="blur" operator="in" result="shadow" />
+                              <feOffset dx="0" dy="0" in="shadow" result="shadow" />
+                              <feMerge>
+                                <feMergeNode in="shadow" />
+                                <feMergeNode in="SourceGraphic" />
+                              </feMerge>
+                            </filter>
                           </defs>
 
-                          {/* ✅ FIXED: Changed all } to " */}
-                          <circle cx="60" cy="60" r="52" fill="none" stroke="url(#aqiGrad)" strokeWidth="8" strokeLinecap="round" strokeDasharray="137.34 327" />
+                          {/* Background Track Circle (Gray) */}
+                          <circle
+                            cx="60"
+                            cy="60"
+                            r="48"
+                            fill="none"
+                            stroke="rgba(255, 255, 255, 0.08)"
+                            strokeWidth="10"
+                            strokeLinecap="round"
+                          />
 
-                          <div className="absolute inset-0 flex flex-col items-center justify-center">
-                            <div className="text-2xl md:text-3xl lg:text-4xl font-bold text-white drop-shadow-lg">42</div>
-                            <div className="text-xs md:text-sm font-semibold text-green-400">Good</div>
-                          </div>
+                          {/* Progress Circle - Correctly Positioned */}
+                          <circle
+                            cx="60"
+                            cy="60"
+                            r="48"
+                            fill="none"
+                            stroke="url(#aqiGradPerfect)"
+                            strokeWidth="10"
+                            strokeLinecap="round"
+                            strokeDasharray="253.33 301.59"
+                            strokeDashoffset="0"
+                            transform="rotate(-90 60 60)"
+                            filter="url(#aqiGlowPerfect)"
+                            style={{
+                              filter: 'drop-shadow(0 0 8px rgba(16, 185, 129, 0.4))',
+                              transition: 'stroke-dasharray 1s ease-in-out'
+                            }}
+                          >
+                            <animate
+                              attributeName="stroke-dasharray"
+                              from="0 301.59"
+                              to="253.33 301.59"
+                              dur="1.5s"
+                              fill="freeze"
+                              calcMode="spline"
+                              keySplines="0.42 0 0.58 1"
+                            />
+
+                            <animate
+                              attributeName="stroke-width"
+                              values="10;11;10"
+                              dur="3s"
+                              repeatCount="indefinite"
+                            />
+                          </circle>
+
+                          {/* ✅✅✅ PERFECTLY CENTERED TEXT - Fixed Positioning */}
+                          <text
+                            x="60"
+                            y="58"
+                            textAnchor="middle"
+                            dominantBaseline="middle"
+                            className="select-none"
+                            style={{
+                              fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif'
+                            }}
+                          >
+                            {/* AQI Number - Large & Bold */}
+                            <tspan
+                              x="60"
+                              dy="0"
+                              className="text-4xl md:text-5xl lg:text-6xl font-black fill-white"
+                              style={{
+                                fontSize: '36px',
+                                fontWeight: '900',
+                                letterSpacing: '-0.02em',
+                                filter: 'drop-shadow(0 2px 6px rgba(0,0,0,0.6))'
+                              }}
+                            >
+                              42
+                              <animate
+                                attributeName="opacity"
+                                values="0;1"
+                                dur="0.5s"
+                                fill="freeze"
+                              />
+                            </tspan>
+
+                            {/* Status Label - Below Number */}
+                            <tspan
+                              x="60"
+                              dy="22"
+                              className="text-xs md:text-sm font-bold fill-green-400"
+                              style={{
+                                fontSize: '13px',
+                                fontWeight: '700',
+                                letterSpacing: '0.02em',
+                                filter: 'drop-shadow(0 1px 3px rgba(16, 185, 129, 0.4))'
+                              }}
+                            >
+                              Good
+                              <animate
+                                attributeName="opacity"
+                                values="0;1"
+                                dur="0.8s"
+                                begin="0.3s"
+                                fill="freeze"
+                              />
+                            </tspan>
+                          </text>
                         </svg>
                       </div>
                     </div>
 
                     {/* AQI Stats Grid */}
                     <div className="grid grid-cols-2 gap-1 md:gap-1.5">
-                      {[{ name: 'PM2.5', value: 18, status: 'Good' }, { name: 'PM10', value: 32, status: 'Good' }, { name: 'O₃', value: 41, status: 'Good' }, { name: 'NO₂', value: 15, status: 'Good' }].map((p, i) => (
-                        <div key={i} className="bg-white/[0.06] rounded-lg p-1.5 md:p-2 text-center hover:bg-white/[0.1] transition-colors border border-white/10">
-                          <p className="text-[9px] md:text-[10px] text-gray-400 mb-0.5">{p.name}</p>
-                          <p className="text-sm md:text-base lg:text-lg font-bold text-white">{p.value}</p>
-                          <p className="text-[8px] md:text-[10px] text-green-400 font-semibold">{p.status}</p>
+                      {[
+                        { name: 'PM2.5', value: 18, status: 'Good', color: 'green' },
+                        { name: 'PM10', value: 32, status: 'Good', color: 'green' },
+                        { name: 'O₃', value: 41, status: 'Good', color: 'green' },
+                        { name: 'NO₂', value: 15, status: 'Good', color: 'green' }
+                      ].map((p, i) => (
+                        <div key={i} className="bg-white/[0.06] rounded-lg p-1.5 md:p-2 text-center hover:bg-white/[0.1] transition-all border border-white/10 min-w-0 backdrop-blur-sm group">
+                          <p className="text-[9px] md:text-[10px] text-gray-400 mb-0.5 truncate">{p.name}</p>
+                          <p className={`text-sm md:text-base lg:text-lg font-bold ${p.color === 'green' ? 'text-green-400' :
+                            p.color === 'yellow' ? 'text-yellow-400' :
+                              p.color === 'orange' ? 'text-orange-400' : 'text-red-400'
+                            } group-hover:scale-105 transition-transform`}>
+                            {p.value}
+                          </p>
+                          <p className={`text-[8px] md:text-[10px] font-semibold ${p.color === 'green' ? 'text-green-400/80' :
+                            p.color === 'yellow' ? 'text-yellow-400/80' :
+                              p.color === 'orange' ? 'text-orange-400/80' : 'text-red-400/80'
+                            }`}>
+                            {p.status}
+                          </p>
                         </div>
                       ))}
                     </div>
@@ -2134,7 +4016,7 @@ export default function WeatherDashboard() {
                 </div>
 
                 {/* Today's Highlights */}
-                <div className="group relative flex-1 flex flex-col">
+                <div id="highlights-section" className="group relative flex-1 flex flex-col">
                   <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/20 to-orange-500/20 rounded-2xl md:rounded-3xl blur-xl opacity=[0.4]" />
                   <div className="relative bg-white/[0.04] backdrop-blur-xl rounded-2xl md:rounded-3xl p-3 md:p-4 lg:p-5 border border-white/15 hover:border-white/25 transition-all flex-1 flex flex-col">
 
@@ -2160,12 +4042,12 @@ export default function WeatherDashboard() {
                         ] as const
 
                         return items.map((item, i) => (
-                          <div key={i} className="flex items-center justify-between py-1.5 md:py-2 hover:bg-white/[0.06] rounded-lg px-1 md:px-2 -mx-1 md:-mx-2 transition-colors border-b border-white/5 last:border-0">
-                            <div className="flex items-center gap-1.5 md:gap-2 lg:gap-3">
+                          <div key={i} className="flex items-center justify-between py-1.5 md:py-2 hover:bg-white/[0.06] rounded-lg px-1 md:px-2 -mx-1 md:-mx-2 transition-colors border-b border-white/5 last:border-0 backdrop-blur-sm">
+                            <div className="flex items-center gap-1.5 md:gap-2 lg:gap-3 min-w-0 flex-1">
                               <item.Icon size="sm" />
-                              <span className="text-[10px] md:text-xs lg:text-sm font-medium text-white/90">{item.label}</span>
+                              <span className="text-[10px] md:text-xs lg:text-sm font-medium text-white/90 truncate">{item.label}</span>
                             </div>
-                            <span className="text-[10px] md:text-xs lg:text-sm font-semibold text-white drop-shadow">{item.value}</span>
+                            <span className="text-[10px] md:text-xs lg:text-sm font-semibold text-white drop-shadow ml-2 flex-shrink-0">{item.value}</span>
                           </div>
                         ))
                       })()}
@@ -2179,7 +4061,8 @@ export default function WeatherDashboard() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 md:gap-4 lg:gap-6 items-stretch min-h-[280px] md:min-h-[320px] lg:h-[360px] auto-rows-fr">
 
               {/* Weather Alerts Card */}
-              <div className="group relative h-full flex flex-col flex-1">
+
+              <div id="weather-alerts-card" className="group relative h-full flex flex-col flex-1">
                 <div className="absolute inset-0 bg-gradient-to-br from-orange-500/20 to-red-500/20 rounded-2xl md:rounded-3xl blur-xl opacity=[0.4]" />
                 <div className="relative bg-white/[0.04] backdrop-blur-xl rounded-2xl md:rounded-3xl p-4 md:p-5 lg:p-6 border border-white/15 hover:border-white/25 transition-all min-h-[250px] md:min-h-[290px] flex-1 h-full">
 
@@ -2199,7 +4082,7 @@ export default function WeatherDashboard() {
 
                       if (alerts.length === 0) {
                         return (
-                          <div className="bg-gradient-to-r from-green-500/15 to-emerald-500/10 rounded-xl md:rounded-2xl p-3 md:p-4 border border-emerald-400/15 hover:border-emerald-400/25 transition-all h-full flex items-center">
+                          <div className="bg-gradient-to-r from-green-500/15 to-emerald-500/10 rounded-xl md:rounded-2xl p-3 md:p-4 border border-emerald-400/15 hover:border-emerald-400/25 transition-all h-full flex items-center backdrop-blur-sm">
                             <div className="flex items-start gap-2 md:gap-3 w-full">
                               <div className="w-8 h-8 md:w-10 md:h-10 bg-emerald-500/25 rounded-lg md:rounded-xl flex items-center justify-center flex-shrink-0">
                                 <AlertTriangle className="w-4 h-4 md:w-5 md:h-5 text-emerald-200" />
@@ -2251,7 +4134,7 @@ export default function WeatherDashboard() {
                       }
 
                       return alerts.slice(0, 2).map((a, i) => (
-                        <div key={i} className={`${asGradient(a.severity)} rounded-xl md:rounded-2xl p-3 md:p-4 border transition-all`}>
+                        <div key={i} className={`${asGradient(a.severity)} rounded-xl md:rounded-2xl p-3 md:p-4 border transition-all backdrop-blur-sm`}>
                           <div className="flex items-start gap-2 md:gap-3">
                             <div className="w-8 h-8 md:w-10 md:h-10 bg-white/[0.08] rounded-lg md:rounded-xl flex items-center justify-center flex-shrink-0">
                               {a.icon ? iconFor(a.icon, a.severity) : iconFor('', a.severity)}
@@ -2273,18 +4156,18 @@ export default function WeatherDashboard() {
 
               {/* Weather Details Card */}
               <div className="group relative h-full flex flex-col flex-1">
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-cyan-500/20 rounded-2xl md:rounded-3xl blur-xl opacity=[0.4]" />
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-cyan-500/20 rounded-2xl md:rounded-3xl blur-xl opacity-[0.4]" />
                 <div className="relative bg-gradient-to-br from-blue-600/20 to-cyan-600/15 backdrop-blur-xl rounded-2xl md:rounded-3xl p-4 md:p-5 lg:p-6 border border-white/15 hover:border-white/25 transition-all min-h-[250px] md:min-h-[290px] flex-1 h-full">
 
                   <div className="flex items-center justify-between h-full">
 
-                    {/* Details List */}
+                    {/* Details List - Responsive spacing */}
                     <div className="flex-1 space-y-2 md:space-y-4 pr-0 md:pr-4">
                       <div className="flex items-center gap-2 md:gap-3 pb-2 md:pb-3 border-b border-white/10">
-                        <div className="w-8 h-8 md:w-10 md:h-10 bg-white/10 rounded-lg md:rounded-xl flex items-center justify-center flex-shrink-0">
+                        <div className="w-8 h-8 md:w-10 md:h-10 bg-white/10 rounded-lg md:rounded-xl flex items-center justify-center flex-shrink-0 backdrop-blur-sm">
                           <Wind className="w-4 h-4 md:w-5 md:h-5 text-white" />
                         </div>
-                        <div>
+                        <div className="min-w-0 flex-1">
                           <p className="text-[10px] md:text-xs text-gray-300">Wind Gust</p>
                           <p className="text-lg md:text-xl font-bold text-white">
                             {Math.round((weatherData?.hourly?.[0]?.wind?.speed ?? weatherData?.current?.wind_speed ?? 0))}
@@ -2294,10 +4177,10 @@ export default function WeatherDashboard() {
                       </div>
 
                       <div className="flex items-center gap-2 md:gap-3 pb-2 md:pb-3 border-b border-white/10">
-                        <div className="w-8 h-8 md:w-10 md:h-10 bg-white/10 rounded-lg md:rounded-xl flex items-center justify-center flex-shrink-0">
+                        <div className="w-8 h-8 md:w-10 md:h-10 bg-white/10 rounded-lg md:rounded-xl flex items-center justify-center flex-shrink-0 backdrop-blur-sm">
                           <Droplets className="w-4 h-4 md:w-5 md:h-5 text-white" />
                         </div>
-                        <div>
+                        <div className="min-w-0 flex-1">
                           <p className="text-[10px] md:text-xs text-gray-300">Precipitation</p>
                           <p className="text-lg md:text-xl font-bold text-white">
                             {((weatherData?.hourly?.[0]?.precipitation_mm ?? 0) as number).toFixed(1)}
@@ -2307,10 +4190,10 @@ export default function WeatherDashboard() {
                       </div>
 
                       <div className="flex items-center gap-2 md:gap-3 pb-2 md:pb-3 border-b border-white/10">
-                        <div className="w-8 h-8 md:w-10 md:h-10 bg-white/10 rounded-lg md:rounded-xl flex items-center justify-center flex-shrink-0">
+                        <div className="w-8 h-8 md:w-10 md:h-10 bg-white/10 rounded-lg md:rounded-xl flex items-center justify-center flex-shrink-0 backdrop-blur-sm">
                           <CloudRain className="w-4 h-4 md:w-5 md:h-5 text-white" />
                         </div>
-                        <div>
+                        <div className="min-w-0 flex-1">
                           <p className="text-[10px] md:text-xs text-gray-300">Chance of Rain</p>
                           <p className="text-lg md:text-xl font-bold text-white">
                             {Math.round(weatherData?.hourly?.[0]?.pop ?? 0)}
@@ -2320,10 +4203,10 @@ export default function WeatherDashboard() {
                       </div>
 
                       <div className="flex items-center gap-2 md:gap-3">
-                        <div className="w-8 h-8 md:w-10 md:h-10 bg-white/10 rounded-lg md:rounded-xl flex items-center justify-center flex-shrink-0">
+                        <div className="w-8 h-8 md:w-10 md:h-10 bg-white/10 rounded-lg md:rounded-xl flex items-center justify-center flex-shrink-0 backdrop-blur-sm">
                           <Cloud className="w-4 h-4 md:w-5 md:h-5 text-white" />
                         </div>
-                        <div>
+                        <div className="min-w-0 flex-1">
                           <p className="text-[10px] md:text-xs text-gray-300">Cloud Cover</p>
                           <p className="text-lg md:text-xl font-bold text-white">
                             {Math.round(weatherData?.hourly?.[0]?.cloud_cover ?? 0)}
@@ -2334,7 +4217,7 @@ export default function WeatherDashboard() {
                     </div>
 
                     {/* Weather Icon - Hidden on mobile, visible on larger screens */}
-                    <div className="hidden lg:block ml-4">
+                    <div className="hidden lg:block ml-4 flex-shrink-0">
                       <div className="w-24 h-24 md:w-32 md:h-32 relative">
                         <AnimatedWeatherIcon type={getWeatherIcon(iconCode)} size="md" />
                       </div>
@@ -2344,81 +4227,279 @@ export default function WeatherDashboard() {
               </div>
             </div>
 
-            {/* Footer */}
-            <footer className="py-4 md:py-5 lg:py-7 mt-3 md:mt-4 text-center text-[10px] md:text-xs lg:text-sm text-gray-400">
-              <div className="flex items-center justify-center gap-1.5 md:gap-2 mb-1.5 md:mb-2">
-                <CloudRain className="w-3 h-3 md:w-4 md:h-4 lg:w-5 lg:h-5 text-blue-400" />
-                <span className="font-semibold text-gray-300 text-xs md:text-sm">WeatherLive Dashboard</span>
-              </div>
-              <p className="mb-1 md:mb-1.5 text-[9px] md:text-xs">
-                Powered by Open-Meteo API & OpenStreetMap • Real-time Tracking
-              </p>
-              <div className="border-t border-white/10 pt-2 md:pt-3 mt-2 md:mt-3 flex items-center justify-center gap-1 md:gap-1.5 flex-wrap">
-                <span>©</span>
-                <span className="font-medium text-gray-300">Nishant Sharma. All Rights Reserved {new Date().getFullYear()}</span>
-                <Heart className="w-3 h-3 md:w-4 md:h-4 text-red-500 fill-red-500 animate-pulse" />
+            {/* Footer - Responsive padding and text sizes */}
+            <footer className="relative z-20 py-8 mt-6 text-center" style={{ background: 'transparent' }}>
+
+              <div className="space-y-3">
+                <div className="flex items-center justify-center gap-2">
+                  <CloudRain className="w-4 h-4 text-cyan-400 drop-shadow-[0_0_10px_rgba(34,211,238,0.7)]" />
+                  <span className="font-bold text-white text-sm tracking-wide drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]">Weather Live </span>
+                </div>
+
+                <div className="w-56 mx-auto h-[1px]" style={{ background: 'linear-gradient(to right, transparent, rgba(96,165,250,0.4), transparent)' }} />
+
+                <p className="text-xs text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)] flex items-center justify-center gap-2">
+                  © Nishant Sharma. All Rights Reserved {new Date().getFullYear()}
+                  <Heart className="w-3.5 h-3.5 text-red-500 fill-red-500 animate-pulse drop-shadow-[0_0_8px_rgba(239,68,68,0.6)]" />
+                </p>
               </div>
 
-              {/* Responsive Indicator - Development only, remove in production */}
-              {process.env.NODE_ENV === 'development' && (
-                <div className="mt-2 text-[8px] text-gray-600 hidden md:block">
-                  Screen: {responsive.width}px | {responsive.isMobile ? 'Mobile' : responsive.isTablet ? 'Tablet' : responsive.isLaptop ? 'Laptop' : responsive.isDesktop ? 'Desktop' : 'Ultra-Wide'}
-                </div>
-              )}
             </footer>
           </div>
         </main>
       </div>
 
-      {/* Custom CSS Animations - Fully Responsive */}
+      {/* ============================================ */}
+      {/* ✅ ULTRA-ENHANCED ANIMATION KEYFRAMES         */}
+      {/* ============================================ */}
       <style jsx global>{`
         /* ============================================ */
-        /* ✅ RESPONSIVE ANIMATION KEYFRAMES          */
+        /* ✅ ENHANCED CINEMATIC ANIMATIONS             */
         /* ============================================ */
 
-        @keyframes cinematic-zoom { 
-          0%, 100% { transform: scale(1) translateY(0); filter: brightness(1) contrast(1); } 
-          25% { transform: scale(1.05) translateY(-1%); filter: brightness(1.05) contrast(1.05); } 
-          50% { transform: scale(1.08) translateY(-0.5%); filter: brightness(1.03) contrast(1.02); } 
-          75% { transform: scale(1.04) translateY(-0.8%); filter: brightness(1.06) contrast(1.04); } 
+        @keyframes cinematic-zoom-enhanced { 
+          0%, 100% { transform: scale(1) translateY(0) rotate(0deg); filter: brightness(1) contrast(1) saturate(1); } 
+          25% { transform: scale(1.06) translateY(-1.5%) rotate(0.3deg); filter: brightness(1.08) contrast(1.06) saturate(1.04); } 
+          50% { transform: scale(1.1) translateY(-0.8%) rotate(-0.2deg); filter: brightness(1.06) contrast(1.04) saturate(1.02); } 
+          75% { transform: scale(1.07) translateY(-1.2%) rotate(0.15deg); filter: brightness(1.09) contrast(1.07) saturate(1.05); } 
         }
         
-        .animate-cinematic-zoom { animation: cinematic-zoom 30s ease-in-out infinite; }
+        .animate-cinematic-zoom-enhanced { animation: cinematic-zoom-enhanced 35s ease-in-out infinite; }
 
-        @keyframes clouds-drift { 
-          0% { transform: translateX(0); } 
-          100% { transform: translateX(-50%); } 
+        /* Gradient Shift Animation */
+        @keyframes gradient-shift {
+          0%, 100% { opacity: 0.5; }
+          50% { opacity: 0.7; }
+        }
+
+        .animate-gradient-shift { animation: gradient-shift 8s ease-in-out infinite; }
+
+        @keyframes clouds-drift-enhanced { 
+          0% { transform: translateX(0) scale(1); } 
+          100% { transform: translateX(-50%) scale(1.1); } 
         }
         
-        .animate-clouds-drift { animation: clouds-drift 120s linear infinite; }
+        .animate-clouds-drift-enhanced { animation: clouds-drift-enhanced 150s linear infinite; }
+
+        /* Nebula Float Animations */
+        @keyframes nebula-float-1 {
+          0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.6; }
+          33% { transform: translate(30px, -20px) scale(1.08); opacity: 0.75; }
+          66% { transform: translate(-20px, 15px) scale(0.95); opacity: 0.65; }
+        }
+
+        .animate-nebula-float-1 { animation: nebula-float-1 25s ease-in-out infinite; }
+
+        @keyframes nebula-float-2 {
+          0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.55; }
+          50% { transform: translate(-40px, 25px) scale(1.12); opacity: 0.7; }
+        }
+
+        .animate-nebula-float-2 { animation: nebula-float-2 30s ease-in-out infinite; }
+
+        @keyframes nebula-float-3 {
+          0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.5; }
+          50% { transform: translate(35px, -18px) scale(1.06); opacity: 0.68; }
+        }
+
+        .animate-nebula-float-3 { animation: nebula-float-3 28s ease-in-out infinite; }
 
         @keyframes float-slow { 
           0%, 100% { transform: translate(0, 0) scale(1); } 
-          50% { transform: translate(40px, -40px) scale(1.05); } 
+          50% { transform: translate(45px, -45px) scale(1.06); } 
         }
         
-        .animate-float-slow { animation: float-slow 10s ease-in-out infinite; }
+        .animate-float-slow { animation: float-slow 11s ease-in-out infinite; }
+
+        @keyframes float-slow-delayed { 
+          0%, 100% { transform: translate(0, 0) scale(1); } 
+          50% { transform: translate(-38px, 42px) scale(1.05); } 
+        }
+        
+        .animate-float-slow-delayed { animation: float-slow-delayed 13s ease-in-out infinite; }
 
         @keyframes float-medium { 
           0%, 100% { transform: translate(0, 0); } 
-          50% { transform: translate(-30px, 30px) scale(1.03); } 
+          50% { transform: translate(-35px, 35px) scale(1.04); } 
         }
         
-        .animate-float-medium { animation: float-medium 7s ease-in-out infinite; }
+        .animate-float-medium { animation: float-medium 8s ease-in-out infinite; }
+
+        @keyframes float-medium-delayed { 
+          0%, 100% { transform: translate(0, 0); } 
+          50% { transform: translate(40px, -28px) scale(1.03); } 
+        }
+        
+        .animate-float-medium-delayed { animation: float-medium-delayed 10s ease-in-out infinite; }
 
         @keyframes pulse-subtle { 
-          0%, 100% { box-shadow: 0 0 0 0 rgb(245 158 11 / 0.3); } 
-          50% { box-shadow: 0 0 0 10px rgb(245 158 11 / 0); } 
+          0%, 100% { box-shadow: 0 0 0 0 rgb(245 158 11 / 0.35); } 
+          50% { box-shadow: 0 0 0 12px rgb(245 158 11 / 0); } 
         }
         
-        .animate-pulse-subtle { animation: pulse-subtle 3s ease-in-out infinite; }
+        .animate-pulse-subtle { animation: pulse-subtle 3.5s ease-in-out infinite; }
 
         @keyframes shimmer { 
           0% { transform: translateX(-100%); } 
           100% { transform: translateX(100%); } 
         }
         
-        .animate-shimmer { animation: shimmer 3s ease-in-out infinite; }
+        .animate-shimmer { animation: shimmer 3.5s ease-in-out infinite; }
+
+        /* Pulsing Ring Effects for Glow Orbs */
+        @keyframes pulse-ring {
+          0%, 100% { 
+            transform: scale(1);
+            opacity: 0.2;
+          }
+          50% { 
+            transform: scale(1.15);
+            opacity: 0.4;
+          }
+        }
+
+        .animate-pulse-ring { animation: pulse-ring 4s ease-in-out infinite; }
+
+        @keyframes pulse-ring-delayed {
+          0%, 100% { 
+            transform: scale(1);
+            opacity: 0.15;
+          }
+          50% { 
+            transform: scale(1.2);
+            opacity: 0.35;
+          }
+        }
+
+        .animate-pulse-ring-delayed { animation: pulse-ring-delayed 5s ease-in-out infinite 1s; }
+
+        @keyframes energy-ring {
+          0%, 100% { 
+            transform: scale(1) rotate(0deg);
+            opacity: 0.1;
+          }
+          50% { 
+            transform: scale(1.3) rotate(180deg);
+            opacity: 0.25;
+          }
+        }
+
+        .animate-energy-ring { animation: energy-ring 6s ease-in-out infinite; }
+
+        /* Enhanced Glow Animation */
+        @keyframes pulse-glow {
+          0%, 100% { 
+            opacity: 0.12;
+            transform: scale(1);
+            filter: blur(110px);
+          }
+          50% { 
+            opacity: 0.22;
+            transform: scale(1.15);
+            filter: blur(130px);
+          }
+        }
+        
+        .animate-pulse-glow { animation: pulse-glow 9s ease-in-out infinite; }
+
+        /* Twinkle Animations for Particles - Enhanced */
+        @keyframes twinkle-1 {
+          0%, 100% { opacity: 0.25; transform: scale(1); }
+          50% { opacity: 1; transform: scale(1.6); }
+        }
+        
+        .animate-twinkle-1 { animation: twinkle-1 3.5s ease-in-out infinite; }
+
+        @keyframes twinkle-2 {
+          0%, 100% { opacity: 0.18; transform: scale(1); }
+          50% { opacity: 0.85; transform: scale(1.4); }
+        }
+        
+        .animate-twinkle-2 { animation: twinkle-2 4.5s ease-in-out infinite 1s; }
+
+        @keyframes twinkle-3 {
+          0%, 100% { opacity: 0.35; transform: scale(1); }
+          50% { opacity: 1; transform: scale(1.5); }
+        }
+        
+        .animate-twinkle-3 { animation: twinkle-3 5.5s ease-in-out infinite 2s; }
+
+        /* Aurora Borealis Effect - Enhanced */
+        @keyframes aurora-enhanced {
+          0% { transform: translateX(-100%) skewY(-6deg); }
+          33% { transform: translateX(-33%) skewY(-4deg); }
+          66% { transform: translateX(33%) skewY(-8deg); }
+          100% { transform: translateX(100%) skewY(-6deg); }
+        }
+        
+        .animate-aurora-enhanced { animation: aurora-enhanced 22s ease-in-out infinite; }
+
+        @keyframes aurora-secondary {
+          0% { transform: translateX(-80%) skewY(-3deg); opacity: 0.12; }
+          50% { transform: translateX(20%) skewY(-5deg); opacity: 0.22; }
+          100% { transform: translateX(120%) skewY(-3deg); opacity: 0.12; }
+        }
+        
+        .animate-aurora-secondary { animation: aurora-secondary 28s ease-in-out infinite 3s; }
+
+        /* Particle Drift - Enhanced */
+        @keyframes particles-drift {
+          0% { transform: translateY(0) translateX(0); }
+          25% { transform: translateY(-15px) translateX(10px); }
+          50% { transform: translateY(-25px) translateX(-5px); }
+          75% { transform: translateY(-12px) translateX(15px); }
+          100% { transform: translateY(0) translateX(0); }
+        }
+        
+        .animate-particles-drift { animation: particles-drift 18s linear infinite; }
+
+        /* Noise Texture Shift */
+        @keyframes noise-shift {
+          0%, 100% { transform: translate(0, 0); }
+          25% { transform: translate(-2%, 2%); }
+          50% { transform: translate(2%, -1%); }
+          75% { transform: translate(-1%, -2%); }
+        }
+
+        .animate-noise-shift { animation: noise-shift 12s linear infinite; }
+
+        /* Glass Reflection Animation */
+        @keyframes glass-reflection {
+          0%, 100% { opacity: 0.03; }
+          50% { opacity: 0.06; }
+        }
+
+        .animate-glass-reflection { animation: glass-reflection 7s ease-in-out infinite; }
+
+        /* Vignette Pulse */
+        @keyframes vignette-pulse {
+          0%, 100% { opacity: 0.3; }
+          50% { opacity: 0.45; }
+        }
+
+        .animate-vignette-pulse { animation: vignette-pulse 10s ease-in-out infinite; }
+
+        /* Cinematic Light Beams */
+        @keyframes light-beam-1 {
+          0%, 100% { opacity: 0.03; transform: translateX(0); }
+          50% { opacity: 0.08; transform: translateX(20px); }
+        }
+
+        .animate-light-beam-1 { animation: light-beam-1 15s ease-in-out infinite; }
+
+        @keyframes light-beam-2 {
+          0%, 100% { opacity: 0.02; transform: translateX(0); }
+          50% { opacity: 0.06; transform: translateX(-15px); }
+        }
+
+        .animate-light-beam-2 { animation: light-beam-2 18s ease-in-out infinite 2s; }
+
+        @keyframes light-beam-3 {
+          0%, 100% { opacity: 0.025; transform: translateX(0); }
+          50% { opacity: 0.07; transform: translateX(25px); }
+        }
+
+        .animate-light-beam-3 { animation: light-beam-3 20s ease-in-out infinite 4s; }
 
         /* Hourly Icon Animations */
         @keyframes sunPulse { 
@@ -2638,7 +4719,1517 @@ export default function WeatherDashboard() {
             border: 2px solid white !important;
           }
         }
+
+        /* Extra small breakpoint for legend visibility */
+        @media (max-width: 474px) {
+          .xs\\:hidden {
+            display: none !important;
+          }
+          
+          .xs\\:block {
+            display: block !important;
+          }
+          
+          .xs\\:inline {
+            display: inline !important;
+          }
+          
+          .xs\\:hidden {
+            display: none !important;
+          }
+        }
+
+        @media (min-width: 475px) {
+          .xs\\:block {
+            display: block !important;
+          }
+          
+          .xs\\:hidden {
+            display: none !important;
+          }
+          
+          .xs\\:inline {
+            display: inline !important;
+          }
+        }
+
+        /* Medium Mobile Breakpoint (412px - 639px) - Critical for Header Fix */
+        @media (min-width: 412px) and (max-width: 639px) {
+          header {
+            padding-left: 0.5rem;
+            padding-right: 0.5rem;
+          }
+
+          header input {
+            font-size: 0.75rem;
+            padding-left: 2rem;
+            padding-right: 0.5rem;
+          }
+
+          header button {
+            padding-left: 0.5rem;
+            padding-right: 0.5rem;
+          }
+        }
+
+        /* Tablet and above */
+        @media (min-width: 640px) {
+          header {
+            padding-left: 1rem;
+            padding-right: 1rem;
+          }
+        }
+          /* ============================================ */
+/* 🎩✨ MAGIC UI ANIMATIONS                     */
+/* ============================================ */
+
+/* Floating Orbs */
+@keyframes floatOrbMagic1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(40px, -30px) scale(1.1); }
+  66% { transform: translate(-20px, 20px) scale(0.95); }
+}
+
+@keyframes floatOrbMagic2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-50px, -40px) scale(1.15); }
+}
+
+@keyframes floatOrbMagic3 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(-30px, 25px) scale(1.08); }
+  66% { transform: translate(20px, -15px) scale(0.98); }
+}
+
+@keyframes floatOrbMagic4 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(35px, -25px) scale(1.12); }
+}
+
+/* Magic Aura Pulses */
+@keyframes magicAura1 {
+  0%, 100% { opacity: 0.6; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.1); }
+}
+
+@keyframes magicAura2 {
+  0%, 100% { opacity: 0.5; transform: scale(1.05); }
+  50% { opacity: 0.9; transform: scale(1.15); }
+}
+
+@keyframes magicAura3 {
+  0%, 100% { opacity: 0.4; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(1.08); }
+}
+
+/* Magical Sparkle Effect */
+@keyframes magicSparkle {
+  0%, 100% { 
+    opacity: 0;
+    transform: scale(0) rotate(0deg);
+  }
+  50% { 
+    opacity: 1;
+    transform: scale(1.5) rotate(180deg);
+  }
+}
+
+/* Shooting Stars */
+@keyframes shootingStar1 {
+  0% { 
+    transform: translateX(0) translateY(0) rotate(-25deg);
+    opacity: 0;
+  }
+  5% { 
+    opacity: 1;
+  }
+  30% { 
+    transform: translateX(800px) translateY(400px) rotate(-25deg);
+    opacity: 0;
+  }
+  100% { 
+    transform: translateX(800px) translateY(400px) rotate(-25deg);
+    opacity: 0;
+  }
+}
+
+@keyframes shootingStar2 {
+  0% { 
+    transform: translateX(0) translateY(0) rotate(-35deg);
+    opacity: 0;
+  }
+  5% { 
+    opacity: 1;
+  }
+  25% { 
+    transform: translateX(900px) translateY(600px) rotate(-35deg);
+    opacity: 0;
+  }
+  100% { 
+    transform: translateX(900px) translateY(600px) rotate(-35deg);
+    opacity: 0;
+  }
+}
+
+@keyframes shootingStar3 {
+  0% { 
+    transform: translateX(0) translateY(0) rotate(-20deg);
+    opacity: 0;
+  }
+  5% { 
+    opacity: 1;
+  }
+  28% { 
+    transform: translateX(700px) translateY(250px) rotate(-20deg);
+    opacity: 0;
+  }
+  100% { 
+    transform: translateX(700px) translateY(250px) rotate(-20deg);
+    opacity: 0;
+  }
+}
+
+/* Golden Dust Float */
+@keyframes goldenDustFloat {
+  0%, 100% { 
+    transform: translateY(0) translateX(0) scale(1);
+    opacity: 0.4;
+  }
+  25% { 
+    transform: translateY(-20px) translateX(10px) scale(1.2);
+    opacity: 0.8;
+  }
+  50% { 
+    transform: translateY(-35px) translateX(-5px) scale(0.9);
+    opacity: 0.6;
+  }
+  75% { 
+    transform: translateY(-15px) translateX(15px) scale(1.1);
+    opacity: 0.9;
+  }
+}
+
+/* Flame Wisps */
+@keyframes flameWisp1 {
+  0%, 100% { 
+    transform: scaleY(1) scaleX(1);
+    opacity: 0.6;
+  }
+  50% { 
+    transform: scaleY(1.3) scaleX(0.9);
+    opacity: 1;
+  }
+}
+
+@keyframes flameWisp2 {
+  0%, 100% { 
+    transform: scaleY(1) scaleX(1);
+    opacity: 0.5;
+  }
+  50% { 
+    transform: scaleY(1.2) scaleX(1.1);
+    opacity: 0.9;
+  }
+}
+
+/* Swirling Energy */
+@keyframes swirlEnergy {
+  0% { 
+    transform: rotate(0deg);
+  }
+  100% { 
+    transform: rotate(360deg);
+  }
+}
+  /* ============================================ */
+/* 🎬 ULTRA PREMIUM WELCOME PAGE - STYLES       */
+/* ============================================ */
+
+/* MAIN CONTAINER */
+.welcome-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  transition: all 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.welcome-overlay.exiting {
+  opacity: 0;
+  transform: scale(1.05);
+  filter: blur(10px);
+}
+
+.welcome-container {
+  width: 100%;
+  height: 100%;
+  background: #000000;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ============================================ */
+/* BACKGROUND LAYERS                           */
+/* ============================================ */
+
+.bg-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.bg-gradient-base {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 50%, #0f172a 0%, #000000 70%);
+}
+
+/* Aurora Effect */
+.aurora {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.4;
+}
+
+.aurora-1 {
+  width: 900px;
+  height: 900px;
+  top: -25%;
+  left: -15%;
+  background: radial-gradient(circle, rgba(59, 130, 246, 0.5) 0%, transparent 60%);
+  animation: auroraFloat1 25s ease-in-out infinite;
+}
+
+.aurora-2 {
+  width: 700px;
+  height: 700px;
+  bottom: -20%;
+  right: -10%;
+  background: radial-gradient(circle, rgba(139, 92, 246, 0.45) 0%, transparent 55%);
+  animation: auroraFloat2 30s ease-in-out infinite 5s;
+}
+
+.aurora-3 {
+  width: 600px;
+  height: 600px;
+  top: 35%;
+  right: 25%;
+  background: radial-gradient(circle, rgba(14, 165, 233, 0.4) 0%, transparent 50%);
+  animation: auroraFloat3 22s ease-in-out infinite 10s;
+}
+
+/* Floating Orbs */
+.floating-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+  pointer-events: none;
+}
+
+.orb-1 {
+  width: 400px;
+  height: 400px;
+  top: 10%;
+  left: 60%;
+  background: rgba(251, 146, 60, 0.2);
+  animation: orbFloat1 20s ease-in-out infinite;
+}
+
+.orb-2 {
+  width: 350px;
+  height: 350px;
+  bottom: 20%;
+  left: 10%;
+  background: rgba(236, 72, 153, 0.15);
+  animation: orbFloat2 25s ease-in-out infinite 3s;
+}
+
+.orb-3 {
+  width: 300px;
+  height: 300px;
+  top: 50%;
+  left: 40%;
+  background: rgba(34, 211, 238, 0.12);
+  animation: orbFloat3 18s ease-in-out infinite 7s;
+}
+
+.orb-4 {
+  width: 250px;
+  height: 250px;
+  top: 70%;
+  right: 20%;
+  background: rgba(168, 85, 247, 0.18);
+  animation: orbFloat4 22s ease-in-out infinite 12s;
+}
+
+/* ============================================ */
+/* PARTICLE SYSTEM                             */
+/* ============================================ */
+
+.particle-layer {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.particle {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.star {
+  background: white;
+  box-shadow: 0 0 4px rgba(255, 255, 255, 0.6);
+  animation: starTwinkle 3s ease-in-out infinite;
+}
+
+.bright-star {
+  width: 4px;
+  height: 4px;
+  background: radial-gradient(circle, #ffffff 0%, #93c5fd 50%, transparent 100%);
+  box-shadow: 0 0 10px rgba(147, 197, 253, 0.8), 0 0 20px rgba(147, 197, 253, 0.4);
+  animation: brightStarPulse 4s ease-in-out infinite;
+}
+
+.dust {
+  width: 2px;
+  height: 2px;
+  background: rgba(148, 163, 184, 0.4);
+  animation: dustFloat 15s linear infinite;
+}
+
+/* ============================================ */
+/* SHOOTING STARS                              */
+/* ============================================ */
+
+.shooting-stars-layer {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.shooting-star {
+  position: absolute;
+  height: 2px;
+  background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.9), #fff);
+  border-radius: 2px;
+  filter: blur(0.5px);
+}
+
+.star-1 {
+  top: 12%;
+  left: -10%;
+  width: 180px;
+  transform: rotate(-25deg);
+  animation: shootingStarAnim 7s linear infinite;
+  box-shadow: 0 0 12px 3px rgba(255, 255, 255, 0.5);
+}
+
+.star-2 {
+  top: 28%;
+  left: -12%;
+  width: 140px;
+  height: 1.5px;
+  transform: rotate(-32deg);
+  background: linear-gradient(to right, transparent, rgba(147, 197, 253, 0.8), #93c5fd);
+  animation: shootingStarAnim 11s linear infinite 4s;
+  box-shadow: 0 0 10px 2px rgba(147, 197, 253, 0.4);
+}
+
+.star-3 {
+  top: 55%;
+  left: -8%;
+  width: 120px;
+  transform: rotate(-20deg);
+  background: linear-gradient(to right, transparent, rgba(251, 191, 36, 0.7), #fbbf24);
+  animation: shootingStarAnim 9s linear infinite 7s;
+  box-shadow: 0 0 8px 2px rgba(251, 191, 36, 0.4);
+}
+
+/* ============================================ */
+/* FLOATING WEATHER ICONS                      */
+/* ============================================ */
+
+.floating-icons-layer {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  opacity: 0.15;
+}
+
+.floating-icon {
+  position: absolute;
+  color: rgba(148, 163, 184, 0.6);
+  filter: blur(0.5px);
+}
+
+.icon-sun {
+  top: 8%;
+  left: 15%;
+  animation: floatIcon1 12s ease-in-out infinite;
+  color: rgba(251, 191, 36, 0.5);
+}
+
+.icon-cloud {
+  top: 65%;
+  left: 8%;
+  animation: floatIcon2 15s ease-in-out infinite 2s;
+  color: rgba(148, 163, 184, 0.4);
+}
+
+.icon-rain {
+  top: 18%;
+  right: 12%;
+  animation: floatIcon3 13s ease-in-out infinite 4s;
+  color: rgba(96, 165, 250, 0.45);
+}
+
+.icon-bolt {
+  bottom: 25%;
+  right: 18%;
+  animation: floatIcon4 10s ease-in-out infinite 1s;
+  color: rgba(251, 146, 60, 0.5);
+}
+
+.icon-snowflake {
+  bottom: 12%;
+  left: 25%;
+  animation: floatIcon5 14s ease-in-out infinite 6s;
+  color: rgba(186, 230, 253, 0.4);
+}
+
+.icon-wind {
+  top: 42%;
+  right: 6%;
+  animation: floatIcon6 11s ease-in-out infinite 3s;
+  color: rgba(134, 239, 172, 0.4);
+}
+
+/* ============================================ */
+/* CENTRAL GLOW                                */
+/* ============================================ */
+
+.central-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 700px;
+  height: 700px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(59, 130, 246, 0.18) 0%, rgba(139, 92, 246, 0.1) 40%, transparent 70%);
+  filter: blur(60px);
+  animation: centralGlowPulse 8s ease-in-out infinite;
+  transition: all 1s ease;
+  pointer-events: none;
+}
+
+.central-glow.glow-exit {
+  transform: translate(-50%, -50%) scale(1.5);
+  opacity: 0;
+}
+
+/* ============================================ */
+/* MAIN CONTENT                                */
+/* ============================================ */
+
+.main-content {
+  position: relative;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  min-height: 100vh;
+  transition: all 1s cubic-bezier(0.4, 0, 0.2, 1);
+  opacity: 0;
+  transform: translateY(30px);
+}
+
+.main-content.content-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.main-content.content-exit {
+  transform: scale(1.08) translateY(-20px);
+  opacity: 0;
+}
+
+/* ============================================ */
+/* LOGO SECTION                                */
+/* ============================================ */
+
+.logo-section {
+  margin-bottom: 2rem;
+}
+
+.logo-container {
+  position: relative;
+  width: 140px;
+  height: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logo-ring {
+  position: absolute;
+  inset: -12px;
+  border-radius: 32px;
+  background: conic-gradient(from 0deg, transparent, rgba(59, 130, 246, 0.6), transparent, rgba(139, 92, 246, 0.6), transparent);
+  animation: ringRotate 6s linear infinite;
+  filter: blur(15px);
+  opacity: 0.7;
+}
+
+.logo-aura {
+  position: absolute;
+  inset: -20px;
+  border-radius: 40px;
+  background: radial-gradient(circle, rgba(251, 146, 60, 0.35) 0%, transparent 70%);
+  animation: auraPulse 4s ease-in-out infinite;
+  filter: blur(25px);
+}
+
+.logo-outer-glow {
+  position: absolute;
+  inset: -8px;
+  border-radius: 28px;
+  background: linear-gradient(135deg, rgba(251, 146, 60, 0.4) 0%, rgba(239, 68, 68, 0.3) 50%, rgba(168, 85, 247, 0.35) 100%);
+  filter: blur(20px);
+  animation: outerGlowPulse 5s ease-in-out infinite;
+}
+
+.logo-card {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, 
+    rgba(251, 146, 60, 0.95) 0%, 
+    rgba(245, 158, 11, 0.92) 25%,
+    rgba(239, 68, 68, 0.88) 50%,
+    rgba(168, 85, 247, 0.9) 75%,
+    rgba(139, 92, 246, 0.88) 100%
+  );
+  box-shadow: 
+    0 0 50px rgba(251, 146, 60, 0.4),
+    0 0 100px rgba(239, 68, 68, 0.2),
+    0 25px 50px -12px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  transition: transform 0.5s ease, box-shadow 0.5s ease;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.logo-card:hover {
+  transform: scale(1.05) rotate(2deg);
+  box-shadow: 
+    0 0 60px rgba(251, 146, 60, 0.6),
+    0 0 120px rgba(239, 68, 68, 0.3),
+    0 30px 60px -12px rgba(0, 0, 0, 0.6);
+}
+
+.logo-inner {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logo-icon {
+  color: white;
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3));
+  animation: iconPulse 3s ease-in-out infinite;
+}
+
+.logo-shimmer {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.15) 45%,
+    rgba(255, 255, 255, 0.25) 50%,
+    rgba(255, 255, 255, 0.15) 55%,
+    transparent 100%
+  );
+  animation: shimmerMove 4s ease-in-out infinite;
+  border-radius: 28px;
+}
+
+.corner-accent {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.5);
+  filter: blur(4px);
+  z-index: 3;
+}
+
+.corner-accent.top-left {
+  top: 10px;
+  left: 10px;
+}
+
+.corner-accent.bottom-right {
+  bottom: 10px;
+  right: 10px;
+}
+
+/* ============================================ */
+/* TITLE SECTION                               */
+/* ============================================ */
+
+.title-section {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.main-title {
+  font-size: clamp(2.8rem, 8vw, 5.5rem);
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  flex-wrap: wrap;
+}
+
+.title-text {
+  color: white;
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+.title-highlight {
+  background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 40%, #c084fc 60%, #f472b6 80%, #fb923c 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 0 30px rgba(96, 165, 250, 0.5));
+  animation: gradientShift 5s ease-in-out infinite;
+  background-size: 200% 200%;
+}
+
+.subtitle {
+  font-size: clamp(1rem, 2.5vw, 1.35rem);
+  font-weight: 300;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: #94a3b8;
+  margin-bottom: 1rem;
+}
+
+.tagline-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.tagline-icon {
+  color: #3b82f6;
+  animation: tagIconPulse 2s ease-in-out infinite;
+}
+
+.tagline-text {
+  font-size: clamp(0.8rem, 1.5vw, 0.95rem);
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  color: #60a5fa;
+  opacity: 0.8;
+}
+
+/* ============================================ */
+/* PROGRESS SECTION                            */
+/* ============================================ */
+
+.progress-section {
+  width: 100%;
+  max-width: 520px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.progress-bar-wrapper {
+  position: relative;
+  padding: 4px 0;
+}
+
+.progress-bar-track {
+  position: relative;
+  height: 18px;
+  background: rgba(15, 23, 42, 0.7);
+  border-radius: 9999px;
+  overflow: visible;
+  border: 1px solid rgba(148, 163, 184, 0.15);
+  box-shadow: 
+    inset 0 2px 8px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(8px);
+}
+
+.progress-bar-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  border-radius: 9999px;
+  background: linear-gradient(90deg, 
+    #22c55e 0%, 
+    #06b6d4 25%, 
+    #3b82f6 50%, 
+    #8b5cf6 75%, 
+    #a855f7 100%
+  );
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 
+    0 0 25px rgba(34, 197, 94, 0.5),
+    0 0 50px rgba(6, 182, 212, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  overflow: hidden;
+}
+
+.progress-glow {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, 
+    transparent 0%,
+    rgba(255, 255, 255, 0.2) 50%,
+    transparent 100%
+  );
+  animation: progressGlowMove 3s ease-in-out infinite;
+}
+
+.progress-shimmer-effect {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.4) 50%,
+    transparent 100%
+  );
+  animation: shimmerSlide 2.5s ease-in-out infinite;
+}
+
+.progress-tip {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: white;
+  transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 
+    0 0 20px 5px rgba(255, 255, 255, 0.9),
+    0 0 40px 10px rgba(255, 255, 255, 0.4);
+  z-index: 10;
+}
+
+.tip-pulse {
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  background: white;
+  animation: tipPulseAnim 1.5s ease-in-out infinite;
+}
+
+/* Status Row */
+.status-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 0.5rem;
+}
+
+.status-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.status-spinner {
+  color: #06b6d4;
+  animation: spin 1s linear infinite;
+  filter: drop-shadow(0 0 8px rgba(6, 182, 212, 0.8));
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.status-text {
+  font-size: 1rem;
+  font-weight: 600;
+  color: white;
+  letter-spacing: 0.02em;
+}
+
+.success-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  color: white;
+  box-shadow: 0 0 20px rgba(34, 197, 94, 0.6);
+  animation: successBadgePop 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.success-text-animate {
+  color: #4ade80 !important;
+  text-shadow: 0 0 15px rgba(74, 222, 128, 0.7);
+  animation: successTextFadeIn 0.5s ease-out;
+}
+
+.percentage-display {
+  display: flex;
+  align-items: baseline;
+  gap: 2px;
+  font-family: 'SF Mono', 'Fira Code', monospace;
+}
+
+.percentage-number {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #06b6d4;
+  text-shadow: 0 0 15px rgba(6, 182, 212, 0.7);
+  transition: all 0.4s ease;
+}
+
+.percentage-number.percentage-complete {
+  color: #4ade80;
+  text-shadow: 0 0 15px rgba(74, 222, 128, 0.8);
+  transform: scale(1.1);
+}
+
+.percentage-symbol {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #06b6d4;
+}
+
+/* Phase Indicators */
+.phase-indicators {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  padding-top: 0.5rem;
+}
+
+.phase-dot {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(30, 41, 59, 0.8);
+  border: 2px solid rgba(71, 85, 105, 0.4);
+  color: #64748b;
+  transition: all 0.5s ease;
+}
+
+.phase-dot.phase-active {
+  background: rgba(59, 130, 246, 0.2);
+  border-color: rgba(59, 130, 246, 0.6);
+  color: #3b82f6;
+  box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
+}
+
+.phase-dot.phase-done {
+  background: rgba(34, 197, 94, 0.2);
+  border-color: rgba(34, 197, 94, 0.6);
+  color: #22c55e;
+  box-shadow: 0 0 15px rgba(34, 197, 94, 0.4);
+}
+
+.phase-line {
+  width: 50px;
+  height: 2px;
+  background: rgba(71, 85, 105, 0.3);
+  transition: all 0.5s ease;
+}
+
+.phase-line.line-active {
+  background: linear-gradient(90deg, #3b82f6, #22c55e);
+  box-shadow: 0 0 8px rgba(59, 130, 246, 0.4);
+}
+
+/* ============================================ */
+/* FEATURES SECTION                            */
+/* ============================================ */
+
+.features-section {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
+  width: 100%;
+  max-width: 520px;
+  margin-top: 2.5rem;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+}
+
+.features-section.features-visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.feature-card {
+  background: rgba(15, 23, 42, 0.5);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(148, 163, 184, 0.1);
+  border-radius: 1.25rem;
+  padding: 1.5rem 1rem;
+  text-align: center;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: default;
+  animation: featureReveal 0.6s ease-out both;
+}
+
+.feature-card:nth-child(1) { animation-delay: 0.1s; }
+.feature-card:nth-child(2) { animation-delay: 0.25s; }
+.feature-card:nth-child(3) { animation-delay: 0.4s; }
+
+.feature-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  border-color: rgba(148, 163, 184, 0.25);
+  background: rgba(15, 23, 42, 0.7);
+  box-shadow: 
+    0 20px 40px -15px rgba(0, 0, 0, 0.5),
+    0 0 30px -10px rgba(59, 130, 246, 0.15);
+}
+
+.feature-icon-wrapper {
+  width: 56px;
+  height: 56px;
+  border-radius: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem;
+  transition: transform 0.4s ease;
+}
+
+.feature-card:hover .feature-icon-wrapper {
+  transform: scale(1.1) rotate(5deg);
+}
+
+.feature-blue {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.25), rgba(96, 165, 250, 0.15));
+  color: #60a5fa;
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.2);
+}
+
+.feature-orange {
+  background: linear-gradient(135deg, rgba(251, 146, 60, 0.25), rgba(251, 191, 36, 0.15));
+  color: #fb923c;
+  box-shadow: 0 0 20px rgba(251, 146, 60, 0.2);
+}
+
+.feature-purple {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.25), rgba(168, 85, 247, 0.15));
+  color: #a78bfa;
+  box-shadow: 0 0 20px rgba(139, 92, 246, 0.2);
+}
+
+.feature-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 0.375rem;
+}
+
+.feature-desc {
+  font-size: 0.8rem;
+  color: #64748b;
+  font-weight: 400;
+}
+
+/* Bottom Hint */
+.bottom-hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 2rem;
+  color: #64748b;
+  font-size: 0.875rem;
+  font-weight: 500;
+  animation: hintPulse 2s ease-in-out infinite;
+}
+
+.hint-arrow {
+  animation: arrowBounce 1.5s ease-in-out infinite;
+}
+
+/* ============================================ */
+/* OVERLAYS                                    */
+/* ============================================ */
+
+.vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse at center, transparent 25%, rgba(0, 0, 0, 0.8) 100%);
+}
+
+.noise-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.025;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+}
+
+.scanlines {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.02;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(255, 255, 255, 0.03) 2px,
+    rgba(255, 255, 255, 0.03) 4px
+  );
+}
+
+/* ============================================ */
+/* KEYFRAME ANIMATIONS                         */
+/* ============================================ */
+
+/* Aurora animations */
+@keyframes auroraFloat1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(60px, -40px) scale(1.1); }
+  66% { transform: translate(-40px, 50px) scale(0.95); }
+}
+
+@keyframes auroraFloat2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-70px, -60px) scale(1.15); }
+}
+
+@keyframes auroraFloat3 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(50px, -45px) scale(1.08); }
+}
+
+/* Orb animations */
+@keyframes orbFloat1 {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(80px, -60px); }
+}
+
+@keyframes orbFloat2 {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(-60px, 50px); }
+}
+
+@keyframes orbFloat3 {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(50px, -40px); }
+}
+
+@keyframes orbFloat4 {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(-40px, 30px); }
+}
+
+/* Star animations */
+@keyframes starTwinkle {
+  0%, 100% { opacity: 0.2; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.4); }
+}
+
+@keyframes brightStarPulse {
+  0%, 100% { 
+    opacity: 0.4; 
+    transform: scale(1);
+    filter: brightness(1);
+  }
+  50% { 
+    opacity: 1; 
+    transform: scale(1.6);
+    filter: brightness(1.5);
+  }
+}
+
+@keyframes dustFloat {
+  0% { transform: translateY(0) translateX(0); opacity: 0; }
+  10% { opacity: 0.4; }
+  90% { opacity: 0.4; }
+  100% { transform: translateY(-100vh) translateX(50px); opacity: 0; }
+}
+
+/* Shooting star */
+@keyframes shootingStarAnim {
+  0% { 
+    transform: translateX(0) translateY(0);
+    opacity: 0;
+  }
+  5% { opacity: 1; }
+  30% { 
+    transform: translateX(1000px) translateY(500px);
+    opacity: 0;
+  }
+  100% { 
+    transform: translateX(1000px) translateY(500px);
+    opacity: 0;
+  }
+}
+
+/* Floating icons */
+@keyframes floatIcon1 {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  50% { transform: translate(30px, -40px) rotate(15deg); }
+}
+
+@keyframes floatIcon2 {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  50% { transform: translate(-40px, 30px) rotate(-10deg); }
+}
+
+@keyframes floatIcon3 {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  50% { transform: translate(25px, 35px) rotate(10deg); }
+}
+
+@keyframes floatIcon4 {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  50% { transform: translate(-30px, -25px) rotate(-15deg); }
+}
+
+@keyframes floatIcon5 {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  50% { transform: translate(35px, 20px) rotate(8deg); }
+}
+
+@keyframes floatIcon6 {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  50% { transform: translate(-25px, -35px) rotate(-12deg); }
+}
+
+/* Central glow */
+@keyframes centralGlowPulse {
+  0%, 100% { 
+    transform: translate(-50%, -50%) scale(1); 
+    opacity: 0.6; 
+  }
+  50% { 
+    transform: translate(-50%, -50%) scale(1.15); 
+    opacity: 0.9; 
+  }
+}
+
+/* Logo effects */
+@keyframes ringRotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes auraPulse {
+  0%, 100% { transform: scale(1); opacity: 0.3; }
+  50% { transform: scale(1.2); opacity: 0.6; }
+}
+
+@keyframes outerGlowPulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 0.8; }
+}
+
+@keyframes iconPulse {
+  0%, 100% { transform: scale(1); filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3)); }
+  50% { transform: scale(1.08); filter: drop-shadow(0 6px 20px rgba(0, 0, 0, 0.4)); }
+}
+
+@keyframes shimmerMove {
+  0% { transform: translateX(-150%) skewX(-15deg); }
+  100% { transform: translateX(250%) skewX(-15deg); }
+}
+
+/* Title gradient shift */
+@keyframes gradientShift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+@keyframes tagIconPulse {
+  0%, 100% { transform: scale(1); opacity: 0.8; }
+  50% { transform: scale(1.15); opacity: 1; }
+}
+
+/* Progress bar effects */
+@keyframes progressGlowMove {
+  0%, 100% { opacity: 0.3; transform: translateX(-100%); }
+  50% { opacity: 0.7; transform: translateX(100%); }
+}
+
+@keyframes shimmerSlide {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(200%); }
+}
+
+@keyframes tipPulseAnim {
+  0%, 100% { transform: scale(1); opacity: 0.6; }
+  50% { transform: scale(2); opacity: 0; }
+}
+
+/* Success animations */
+@keyframes successBadgePop {
+  0% { transform: scale(0) rotate(-180deg); }
+  100% { transform: scale(1) rotate(0deg); }
+}
+
+@keyframes successTextFadeIn {
+  0% { opacity: 0; transform: translateX(-10px); }
+  100% { opacity: 1; transform: translateX(0); }
+}
+
+/* Feature reveal */
+@keyframes featureReveal {
+  0% { 
+    opacity: 0; 
+    transform: translateY(25px) scale(0.9); 
+  }
+  100% { 
+    opacity: 1; 
+    transform: translateY(0) scale(1); 
+  }
+}
+
+/* Hint animations */
+@keyframes hintPulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+@keyframes arrowBounce {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(8px); }
+}
+ @keyframes auroraFlow1 {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); opacity: 0.4; }
+  33% { transform: translate(40px, 30px) rotate(3deg); opacity: 0.6; }
+  66% { transform: translate(-30px, -20px) rotate(-2deg); opacity: 0.5; }
+}
+
+@keyframes auroraFlow2 {
+  0%, 100% { transform: translate(0, 0); opacity: 0.35; }
+  50% { transform: translate(-50px, 40px); opacity: 0.55; }
+}
+
+@keyframes softOrbFloat1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(60px, -45px) scale(1.1); }
+}
+
+@keyframes softOrbFloat2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-50px, 35px) scale(1.08); }
+}
+
+@keyframes dustDrift {
+  0% { transform: translateY(0) translateX(0); opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { transform: translateY(-120vh) translateX(40px); opacity: 0; }
+}
+
+@keyframes ringRotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes auraPulse {
+  0%, 100% { transform: scale(1); opacity: 0.25; }
+  50% { transform: scale(1.2); opacity: 0.5; }
+}
+
+@keyframes iconBreath {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.06); }
+}
+
+@keyframes shimmerSweep {
+  0% { transform: translateX(-150%) skewX(-12deg); }
+  100% { transform: translateX(250%) skewX(-12deg); }
+}
+
+@keyframes gradientFlow {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+@keyframes iconGlow {
+  0%, 100% { opacity: 0.7; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.12); }
+}
+
+@keyframes progressShine {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(200%); }
+}
+
+@keyframes successPop {
+  0% { transform: scale(0) rotate(-180deg); }
+  100% { transform: scale(1) rotate(0deg); }
+}
+
+@keyframes featureSlideUp {
+  0% { opacity: 0; transform: translateY(20px) scale(0.95); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes hintFade {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+@keyframes arrowMove {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(7px); }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes mobileAurora {
+  0%, 100% { transform: translateX(0) translateY(0) rotate(0deg); }
+  33% { transform: translateX(30px) translateY(20px) rotate(2deg); }
+  66% { transform: translateX(-20px) translateY(-15px) rotate(-1deg); }
+}
+
+@keyframes mobileOrbFloat {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(-40px, 30px); }
+}
+ @keyframes softGlowPulse {
+  0%, 100% { transform: scale(1); opacity: 0.6; }
+  50% { transform: scale(1.08); opacity: 0.9; }
+}
+
+@keyframes gentleRayPulse {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
+}
+
+@keyframes subtleShimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+  @keyframes softGlowPulse {
+  0%, 100% { transform: scale(1); opacity: 0.6; }
+  50% { transform: scale(1.08); opacity: 0.9; }
+}
+
+@keyframes gentleRayPulse {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
+}
+
+@keyframes subtleShimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+  /* ============================================ */
+/* ✅ MOBILE ANIMATION KEYFRAMES               */
+/* ============================================ */
+
+@keyframes iconBreath {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.03); }
+}
+
+@keyframes sunRotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes cloudFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-2px); }
+}
+
+@keyframes softGlowPulse {
+  0%, 100% { transform: scale(1); opacity: 0.6; }
+  50% { transform: scale(1.05); opacity: 0.9; }
+}
+
+@keyframes shimmerSweep {
+  0% { transform: translateX(-150%) skewX(-12deg); }
+  100% { transform: translateX(250%) skewX(-12deg); }
+}
+
+@keyframes mobileAurora {
+  0%, 100% { transform: translate(0, 0); opacity: 0.4; }
+  33% { transform: translate(30px, 20px); opacity: 0.6; }
+  66% { transform: translate(-20px, -15px); opacity: 0.5; }
+}
+
+@keyframes mobileOrbFloat {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(-40px, 30px); }
+}
+
+@keyframes gradientMove {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInOut {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
+}
       `}</style>
     </div>
   )
-} 
+}
