@@ -3432,7 +3432,7 @@ function WeatherDashboardContent() {
       <div className="relative z-10 flex-1 flex flex-col overflow-hidden">
         {/* Header - ✅ FIXED: Single Row Layout for ALL Screen Sizes Including 412px-729px */}
         {/* Header - ✅ TRULY RESPONSIVE: Compact Mobile → Large Desktop */}
-        <header className="relative bg-black/50 backdrop-blur-2xl px-2 sm:px-4 md:px-6 lg:px-8 xl:px-8 py-2 md:py-3 lg:py-4 flex items-center justify-between flex-shrink-0 border-b border-white/10" style={{ minHeight: '52px' }}>
+        <header className="relative bg-black/50 backdrop-blur-2xl px-1.5 sm:px-3 md:px-6 lg:px-8 xl:px-8 py-1.5 sm:py-2 md:py-3 lg:py-4 flex items-center justify-between flex-shrink-0 border-b border-white/10 overflow-x-auto overflow-y-hidden scrollbar-hide" style={{ minHeight: '48px', maxHeight: '64px', WebkitOverflowScrolling: 'touch' }}>
 
           {/* Background Effects */}
           <div className="absolute inset-0 bg-gradient-to-r from-blue-900/20 via-purple-900/10 to-cyan-900/20 opacity-60 pointer-events-none" />
@@ -3440,109 +3440,110 @@ function WeatherDashboardContent() {
           <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent" />
 
           {/* Main Container */}
-          <div className="w-full relative z-10 flex flex-row items-center justify-between gap-1.5 sm:gap-2 md:gap-4 flex-nowrap">
+          <div className="w-full relative z-10 flex flex-row items-center justify-between gap-1 sm:gap-1.5 md:gap-4 flex-nowrap min-w-0">
 
             {/* ========================================== */}
-            {/* 🍔 HAMBURGER - Small on Mobile            */}
+            {/* 🍔 HAMBURGER - Compact on Small Mobile     */}
             {/* ========================================== */}
             {responsive.isMobile && (
               <button
                 onClick={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
                 className="flex-shrink-0 flex items-center justify-center rounded-lg bg-gradient-to-br from-blue-600/30 to-blue-800/40 border border-blue-400/40 backdrop-blur-md hover:from-blue-500/40 hover:to-blue-700/50 hover:border-blue-300/60 transition-all duration-300 shadow-lg hover:scale-105 active:scale-95"
-                style={{ width: '38px', height: '38px', minWidth: '38px', minHeight: '38px' }}
+                style={{ width: '34px', height: '34px', minWidth: '34px', minHeight: '34px' }}
                 aria-label="Toggle menu"
               >
-                <div className="flex flex-col gap-[3px] w-5 relative justify-center items-center">
-                  <span className={`h-[2px] bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full block transition-all duration-300 ease-in-out w-full ${isMobileSidebarOpen ? 'rotate-[45deg] translate-y-[5px] from-white to-gray-200' : ''}`} />
-                  <span className={`h-[2px] bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full block transition-all duration-300 ease-in-out w-full ${isMobileSidebarOpen ? 'opacity-0 scale-x-0' : ''}`} />
-                  <span className={`h-[2px] bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full block transition-all duration-300 ease-in-out w-full ${isMobileSidebarOpen ? '-rotate-[45deg] -translate-y-[5px] from-white to-gray-200' : ''}`} />
+                <div className="flex flex-col gap-[2.5px] w-4 relative justify-center items-center">
+                  <span className={`h-[1.5px] bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full block transition-all duration-300 ease-in-out w-full ${isMobileSidebarOpen ? 'rotate-[45deg] translate-y-[4px] from-white to-gray-200' : ''}`} />
+                  <span className={`h-[1.5px] bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full block transition-all duration-300 ease-in-out w-full ${isMobileSidebarOpen ? 'opacity-0 scale-x-0' : ''}`} />
+                  <span className={`h-[1.5px] bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full block transition-all duration-300 ease-in-out w-full ${isMobileSidebarOpen ? '-rotate-[45deg] -translate-y-[4px] from-white to-gray-200' : ''}`} />
                 </div>
               </button>
             )}
 
             {/* ========================================== */}
-            {/* 🔍 SEARCH BAR - Responsive Sizing         */}
+            {/* 🔍 SEARCH BAR - Ultra Compact for Mobile  */}
             {/* ========================================== */}
             <form
-              className="flex-1 relative group mx-1 sm:mx-2"
+              className="flex-1 relative group mx-0.5 sm:mx-1 md:mx-2 min-w-0"
               onSubmit={(e) => { e.preventDefault(); void refreshWeather() }}
-              style={{ maxWidth: '100%', minWidth: '100px' }}
+              style={{ maxWidth: '100%', minWidth: '60px' }}
             >
-              <div className="absolute left-2 sm:left-3 md:left-4 top-1/2 -translate-y-1/2 z-20">
-                <Search className="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5 text-gray-400 group-focus-within:text-blue-400 transition-colors" />
+              <div className="absolute left-1.5 sm:left-2 md:left-3 top-1/2 -translate-y-1/2 z-20">
+                <Search className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 lg:w-5 lg:h-5 text-gray-400 group-focus-within:text-blue-400 transition-colors" />
               </div>
 
               <input
                 type="text"
-                placeholder={responsive.isMobile ? "🔍 Search..." : "🔍 Search location..."}
+                placeholder={responsive.isMobile ? "🔍" : "🔍 Search location..."}
                 value={city}
                 onChange={(e) => changeCity(e.target.value)}
-                className="w-full pl-8 sm:pl-9 md:pl-11 pr-3 sm:pr-4 md:pr-6 py-1.5 sm:py-2 md:py-2.5 bg-white/[0.08] backdrop-blur-xl border border-white/15 rounded-lg sm:rounded-xl md:rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:bg-white/[0.12] focus:border-blue-400/40 transition-all text-xs sm:text-sm md:text-base lg:text-lg text-white placeholder-gray-400 font-medium shadow-inner"
-                style={{ minHeight: '36px', height: 'auto' }}
+                className="w-full pl-6 sm:pl-8 md:pl-10 lg:pl-11 pr-2 sm:pr-3 md:pr-4 lg:pr-6 py-1 sm:py-1.5 md:py-2 lg:py-2.5 bg-white/[0.08] backdrop-blur-xl border border-white/15 rounded-lg sm:rounded-xl md:rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:bg-white/[0.12] focus:border-blue-400/40 transition-all text-[11px] sm:text-xs md:text-base lg:text-lg text-white placeholder-gray-400 font-medium shadow-inner"
+                style={{ minHeight: '32px', height: 'auto' }}
               />
             </form>
 
             {/* ========================================== */}
-            {/* 🔘 BUTTONS - Scale Up with Screen Size     */}
+            {/* 🔘 BUTTONS - Super Compact for 350-729px    */}
             {/* ========================================== */}
-            <div className="flex items-center gap-1 sm:gap-1.5 md:gap-2.5 lg:gap-3 justify-end flex-shrink-0">
+            <div className="flex items-center gap-0.5 sm:gap-1 md:gap-2.5 lg:gap-3 justify-end flex-shrink-0">
 
-              {/* 📍 LIVE LOCATION - Responsive Text */}
+              {/* 📍 LIVE LOCATION - Icon Only on Tiny Screens */}
               <button
                 onClick={fetchByGeolocation}
-                className="flex items-center gap-1 sm:gap-1.5 md:gap-2 px-2 sm:px-2.5 md:px-4 lg:px-5 py-1.5 sm:py-2 md:py-2.5 bg-gradient-to-r from-blue-500/90 to-cyan-500/80 hover:from-blue-500 hover:to-cyan-400 text-white rounded-lg sm:rounded-lg md:rounded-xl font-semibold text-[10px] sm:text-xs md:text-sm lg:text-base border border-blue-400/30 shadow-md hover:shadow-blue-500/30 active:scale-95 transition-all relative overflow-hidden group backdrop-blur-sm whitespace-nowrap"
-                style={{ minHeight: '36px', height: 'auto' }}
+                className="flex items-center gap-0.5 sm:gap-1 md:gap-2 px-1.5 sm:px-2 md:px-4 lg:px-5 py-1 sm:py-1.5 md:py-2.5 bg-gradient-to-r from-blue-500/90 to-cyan-500/80 hover:from-blue-500 hover:to-cyan-400 text-white rounded-lg sm:rounded-lg md:rounded-xl font-semibold text-[9px] sm:text-xs md:text-sm lg:text-base border border-blue-400/30 shadow-md hover:shadow-blue-500/30 active:scale-95 transition-all relative overflow-hidden group backdrop-blur-sm whitespace-nowrap"
+                style={{ minHeight: '32px', height: 'auto' }}
+                title="Get Live Location"
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
-                <MapPin className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 lg:w-5 lg:h-5 relative z-10 group-hover:animate-pulse flex-shrink-0" />
-                <span className="relative z-10 font-bold hidden sm:inline">Live Location</span>
-                <span className="relative z-10 sm:hidden">Live Location</span>
+                <MapPin className="w-2.5 h-2.5 sm:w-3 sm:h-3 md:w-4 md:h-4 lg:w-5 lg:h-5 relative z-10 group-hover:animate-pulse flex-shrink-0" />
+                <span className="relative z-10 font-bold hidden xs:inline sm:inline">Live Location</span>
+                <span className="relative z-10 xs:hidden sm:hidden" title="Live Location">Live Location</span>
               </button>
 
-              {/* 🌡️ TEMPERATURE TOGGLE - Compact */}
+              {/* 🌡️ TEMPERATURE TOGGLE - Ultra Compact */}
               <div
-                className="flex items-center bg-white/[0.12] backdrop-blur-xl rounded-lg sm:rounded-lg md:rounded-xl p-[2px] sm:p-[3px] md:p-1 border border-white/15 shadow-inner flex-shrink-0"
-                style={{ minHeight: '36px', height: 'auto' }}
+                className="flex items-center bg-white/[0.12] backdrop-blur-xl rounded-lg sm:rounded-lg md:rounded-xl p-[1.5px] sm:p-[2px] md:p-1 border border-white/15 shadow-inner flex-shrink-0"
+                style={{ minHeight: '32px', height: 'auto' }}
               >
                 <button
                   onClick={() => setUnit('C')}
-                  className={`px-1.5 sm:px-2 md:px-3 lg:px-3.5 py-1 sm:py-1 md:py-1.5 rounded-md font-bold text-[10px] sm:text-xs md:text-sm lg:text-base transition-all ${unit === 'C' ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg shadow-blue-500/40 scale-105' : 'text-gray-300 hover:text-white hover:bg-white/10'}`}
-                  style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '30px' }}
+                  className={`px-1 sm:px-1.5 md:px-3 lg:px-3.5 py-0.5 sm:py-1 md:py-1.5 rounded-md font-bold text-[9px] sm:text-xs md:text-sm lg:text-base transition-all ${unit === 'C' ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg shadow-blue-500/40 scale-105' : 'text-gray-300 hover:text-white hover:bg-white/10'}`}
+                  style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '28px' }}
                 >
                   °C
                 </button>
 
                 <button
                   onClick={() => setUnit('F')}
-                  className={`px-1.5 sm:px-2 md:px-3 lg:px-3.5 py-1 sm:py-1 md:py-1.5 rounded-md font-bold text-[10px] sm:text-xs md:text-sm lg:text-base transition-all ${unit === 'F' ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg shadow-blue-500/40 scale-105' : 'text-gray-300 hover:text-white hover:bg-white/10'}`}
-                  style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '30px' }}
+                  className={`px-1 sm:px-1.5 md:px-3 lg:px-3.5 py-0.5 sm:py-1 md:py-1.5 rounded-md font-bold text-[9px] sm:text-xs md:text-sm lg:text-base transition-all ${unit === 'F' ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg shadow-blue-500/40 scale-105' : 'text-gray-300 hover:text-white hover:bg-white/10'}`}
+                  style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '28px' }}
                 >
                   °F
                 </button>
               </div>
 
-              {/* Divider (Hidden on small screens) */}
-              <div className="hidden lg:block w-[1px] h-7 bg-gradient-to-b from-transparent via-white/20 to-transparent" />
+              {/* Divider (Hidden on mobile & tablet) */}
+              <div className="hidden xl:block w-[1px] h-6 bg-gradient-to-b from-transparent via-white/20 to-transparent" />
 
-              {/* 🟢 LIVE BUTTON - Scales Up */}
-              {/* 🟢 LIVE BUTTON - Links to weather.gov */}
+              {/* 🟢 LIVE BUTTON - Hidden on Very Small Screens (<475px) */}
               <a
                 href="https://www.weather.gov/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="green-next-btn group relative inline-flex items-center gap-1 sm:gap-1.5 md:gap-2 px-2 sm:px-3 md:px-5 lg:px-6 py-1.5 sm:py-2 md:py-2.5 overflow-hidden rounded-lg sm:rounded-lg md:rounded-xl font-bold text-[10px] sm:text-xs md:text-sm lg:text-base text-white transform hover:scale-105 hover:-translate-y-0.5 active:scale-95 cursor-pointer flex-shrink-0 whitespace-nowrap no-underline"
-                style={{ minHeight: '36px', height: 'auto' }}
+                className="green-next-btn group relative inline-flex items-center gap-0.5 sm:gap-1 md:gap-2 px-1.5 sm:px-2 md:px-5 lg:px-6 py-1 sm:py-1.5 md:py-2.5 overflow-hidden rounded-lg sm:rounded-lg md:rounded-xl font-bold text-[9px] sm:text-xs md:text-sm lg:text-base text-white transform hover:scale-105 hover:-translate-y-0.5 active:scale-95 cursor-pointer flex-shrink-0 whitespace-nowrap no-underline hidden xs:flex sm:flex"
+                style={{ minHeight: '32px', height: 'auto' }}
+                title="View Live Weather Data"
               >
                 <div className="green-btn-shimmer absolute inset-0 opacity-30"></div>
                 <div className="green-btn-glow absolute -inset-[2px] rounded-lg md:rounded-xl"></div>
 
-                <span className="relative flex h-2 w-2 sm:h-2.5 sm:w-2.5 md:h-3 md:w-3 lg:h-3.5 lg:w-3.5">
+                <span className="relative flex h-1.5 w-1.5 sm:h-2 sm:w-2 md:h-3 md:w-3 lg:h-3.5 lg:w-3.5">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75" style={{ animationDuration: '1.5s' }}></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 sm:h-2.5 sm:w-2.5 md:h-3 md:w-3 lg:h-3.5 lg:w-3.5 bg-white shadow-lg shadow-green-300/50"></span>
+                  <span className="relative inline-flex rounded-full h-1.5 w-1.5 sm:h-2 sm:w-2 md:h-3 md:w-3 lg:h-3.5 lg:w-3.5 bg-white shadow-lg shadow-green-300/50"></span>
                 </span>
 
-                <span className="relative z-10 font-bold tracking-wide drop-shadow-md hidden xs:inline sm:inline">Live</span>
-                <span className="relative z-10 xs:hidden sm:hidden">Live </span>
+                <span className="relative z-10 font-bold tracking-wide drop-shadow-md hidden sm:inline">Live</span>
+                <span className="relative z-10 sm:hidden">Live</span>
 
                 <div className="green-btn-sparkle absolute top-0 left-[-100%] h-full w-[50%] bg-gradient-to-r from-transparent via-white/20 to-transparent skew-x-12"></div>
               </a>
