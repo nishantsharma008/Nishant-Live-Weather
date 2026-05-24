@@ -1690,7 +1690,7 @@ const WorldWeatherMap = memo<WorldWeatherMapProps>(({ weatherData, unit }) => {
 WorldWeatherMap.displayName = 'WorldWeatherMap'
 
 // ==================== MAIN DASHBOARD COMPONENT ====================
-function WeatherDashboardContent() { 
+export default function WeatherDashboard() {
   // ============================================
   // 🎬 WELCOME PAGE INTEGRATION
   // ============================================
@@ -6212,18 +6212,6 @@ function WeatherDashboardContent() {
   0%, 100% { opacity: 0.7; }
   50% { opacity: 1; }
 }
-  export default function WeatherDashboard() {
-  return (
-    <Suspense fallback={
-      <div className="flex items-center justify-center h-screen bg-black">
-        <Loader2 className="w-12 h-12 text-blue-500 animate-spin" />
-      </div>
-    }>
-      <WeatherDashboardContent />
-    </Suspense>
-  )
-}
       `}</style>
     </div>
-  )
-}
+  ); }
