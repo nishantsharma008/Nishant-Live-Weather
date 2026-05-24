@@ -915,9 +915,11 @@ export default function PollenCountPage() {
                 { type: 'Tree', Icon: TreePine, color: '#10b981', colorLight: '#34d399', colorDark: '#059669' },
                 { type: 'Weed', Icon: Wind, color: '#eab308', colorLight: '#facc15', colorDark: '#ca8a04' }
               ].map(({ type, Icon, color, colorLight, colorDark }) => {
-                const pollenValue = pollenData.pollen[`${type.toLowerCase()}_pollen`];
-                const maxVal = type === 'Weed' ? 80 : 100;
-                const percentage = Math.min((pollenValue / maxVal) * 100, 100);
+  // ✅ Get value with explicit number type - NO RED LINES!
+  const pollenValue: number = Number(pollenData.pollen[`${type.toLowerCase()}_pollen` as keyof typeof pollenData.pollen] ?? 0);
+  
+  const maxVal: number = type === 'Weed' ? 80 : 100;
+  const percentage: number = Math.min((pollenValue / maxVal) * 100, 100);
 
                 return (
                   <div key={type} className="relative group">
