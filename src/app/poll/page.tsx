@@ -915,11 +915,11 @@ export default function PollenCountPage() {
                 { type: 'Tree', Icon: TreePine, color: '#10b981', colorLight: '#34d399', colorDark: '#059669' },
                 { type: 'Weed', Icon: Wind, color: '#eab308', colorLight: '#facc15', colorDark: '#ca8a04' }
               ].map(({ type, Icon, color, colorLight, colorDark }) => {
-  // ✅ Get value with explicit number type - NO RED LINES!
-  const pollenValue: number = Number(pollenData.pollen[`${type.toLowerCase()}_pollen` as keyof typeof pollenData.pollen] ?? 0);
-  
-  const maxVal: number = type === 'Weed' ? 80 : 100;
-  const percentage: number = Math.min((pollenValue / maxVal) * 100, 100);
+                // ✅ Get value with explicit number type - NO RED LINES!
+                const pollenValue: number = Number(pollenData.pollen[`${type.toLowerCase()}_pollen` as keyof typeof pollenData.pollen] ?? 0);
+
+                const maxVal: number = type === 'Weed' ? 80 : 100;
+                const percentage: number = Math.min((pollenValue / maxVal) * 100, 100);
 
                 return (
                   <div key={type} className="relative group">
@@ -934,7 +934,7 @@ export default function PollenCountPage() {
                     {/* Main Card */}
                     <div
                       className="relative bg-white/[0.06] backdrop-blur-2xl rounded-2xl sm:rounded-3xl p-5 sm:p-6 lg:p-7 border border-blue-500/20 hover:border-opacity-60 transition-all duration-300 shadow-xl shadow-blue-900/20 active:scale-[0.98]"
-                      style={{ '--hover-border': colorLight }}
+                      style={{ '--hover-border': colorLight } as React.CSSProperties}
                       onMouseEnter={(e) => {
                         e.currentTarget.style.borderColor = `${colorLight}99`;
                       }}
