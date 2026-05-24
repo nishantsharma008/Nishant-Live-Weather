@@ -3276,7 +3276,7 @@ export default function WeatherDashboard() {
           </div>
 
           {/* Navigation */}
-          <nav className="flex-1 px-2 md:px-3 space-y-0.5 md:space-y-1 mt-2 md:mt-4 overflow-y-auto scrollbar-thin relative z-10 min-h-0">
+                    <nav className="flex-1 px-2 md:px-3 space-y-0.5 md:space-y-1 mt-2 md:mt-4 overflow-y-auto scrollbar-thin relative z-10 min-h-0">
             {[
               { icon: Home, label: 'Home', active: true },
               { icon: Map, label: 'Live Map' },
@@ -3291,7 +3291,7 @@ export default function WeatherDashboard() {
               },
               {
                 icon: Video,
-                label: 'News & Videos',
+                label: ' News & Videos',
                 isLink: true,
                 href: 'https://weather.com/en-IN/weather/today/l/INXX0096:1:IN?Goto=Redirected'
               },
@@ -3333,7 +3333,7 @@ export default function WeatherDashboard() {
                         }
                       }, responsive.isMobile ? 300 : 0)
                     }
-                    // ✅ AIR QUALITY BUTTON - NEW!
+                    // ✅ AIR QUALITY BUTTON
                     else if (item.label === 'Air Quality') {
                       setTimeout(() => {
                         const airQualityElement = document.getElementById('air-quality-section')
@@ -3357,7 +3357,7 @@ export default function WeatherDashboard() {
                         }
                       }, responsive.isMobile ? 300 : 0)
                     }
-                    // ✅ FORECAST BUTTON - NEW!
+                    // ✅ FORECAST BUTTON
                     else if (item.label === 'Forecast') {
                       setTimeout(() => {
                         const forecastElement = document.getElementById('forecast-section')
@@ -3369,7 +3369,7 @@ export default function WeatherDashboard() {
                         }
                       }, responsive.isMobile ? 300 : 0)
                     }
-                    // ✅ FAVORITES/HIGHLIGHTS BUTTON - NEW!
+                    // ✅ FAVORITES/HIGHLIGHTS BUTTON
                     else if (item.label === 'Favorites') {
                       setTimeout(() => {
                         const highlightsElement = document.getElementById('highlights-section')
@@ -3390,7 +3390,6 @@ export default function WeatherDashboard() {
                 >
                   <item.icon className={`w-4 h-4 md:w-5 md:h-5 transition-transform group-hover:scale-110 flex-shrink-0 ${item.active ? 'text-white' : ''}`} />
                   <span className="font-medium text-sm md:text-base truncate">{item.label}</span>
-                  {item.badge && (<span className="ml-auto bg-red-500/80 text-white text-[10px] md:text-xs font-bold px-1.5 md:px-2 py-0.5 rounded-full backdrop-blur-sm animate-pulse border border-red-400/30 flex-shrink-0">{item.badge}</span>)}
                 </button>
               )
             })}
