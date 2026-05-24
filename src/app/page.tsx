@@ -3276,124 +3276,107 @@ export default function WeatherDashboard() {
           </div>
 
           {/* Navigation */}
-                    <nav className="flex-1 px-2 md:px-3 space-y-0.5 md:space-y-1 mt-2 md:mt-4 overflow-y-auto scrollbar-thin relative z-10 min-h-0">
-            {[
-              { icon: Home, label: 'Home', active: true },
-              { icon: Map, label: 'Live Map' },
-              { icon: Calendar, label: 'Forecast' },
-              { icon: Bell, label: 'Alerts' },
-              { icon: Wind, label: 'Air Quality' },
-              {
-                icon: Flower2,
-                label: 'Pollen Count',
-                isLink: true,
-                href: `/poll?city=${encodeURIComponent(location?.city || '')}&lat=${location?.lat || ''}&lon=${location?.lon || ''}`
-              },
-              {
-                icon: Video,
-                label: ' News & Videos',
-                isLink: true,
-                href: 'https://weather.com/en-IN/weather/today/l/INXX0096:1:IN?Goto=Redirected'
-              },
-              { icon: Heart, label: 'Favorites' }
-            ].map((item) => {
-              if (item.isLink) {
-                return (
-                  <a
-                    key={item.label}
-                    href={item.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-full flex items-center gap-2 md:gap-3 px-3 md:px-4 py-2.5 md:py-3 rounded-xl transition-all duration-200 group text-gray-300 hover:bg-white/[0.08] hover:text-white hover:backdrop-blur-sm hover:translate-x-1 border border-transparent hover:border-white/10 hover:bg-gradient-to-r hover:from-blue-500/10 hover:to-cyan-500/10"
-                    onClick={() => responsive.isMobile && setIsMobileSidebarOpen(false)}
-                  >
-                    <item.icon className="w-4 h-4 md:w-5 md:h-5 transition-transform group-hover:scale-110 flex-shrink-0" />
-                    <span className="font-medium text-sm md:text-base truncate">{item.label}</span>
-                  </a>
-                )
+          {/* Navigation */}
+<nav className="flex-1 px-2 md:px-3 space-y-0.5 md:space-y-1 mt-2 md:mt-4 overflow-y-auto scrollbar-thin relative z-10 min-h-0">
+  {[
+    { icon: Home, label: 'Home', active: true },
+    { icon: Map, label: 'Live Map' },
+    { icon: Calendar, label: 'Forecast' },
+    { icon: Wind, label: 'Air Quality' },
+    {
+      icon: Flower2,
+      label: 'Pollen Count',
+      isLink: true,
+      href: `/poll?city=${encodeURIComponent(location?.city || '')}&lat=${location?.lat || ''}&lon=${location?.lon || ''}`
+    },
+    {
+      icon: Video,
+      label: 'News & Videos',
+      isLink: true,
+      href: 'https://weather.com/en-IN/weather/today/l/INXX0096:1:IN?Goto=Redirected'
+    },
+    { icon: Heart, label: 'Favorites' }
+  ].map((item) => {
+    if (item.isLink) {
+      return (
+        <a
+          key={item.label}
+          href={item.href}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="w-full flex items-center gap-2 md:gap-3 px-3 md:px-4 py-2.5 md:py-3 rounded-xl transition-all duration-200 group text-gray-300 hover:bg-white/[0.08] hover:text-white hover:backdrop-blur-sm hover:translate-x-1 border border-transparent hover:border-white/10 hover:bg-gradient-to-r hover:from-blue-500/10 hover:to-cyan-500/10"
+          onClick={() => responsive.isMobile && setIsMobileSidebarOpen(false)}
+        >
+          <item.icon className="w-4 h-4 md:w-5 md:h-5 transition-transform group-hover:scale-110 flex-shrink-0" />
+          <span className="font-medium text-sm md:text-base truncate">{item.label}</span>
+        </a>
+      )
+    }
+
+    return (
+      <button
+        key={item.label}
+        onClick={() => {
+          if (responsive.isMobile) {
+            setIsMobileSidebarOpen(false)
+          }
+
+          if (item.label === 'Air Quality') {
+            setTimeout(() => {
+              const airQualityElement = document.getElementById('air-quality-section')
+              if (airQualityElement) {
+                airQualityElement.scrollIntoView({
+                  behavior: 'smooth',
+                  block: 'start'
+                })
               }
-
-              return (
-                <button
-                  key={item.label}
-                  onClick={() => {
-                    if (responsive.isMobile) {
-                      setIsMobileSidebarOpen(false)
-                    }
-
-                    // ✅ ALERTS BUTTON
-                    if (item.label === 'Alerts') {
-                      setTimeout(() => {
-                        const alertElement = document.getElementById('weather-alerts-card')
-                        if (alertElement) {
-                          alertElement.scrollIntoView({
-                            behavior: 'smooth',
-                            block: 'start'
-                          })
-                        }
-                      }, responsive.isMobile ? 300 : 0)
-                    }
-                    // ✅ AIR QUALITY BUTTON
-                    else if (item.label === 'Air Quality') {
-                      setTimeout(() => {
-                        const airQualityElement = document.getElementById('air-quality-section')
-                        if (airQualityElement) {
-                          airQualityElement.scrollIntoView({
-                            behavior: 'smooth',
-                            block: 'start'
-                          })
-                        }
-                      }, responsive.isMobile ? 300 : 0)
-                    }
-                    // ✅ LIVE MAP BUTTON
-                    else if (item.label === 'Live Map') {
-                      setTimeout(() => {
-                        const mapElement = document.getElementById('live-map-section')
-                        if (mapElement) {
-                          mapElement.scrollIntoView({
-                            behavior: 'smooth',
-                            block: 'start'
-                          })
-                        }
-                      }, responsive.isMobile ? 300 : 0)
-                    }
-                    // ✅ FORECAST BUTTON
-                    else if (item.label === 'Forecast') {
-                      setTimeout(() => {
-                        const forecastElement = document.getElementById('forecast-section')
-                        if (forecastElement) {
-                          forecastElement.scrollIntoView({
-                            behavior: 'smooth',
-                            block: 'start'
-                          })
-                        }
-                      }, responsive.isMobile ? 300 : 0)
-                    }
-                    // ✅ FAVORITES/HIGHLIGHTS BUTTON
-                    else if (item.label === 'Favorites') {
-                      setTimeout(() => {
-                        const highlightsElement = document.getElementById('highlights-section')
-                        if (highlightsElement) {
-                          highlightsElement.scrollIntoView({
-                            behavior: 'smooth',
-                            block: 'start'
-                          })
-                        }
-                      }, responsive.isMobile ? 300 : 0)
-                    }
-                    // ✅ OTHER BUTTONS
-                    else {
-                      if (responsive.isMobile) setIsMobileSidebarOpen(false)
-                    }
-                  }}
-                  className={`w-full flex items-center gap-2 md:gap-3 px-3 md:px-4 py-2.5 md:py-3 rounded-xl transition-all duration-200 group cursor-pointer ${item.active ? 'bg-gradient-to-r from-blue-600/80 to-cyan-600/80 text-white shadow-lg shadow-blue-500/30 backdrop-blur-md border border-blue-400/40' : 'text-gray-300 hover:bg-white/[0.08] hover:text-white hover:backdrop-blur-sm hover:translate-x-1 border border-transparent hover:border-white/10 hover:bg-gradient-to-r hover:from-blue-500/5 hover:to-cyan-500/5'}`}
-                >
-                  <item.icon className={`w-4 h-4 md:w-5 md:h-5 transition-transform group-hover:scale-110 flex-shrink-0 ${item.active ? 'text-white' : ''}`} />
-                  <span className="font-medium text-sm md:text-base truncate">{item.label}</span>
-                </button>
-              )
-            })}
-          </nav>
+            }, responsive.isMobile ? 300 : 0)
+          }
+          else if (item.label === 'Live Map') {
+            setTimeout(() => {
+              const mapElement = document.getElementById('live-map-section')
+              if (mapElement) {
+                mapElement.scrollIntoView({
+                  behavior: 'smooth',
+                  block: 'start'
+                })
+              }
+            }, responsive.isMobile ? 300 : 0)
+          }
+          else if (item.label === 'Forecast') {
+            setTimeout(() => {
+              const forecastElement = document.getElementById('forecast-section')
+              if (forecastElement) {
+                forecastElement.scrollIntoView({
+                  behavior: 'smooth',
+                  block: 'start'
+                })
+              }
+            }, responsive.isMobile ? 300 : 0)
+          }
+          else if (item.label === 'Favorites') {
+            setTimeout(() => {
+              const highlightsElement = document.getElementById('highlights-section')
+              if (highlightsElement) {
+                highlightsElement.scrollIntoView({
+                  behavior: 'smooth',
+                  block: 'start'
+                })
+              }
+            }, responsive.isMobile ? 300 : 0)
+          }
+          else {
+            if (responsive.isMobile) setIsMobileSidebarOpen(false)
+          }
+        }}
+        className={`w-full flex items-center gap-2 md:gap-3 px-3 md:px-4 py-2.5 md:py-3 rounded-xl transition-all duration-200 group cursor-pointer ${item.active ? 'bg-gradient-to-r from-blue-600/80 to-cyan-600/80 text-white shadow-lg shadow-blue-500/30 backdrop-blur-md border border-blue-400/40' : 'text-gray-300 hover:bg-white/[0.08] hover:text-white hover:backdrop-blur-sm hover:translate-x-1 border border-transparent hover:border-white/10 hover:bg-gradient-to-r hover:from-blue-500/5 hover:to-cyan-500/5'}`}
+      >
+        <item.icon className={`w-4 h-4 md:w-5 md:h-5 transition-transform group-hover:scale-110 flex-shrink-0 ${item.active ? 'text-white' : ''}`} />
+        <span className="font-medium text-sm md:text-base truncate">{item.label}</span>
+      </button>
+    )
+  })}
+</nav>
 
           {/* Location Info Box - Enhanced Glass */}
           {/* Location Info Box - Enhanced Glass */}
