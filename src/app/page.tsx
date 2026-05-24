@@ -1924,11 +1924,6 @@ function WeatherDashboardContent() {
             50% { opacity: 1; stroke-width: 3.5; }
           }
 
-          @keyframes desktopIconBreath {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.03); }
-          }
-
           @keyframes desktopShimmerSweep {
             0% { transform: translateX(-150%) skewX(-12deg); }
             100% { transform: translateX(250%) skewX(-12deg); }
@@ -5560,11 +5555,6 @@ function WeatherDashboardContent() {
   filter: drop-shadow(0 0 8px rgba(6, 182, 212, 0.8));
 }
 
-@keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
 .status-text {
   font-size: 1rem;
   font-weight: 600;
@@ -5814,87 +5804,6 @@ function WeatherDashboardContent() {
 /* KEYFRAME ANIMATIONS                         */
 /* ============================================ */
 
-/* Aurora animations */
-@keyframes auroraFloat1 {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  33% { transform: translate(60px, -40px) scale(1.1); }
-  66% { transform: translate(-40px, 50px) scale(0.95); }
-}
-
-@keyframes auroraFloat2 {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  50% { transform: translate(-70px, -60px) scale(1.15); }
-}
-
-@keyframes auroraFloat3 {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  50% { transform: translate(50px, -45px) scale(1.08); }
-}
-
-/* Orb animations */
-@keyframes orbFloat1 {
-  0%, 100% { transform: translate(0, 0); }
-  50% { transform: translate(80px, -60px); }
-}
-
-@keyframes orbFloat2 {
-  0%, 100% { transform: translate(0, 0); }
-  50% { transform: translate(-60px, 50px); }
-}
-
-@keyframes orbFloat3 {
-  0%, 100% { transform: translate(0, 0); }
-  50% { transform: translate(50px, -40px); }
-}
-
-@keyframes orbFloat4 {
-  0%, 100% { transform: translate(0, 0); }
-  50% { transform: translate(-40px, 30px); }
-}
-
-/* Star animations */
-@keyframes starTwinkle {
-  0%, 100% { opacity: 0.2; transform: scale(1); }
-  50% { opacity: 1; transform: scale(1.4); }
-}
-
-@keyframes brightStarPulse {
-  0%, 100% { 
-    opacity: 0.4; 
-    transform: scale(1);
-    filter: brightness(1);
-  }
-  50% { 
-    opacity: 1; 
-    transform: scale(1.6);
-    filter: brightness(1.5);
-  }
-}
-
-@keyframes dustFloat {
-  0% { transform: translateY(0) translateX(0); opacity: 0; }
-  10% { opacity: 0.4; }
-  90% { opacity: 0.4; }
-  100% { transform: translateY(-100vh) translateX(50px); opacity: 0; }
-}
-
-/* Shooting star */
-@keyframes shootingStarAnim {
-  0% { 
-    transform: translateX(0) translateY(0);
-    opacity: 0;
-  }
-  5% { opacity: 1; }
-  30% { 
-    transform: translateX(1000px) translateY(500px);
-    opacity: 0;
-  }
-  100% { 
-    transform: translateX(1000px) translateY(500px);
-    opacity: 0;
-  }
-}
-
 /* Floating icons */
 @keyframes floatIcon1 {
   0%, 100% { transform: translate(0, 0) rotate(0deg); }
@@ -6052,16 +5961,6 @@ function WeatherDashboardContent() {
   100% { transform: translateY(-120vh) translateX(40px); opacity: 0; }
 }
 
-@keyframes ringRotate {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-@keyframes auraPulse {
-  0%, 100% { transform: scale(1); opacity: 0.25; }
-  50% { transform: scale(1.2); opacity: 0.5; }
-}
-
 @keyframes iconBreath {
   0%, 100% { transform: scale(1); }
   50% { transform: scale(1.06); }
@@ -6136,20 +6035,6 @@ function WeatherDashboardContent() {
   0% { transform: translateX(-100%); }
   100% { transform: translateX(100%); }
 }
-  @keyframes softGlowPulse {
-  0%, 100% { transform: scale(1); opacity: 0.6; }
-  50% { transform: scale(1.08); opacity: 0.9; }
-}
-
-@keyframes gentleRayPulse {
-  0%, 100% { opacity: 0.7; }
-  50% { opacity: 1; }
-}
-
-@keyframes subtleShimmer {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
-}
   /* ============================================ */
 /* ✅ MOBILE ANIMATION KEYFRAMES               */
 /* ============================================ */
@@ -6167,11 +6052,6 @@ function WeatherDashboardContent() {
 @keyframes cloudFloat {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-2px); }
-}
-
-@keyframes softGlowPulse {
-  0%, 100% { transform: scale(1); opacity: 0.6; }
-  50% { transform: scale(1.05); opacity: 0.9; }
 }
 
 @keyframes shimmerSweep {
