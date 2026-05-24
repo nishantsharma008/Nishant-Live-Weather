@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, Suspense } from 'react';
 import { useLocation } from '@/app/context/LocationContext';
 import { useSearchParams, useRouter } from 'next/navigation';
 import {
@@ -40,7 +40,7 @@ interface PollenData {
   success: boolean;
 }
 
-export default function PollenCountPage() {
+function PollPageContent() {
   const { currentLocation } = useLocation();
   const searchParams = useSearchParams();
 
@@ -1095,6 +1095,25 @@ export default function PollenCountPage() {
         }
       `}</style>
     </div>
+  );
+}
+
+export default function PollPage() {
+  return (
+    <Suspense fallback={
+      <div style={{
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: '#000000',
+        color: 'white'
+      }}>
+        <p>Loading...</p>
+      </div>
+    }>
+      <PollPageContent />
+    </Suspense>
   );
 }
 
