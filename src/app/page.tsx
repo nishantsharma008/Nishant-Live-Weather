@@ -1535,59 +1535,112 @@ const WorldWeatherMap = memo<WorldWeatherMapProps>(({ weatherData, unit }) => {
     </div>
 
     {/* 🔵 Locate Me */}
-    <button
-      onClick={() => {
-        if (leafletMap && location?.lat && location?.lon) {
-          leafletMap.flyTo([location.lat, location.lon], 14, { duration: 2 })
-        }
-      }}
-      className="
-        relative flex items-center justify-center gap-0.5 
-        bg-gradient-to-r from-blue-500 to-cyan-400 
-        hover:from-blue-400 hover:to-cyan-300
-        text-white rounded-full font-semibold 
-        border border-blue-300/40 
-        shadow-sm shadow-blue-500/20
-        backdrop-blur-sm
-        active:scale-95
-        flex-shrink-0
-        
-        px-[6px] py-[1px]
-        h-[22px]
-        text-[8px]
-        w-[82px]
-        leading-none
-      "
-    >
-      <Navigation className="w-[10px] h-[10px] sm:w-3 sm:h-3" />
-      <span className="font-semibold whitespace-nowrap">Locate Me</span>
-    </button>
-
+    {/* 🔵 Locate Me - BLUE Icon + WHITE Text - NO BOX ANIMATION */}
+    {/* 🔵 Locate Me - BLUE GLOW HOVER EFFECT */}
+<button
+  onClick={() => {
+    if (leafletMap && location?.lat && location?.lon) {
+      leafletMap.flyTo([location.lat, location.lon], 14, { duration: 2 })
+    }
+  }}
+  className="
+    bg-transparent
+    
+    /* ✨ BLUE LIGHT HOVER EFFECT */
+    hover:bg-blue-500/15
+    active:bg-blue-500/25
+    hover:shadow-[0_0_12px_rgba(59,130,246,0.5)]
+    active:shadow-[0_0_16px_rgba(59,130,246,0.7)]
+    
+    /* Text styling */
+    text-white 
+    hover:text-blue-100
+    font-semibold 
+    
+    /* NO SQUARE BOX */
+    border-0
+    shadow-none
+    outline-none
+    focus:outline-none
+    focus-visible:outline-none
+    focus:ring-0
+    ring-0
+    
+    /* Rounded corners for smooth look */
+    rounded-lg
+    
+    /* Size fits text */
+    px-2 py-1
+    h-auto w-auto
+    
+    /* Text size */
+    text-[11px] sm:text-xs md:text-sm
+    
+    /* Smooth transitions */
+    transition-all duration-200 ease-out
+    cursor-pointer
+    inline-flex items-center gap-1.5
+    whitespace-nowrap
+    select-none
+    tap-highlight-transparent
+    appearance-none
+    -webkit-appearance:none
+    -webkit-tap-highlight-color:transparent
+  "
+>
+  <Navigation className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-blue-400" />
+  <span>Locate Me</span>
+</button>
   </div>
 </div>
 
           {/* LAYER BUTTONS */}
-          <div className="flex items-center gap-1.5 md:gap-2 mb-2 md:mb-3 overflow-x-auto overflow-y-hidden pb-1 md:pb-2 flex-shrink-0 snap-x snap-mandatory scrollbar-hide -mx-1 px-1">
-            <span className="text-[10px] md:text-xs font-semibold text-gray-300 whitespace-nowrap mr-1 flex items-center gap-1">
-              <Layers className="w-2.5 h-2.5 md:w-3 md:h-3" />
-              :
-            </span>
-            {['Temperature', 'Precipitation', 'Wind Speed'].map((layer) => (
-              <button
-                key={layer}
-                onClick={() => setActiveLayer(layer)}
-                className={`flex items-center gap-1 md:gap-1.5 px-3 md:px-3 lg:px-4 py-1.5 md:py-1.5 lg:py-2 rounded-lg font-medium text-[10px] md:text-xs whitespace-nowrap transition-all duration-300 border active:scale-95 snap-start flex-shrink-0 ${activeLayer === layer
-                  ? 'bg-gradient-to-r from-orange-500/95 to-red-500/95 text-white shadow-lg backdrop-blur-sm border-orange-300/50 font-bold'
-                  : 'bg-white/[0.08] text-gray-300 hover:text-white hover:bg-white/[0.15] border-white/15 hover:scale-105'
-                  }`}
-              >
-                {layer === 'Temperature' && <Thermometer className="w-2.5 h-2.5 md:w-3 md:h-3" />}
-                {layer === 'Precipitation' && <Droplets className="w-2.5 h-2.5 md:w-3 md:h-3" />}
-                {layer === 'Wind Speed' && <Wind className="w-2.5 h-2.5 md:w-3 md:h-3" />}
-                {layer}
-              </button>
-            ))}
-          </div>
+          {/* ✅✅✅ LAYER BUTTONS SECTION - COMPLETE & UNBREAKABLE ✅✅✅ */}
+<div className="flex items-center gap-1 lg:gap-2 mb-2 md:mb-3 overflow-x-auto overflow-y-hidden pb-1 md:pb-2 flex-shrink-0 scrollbar-hide -mx-1 px-1 min-w-0">
+  
+  {/* 🎯 UNBREAKABLE ICON - Always Visible */}
+  <Layers className="w-3.5 h-3.5 md:w-4 md:h-4 text-gray-300" />
+    <span className="text-gray-300 font-semibold ml-1 text-xs md:text-sm"></span>
+
+  {/* Temperature Button */}
+  <button
+    onClick={() => setActiveLayer('Temperature')}
+    className={`flex items-center gap-1 md:gap-1.5 px-2.5 sm:px-3 md:px-3 lg:px-4 py-1.5 md:py-1.5 lg:py-2 rounded-lg font-medium text-[10px] sm:text-[10px] md:text-xs whitespace-nowrap transition-all duration-300 border snap-start flex-shrink-0 ${
+      activeLayer === 'Temperature'
+        ? 'bg-gradient-to-r from-orange-500/95 to-red-500/95 text-white shadow-lg backdrop-blur-sm border-orange-300/50 font-bold'
+        : 'bg-white/[0.08] text-gray-300 hover:text-white hover:bg-white/[0.15] border-white/15'
+    }`}
+  >
+    <Thermometer className="w-2.5 h-2.5 sm:w-3 sm:h-3 md:w-3 md:h-3 flex-shrink-0" />
+    Temperature
+  </button>
+
+  {/* Precipitation Button */}
+  <button
+    onClick={() => setActiveLayer('Precipitation')}
+    className={`flex items-center gap-1 md:gap-1.5 px-2.5 sm:px-3 md:px-3 lg:px-4 py-1.5 md:py-1.5 lg:py-2 rounded-lg font-medium text-[10px] sm:text-[10px] md:text-xs whitespace-nowrap transition-all duration-300 border snap-start flex-shrink-0 ${
+      activeLayer === 'Precipitation'
+        ? 'bg-gradient-to-r from-orange-500/95 to-red-500/95 text-white shadow-lg backdrop-blur-sm border-orange-300/50 font-bold'
+        : 'bg-white/[0.08] text-gray-300 hover:text-white hover:bg-white/[0.15] border-white/15'
+    }`}
+  >
+    <Droplets className="w-2.5 h-2.5 sm:w-3 sm:h-3 md:w-3 md:h-3 flex-shrink-0" />
+    Precipitation
+  </button>
+
+  {/* Wind Speed Button */}
+  <button
+    onClick={() => setActiveLayer('Wind Speed')}
+    className={`flex items-center gap-1 md:gap-1.5 px-2.5 sm:px-3 md:px-3 lg:px-4 py-1.5 md:py-1.5 lg:py-2 rounded-lg font-medium text-[10px] sm:text-[10px] md:text-xs whitespace-nowrap transition-all duration-300 border snap-start flex-shrink-0 ${
+      activeLayer === 'Wind Speed'
+        ? 'bg-gradient-to-r from-orange-500/95 to-red-500/95 text-white shadow-lg backdrop-blur-sm border-orange-300/50 font-bold'
+        : 'bg-white/[0.08] text-gray-300 hover:text-white hover:bg-white/[0.15] border-white/15'
+    }`}
+  >
+    <Wind className="w-2.5 h-2.5 sm:w-3 sm:h-3 md:w-3 md:h-3 flex-shrink-0" />
+    Wind Speed
+  </button>
+</div>
 
           {/* MAP CONTAINER WITH ALL OVERLAYS */}
           <div className="relative w-full flex-1 min-h-[250px] sm:min-h-[300px] md:min-h-[350px] lg:min-h-[400px] aspect-video max-h-[50vh] lg:max-h-none rounded-xl md:rounded-2xl overflow-hidden border border-white/20 z-0">
