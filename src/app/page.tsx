@@ -220,16 +220,16 @@ function usePerformanceMode() {
       // Check if mobile device
       const isMobile = window.innerWidth < 768;
       setIsMobileDevice(isMobile);
-      
+
       // Check hardware concurrency (CPU cores)
       const cores = navigator.hardwareConcurrency || 2;
-      
+
       // Check memory (if available)
       const memory = (navigator as any)?.deviceMemory || 4;
-      
+
       // Check user preference for reduced motion
       const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      
+
       // Enable low performance mode if:
       // - Mobile device OR
       // - Less than 4 CPU cores OR  
@@ -1525,35 +1525,69 @@ const WorldWeatherMap = memo<WorldWeatherMapProps>(({ weatherData, unit }) => {
               </div>
 
               {/* ✅ LOCATE ME BUTTON - SMALLER SIZE */}
+              {/* ✅✅✅ MOBILE-FIXED LOCATE ME BUTTON */}
               <button
                 onClick={() => {
                   if (leafletMap && location?.lat && location?.lon) {
                     leafletMap.flyTo([location.lat, location.lon], 14, { duration: 2 })
                   }
                 }}
-                className="relative flex items-center gap-1 
-                  px-2 sm:px-2.5 md:px-3 
-                  py-1 sm:py-1.5 md:py-1.5 
-                  bg-gradient-to-r from-blue-500/95 to-cyan-400/95 
-                  hover:from-blue-400 hover:to-cyan-300
-                  text-white rounded-lg md:rounded-xl font-bold 
-                  text-[10px] sm:text-xs md:text-sm 
-                  border-2 border-blue-200/70 
-                  shadow-[0_0_15px_rgba(59,130,246,0.6),0_0_30px_rgba(59,130,246,0.35)]
-                  hover:shadow-[0_0_20px_rgba(96,165,250,0.8),0_0_40px_rgba(59,130,246,0.5)]
-                  transition-all duration-300 
-                  whitespace-nowrap flex-shrink-0 
-                  overflow-hidden group
-                  transform hover:scale-105 active:scale-95"
+                className="
+    relative flex items-center justify-center gap-1 
+    px-2 py-1.5 
+    bg-gradient-to-r from-blue-500 to-cyan-400 
+    hover:from-blue-400 hover:to-cyan-300
+    text-white rounded-lg font-bold 
+    border border-blue-300/50 
+    shadow-md shadow-blue-500/40
+    hover:shadow-lg hover:shadow-blue-400/60
+    transition-all duration-200 
+    whitespace-nowrap flex-shrink-0 
+    overflow-hidden group
+    active:scale-95
+    
+    /* ✅ MOBILE-SPECIFIC SIZING */
+    text-xs        /* Base size */
+    min-w-[80px]   /* Minimum width */
+    h-8           /* Fixed height: 32px */
+    
+    /* Responsive scaling */
+    sm:px-3 sm:py-2 sm:text-sm sm:min-w-[100px] sm:h-9
+    md:px-4 md:py-2.5 md:text-base md:min-w-[110px] md:h-10
+  "
                 aria-label="Locate me on map"
+                style={{
+                  /* Glow effect - subtle on mobile */
+                  boxShadow: '0 0 12px rgba(59, 130, 246, 0.4), 0 0 24px rgba(59, 130, 246, 0.2)',
+                }}
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-300/40 to-cyan-200/40 
-                  opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-xl" />
+                {/* Shimmer overlay */}
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent 
+    opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-xl" />
 
-                <Navigation className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 relative z-10 
-                  group-hover:animate-pulse drop-shadow-[0_0_6px_rgba(255,255,255,0.9)]" />
+                {/* Icon - FIXED SIZE */}
+                <Navigation className="
+    w-3.5 h-3.5 
+    sm:w-4 sm:h-4 
+    md:w-5 md:h-5 
+    relative z-10 
+    group-hover:animate-pulse 
+    drop-shadow-[0_0_4px_rgba(255,255,255,0.8)]
+    flex-shrink-0
+  " />
 
-                <span className="relative z-10 font-bold tracking-wide">
+                {/* Text - HIDDEN ON VERY SMALL SCREENS IF NEEDED */}
+                <span className="
+    relative z-10 
+    font-bold tracking-wide
+    hidden xs:inline  /* Hide text on tiny screens if needed */
+    sm:inline
+  ">
+                  Locate Me
+                </span>
+
+                {/* Tiny screen: Show only icon with tooltip */}
+                <span className="xs:hidden relative z-10 font-bold" title="Locate Me">
                   Locate Me
                 </span>
               </button>
@@ -1564,7 +1598,7 @@ const WorldWeatherMap = memo<WorldWeatherMapProps>(({ weatherData, unit }) => {
           <div className="flex items-center gap-1.5 md:gap-2 mb-2 md:mb-3 overflow-x-auto overflow-y-hidden pb-1 md:pb-2 flex-shrink-0 snap-x snap-mandatory scrollbar-hide -mx-1 px-1">
             <span className="text-[10px] md:text-xs font-semibold text-gray-300 whitespace-nowrap mr-1 flex items-center gap-1">
               <Layers className="w-2.5 h-2.5 md:w-3 md:h-3" />
-              Layers:
+              :
             </span>
             {['Temperature', 'Precipitation', 'Wind Speed'].map((layer) => (
               <button
@@ -1731,7 +1765,7 @@ WorldWeatherMap.displayName = 'WorldWeatherMap'
 
 // ==================== MAIN DASHBOARD COMPONENT ====================
 function WeatherDashboardContent() {
-  
+
   // ============================================
   // 🎬 WELCOME PAGE INTEGRATION
   // ============================================
@@ -2974,295 +3008,126 @@ function WeatherDashboardContent() {
       {/* ============================================ */}
       {/* 🎩✨ MAGIC UI BACKGROUND - HYDRATION SAFE   */}
       {/* ============================================ */}
-      <div className="fixed inset-0 overflow-hidden bg-black" id="magic-container">
+      {/* ============================================ */}
+      {/* 🌙 NIGHT SKY LAKE BACKGROUND - GLASS MORPHISM */}
+      {/* ============================================ */}
+      {/* ============================================ */}
+      {/* 🌙 DOPER.PNG BACKGROUND - CINEMATIC EDITION */}
+      {/* ============================================ */}
+      <div
+        className="fixed inset-0 overflow-hidden"
+        style={{ zIndex: 0 }}
+      >
+        {/* 🖼️ Main Background Image - WITH ANIMATION */}
+        <div
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{
+            backgroundImage: "url('/doper.png')",  // ← YOUR LOCAL IMAGE!
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            opacity: 0.4,  // Slightly increased for better visibility
+            animation: 'backgroundZoom 20s ease-in-out infinite',  // ← CINEMATIC ZOOM
+            transformOrigin: 'center',
+          }}
+        />
 
-        {/* ============================== */}
-        {/* 🌑 DEEP BLACK BASE LAYER      */}
-        {/* ============================== */}
+        {/* 🌊 Animated Gradient Overlay - Moving Colors */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            zIndex: 1,
+            background: `
+        linear-gradient(135deg, 
+          rgba(59,130,246,${0.08 + Math.sin(Date.now() / 5000) * 0.02}) 0%, 
+          transparent 50%,
+          rgba(99,102,241,${0.06 + Math.cos(Date.now() / 7000) * 0.02}) 100%
+        )
+      `,
+            animation: 'gradientShift 8s ease-in-out infinite',
+          }}
+        />
+
+        {/* 🎭 Dark Overlay - For contrast with text */}
         <div
           className="absolute inset-0"
           style={{
-            background: 'radial-gradient(ellipse at 50% 50%, #0a0a0a 0%, #000000 50%, #050505 100%)',
-          }}
-        />
-
-        {/* ============================== */}
-        {/* ✨ GOLDEN MYSTICAL AURA        */}
-        {/* ============================== */}
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            background: 'radial-gradient(ellipse at 30% 20%, rgba(255, 215, 0, 0.15) 0%, transparent 50%)',
-            animation: 'magicAura1 8s ease-in-out infinite',
+            background: 'linear-gradient(180deg, rgba(0,0,20,0.25) 0%, rgba(0,0,10,0.55) 100%)',
             zIndex: 2,
           }}
         />
 
+        {/* ✨ Frosted Glass Overlay - The magic touch! */}
         <div
-          className="absolute inset-0 pointer-events-none"
+          className="absolute inset-0 backdrop-blur-[2px] bg-white/[0.03]"
           style={{
-            background: 'radial-gradient(ellipse at 70% 80%, rgba(255, 193, 7, 0.12) 0%, transparent 45%)',
-            animation: 'magicAura2 10s ease-in-out infinite 2s',
-            zIndex: 2,
-          }}
-        />
-
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            background: 'radial-gradient(ellipse at 80% 30%, rgba(255, 235, 59, 0.08) 0%, transparent 40%)',
-            animation: 'magicAura3 12s ease-in-out infinite 4s',
-            zIndex: 2,
-          }}
-        />
-
-        {/* ============================== */}
-        {/* 🔮 FLOATING MAGIC ORBS (Fixed Positions) */}
-        {/* ============================== */}
-
-        {/* Large Golden Orb - Top Left */}
-        <div
-          className="absolute w-[500px] h-[500px] rounded-full pointer-events-none"
-          style={{
-            top: '-10%',
-            left: '-5%',
-            background: 'radial-gradient(circle, rgba(255, 215, 0, 0.25) 0%, rgba(255, 193, 7, 0.15) 40%, transparent 70%)',
-            filter: 'blur(60px)',
-            animation: 'floatOrbMagic1 15s ease-in-out infinite',
             zIndex: 3,
-          }}
-        />
-
-        {/* Amber Orb - Bottom Right */}
-        <div
-          className="absolute w-[600px] h-[600px] rounded-full pointer-events-none"
-          style={{
-            bottom: '-15%',
-            right: '-10%',
-            background: 'radial-gradient(circle, rgba(255, 152, 0, 0.2) 0%, rgba(245, 124, 0, 0.12) 50%, transparent 70%)',
-            filter: 'blur(70px)',
-            animation: 'floatOrbMagic2 18s ease-in-out infinite 3s',
-            zIndex: 3,
-          }}
-        />
-
-        {/* Small Bright Gold Orb - Center Right */}
-        <div
-          className="absolute w-[350px] h-[350px] rounded-full pointer-events-none"
-          style={{
-            top: '40%',
-            right: '20%',
-            background: 'radial-gradient(circle, rgba(255, 235, 59, 0.3) 0%, rgba(255, 215, 0, 0.15) 40%, transparent 70%)',
-            filter: 'blur(50px)',
-            animation: 'floatOrbMagic3 12s ease-in-out infinite 1s',
-            zIndex: 3,
-          }}
-        />
-
-        {/* Dark Mystery Orb - Left Center */}
-        <div
-          className="absolute w-[400px] h-[400px] rounded-full pointer-events-none"
-          style={{
-            top: '30%',
-            left: '10%',
-            background: 'radial-gradient(circle, rgba(139, 69, 19, 0.25) 0%, rgba(0, 0, 0, 0.4) 60%, transparent 70%)',
-            filter: 'blur(55px)',
-            animation: 'floatOrbMagic4 20s ease-in-out infinite 5s',
-            zIndex: 3,
-          }}
-        />
-
-        {/* ============================== */}
-        {/* ⭐ MAGICAL SPARKLE PARTICLES (Fixed Positions - No Random!) */}
-        {/* ============================== */}
-        <div className="absolute inset-0 pointer-events-none overflow-hidden" style={{ zIndex: 6 }}>
-
-          {/* Large bright stars - Fixed positions */}
-          <div className="absolute" style={{ left: '15%', top: '20%', width: '4px', height: '4px', borderRadius: '50%', background: 'radial-gradient(circle, #FFD700 0%, #FFA500 50%, transparent 100%)', boxShadow: '0 0 8px 2px rgba(255, 215, 0, 0.8), 0 0 16px 4px rgba(255, 193, 7, 0.5)', animation: 'magicSparkle 3s ease-in-out infinite 0s' }} />
-          <div className="absolute" style={{ left: '85%', top: '15%', width: '5px', height: '5px', borderRadius: '50%', background: 'radial-gradient(circle, #FFD700 0%, #FFA500 50%, transparent 100%)', boxShadow: '0 0 10px 2.5px rgba(255, 215, 0, 0.8), 0 0 20px 5px rgba(255, 193, 7, 0.5)', animation: 'magicSparkle 4s ease-in-out infinite 1.5s' }} />
-          <div className="absolute" style={{ left: '75%', top: '75%', width: '4px', height: '4px', borderRadius: '50%', background: 'radial-gradient(circle, #FFD700 0%, #FFA500 50%, transparent 100%)', boxShadow: '0 0 8px 2px rgba(255, 215, 0, 0.8), 0 0 16px 4px rgba(255, 193, 7, 0.5)', animation: 'magicSparkle 3.5s ease-in-out infinite 0.8s' }} />
-          <div className="absolute" style={{ left: '25%', top: '85%', width: '6px', height: '6px', borderRadius: '50%', background: 'radial-gradient(circle, #FFD700 0%, #FFA500 50%, transparent 100%)', boxShadow: '0 0 12px 3px rgba(255, 215, 0, 0.8), 0 0 24px 6px rgba(255, 193, 7, 0.5)', animation: 'magicSparkle 4.5s ease-in-out infinite 2s' }} />
-          <div className="absolute" style={{ left: '50%', top: '10%', width: '5px', height: '5px', borderRadius: '50%', background: 'radial-gradient(circle, #FFD700 0%, #FFA500 50%, transparent 100%)', boxShadow: '0 0 10px 2.5px rgba(255, 215, 0, 0.8), 0 0 20px 5px rgba(255, 193, 7, 0.5)', animation: 'magicSparkle 3.2s ease-in-out infinite 1s' }} />
-
-          {/* Medium stars */}
-          <div className="absolute" style={{ left: '35%', top: '45%', width: '3px', height: '3px', borderRadius: '50%', background: 'radial-gradient(circle, #FFD700 0%, #FFA500 50%, transparent 100%)', boxShadow: '0 0 6px 1.5px rgba(255, 215, 0, 0.8), 0 0 12px 3px rgba(255, 193, 7, 0.5)', animation: 'magicSparkle 3.8s ease-in-out infinite 2.5s' }} />
-          <div className="absolute" style={{ left: '65%', top: '35%', width: '3px', height: '3px', borderRadius: '50%', background: 'radial-gradient(circle, #FFD700 0%, #FFA500 50%, transparent 100%)', boxShadow: '0 0 6px 1.5px rgba(255, 215, 0, 0.8), 0 0 12px 3px rgba(255, 193, 7, 0.5)', animation: 'magicSparkle 3.3s ease-in-out infinite 0.5s' }} />
-          <div className="absolute" style={{ left: '20%', top: '60%', width: '3px', height: '3px', borderRadius: '50%', background: 'radial-gradient(circle, #FFD700 0%, #FFA500 50%, transparent 100%)', boxShadow: '0 0 6px 1.5px rgba(255, 215, 0, 0.8), 0 0 12px 3px rgba(255, 193, 7, 0.5)', animation: 'magicSparkle 4.2s ease-in-out infinite 3s' }} />
-          <div className="absolute" style={{ left: '80%', top: '55%', width: '3px', height: '3px', borderRadius: '50%', background: 'radial-gradient(circle, #FFD700 0%, #FFA500 50%, transparent 100%)', boxShadow: '0 0 6px 1.5px rgba(255, 215, 0, 0.8), 0 0 12px 3px rgba(255, 193, 7, 0.5)', animation: 'magicSparkle 3.6s ease-in-out infinite 1.8s' }} />
-          <div className="absolute" style={{ left: '45%', top: '80%', width: '4px', height: '4px', borderRadius: '50%', background: 'radial-gradient(circle, #FFD700 0%, #FFA500 50%, transparent 100%)', boxShadow: '0 0 8px 2px rgba(255, 215, 0, 0.8), 0 0 16px 4px rgba(255, 193, 7, 0.5)', animation: 'magicSparkle 3.9s ease-in-out infinite 2.2s' }} />
-
-          {/* Small twinkling stars */}
-          <div className="absolute" style={{ left: '10%', top: '40%', width: '2px', height: '2px', borderRadius: '50%', background: 'radial-gradient(circle, #FFD700 0%, #FFA500 50%, transparent 100%)', boxShadow: '0 0 4px 1px rgba(255, 215, 0, 0.8)', animation: 'magicSparkle 2.8s ease-in-out infinite 0.3s' }} />
-          <div className="absolute" style={{ left: '90%', top: '45%', width: '2px', height: '2px', borderRadius: '50%', background: 'radial-gradient(circle, #FFD700 0%, #FFA500 50%, transparent 100%)', boxShadow: '0 0 4px 1px rgba(255, 215, 0, 0.8)', animation: 'magicSparkle 2.5s ease-in-out infinite 1.2s' }} />
-          <div className="absolute" style={{ left: '55%', top: '65%', width: '2px', height: '2px', borderRadius: '50%', background: 'radial-gradient(circle, #FFD700 0%, #FFA500 50%, transparent 100%)', boxShadow: '0 0 4px 1px rgba(255, 215, 0, 0.8)', animation: 'magicSparkle 3.1s ease-in-out infinite 2.8s' }} />
-          <div className="absolute" style={{ left: '40%', top: '25%', width: '2px', height: '2px', borderRadius: '50%', background: 'radial-gradient(circle, #FFD700 0%, #FFA500 50%, transparent 100%)', boxShadow: '0 0 4px 1px rgba(255, 215, 0, 0.8)', animation: 'magicSparkle 2.9s ease-in-out infinite 0.7s' }} />
-          <div className="absolute" style={{ left: '70%', top: '90%', width: '2px', height: '2px', borderRadius: '50%', background: 'radial-gradient(circle, #FFD700 0%, #FFA500 50%, transparent 100%)', boxShadow: '0 0 4px 1px rgba(255, 215, 0, 0.8)', animation: 'magicSparkle 2.7s ease-in-out infinite 1.9s' }} />
-
-          {/* Extra tiny sparkles */}
-          <div className="absolute" style={{ left: '5%', top: '75%', width: '1.5px', height: '1.5px', borderRadius: '50%', background: '#FFD700', boxShadow: '0 0 3px 1px rgba(255, 215, 0, 0.6)', animation: 'magicSparkle 2.3s ease-in-out infinite 1.1s' }} />
-          <div className="absolute" style={{ left: '95%', top: '25%', width: '1.5px', height: '1.5px', borderRadius: '50%', background: '#FFD700', boxShadow: '0 0 3px 1px rgba(255, 215, 0, 0.6)', animation: 'magicSparkle 2.6s ease-in-out infinite 2.4s' }} />
-          <div className="absolute" style={{ left: '60%', top: '50%', width: '1.5px', height: '1.5px', borderRadius: '50%', background: '#FFD700', boxShadow: '0 0 3px 1px rgba(255, 215, 0, 0.6)', animation: 'magicSparkle 2.4s ease-in-out infinite 0.9s' }} />
-          <div className="absolute" style={{ left: '30%', top: '70%', width: '1.5px', height: '1.5px', borderRadius: '50%', background: '#FFD700', boxShadow: '0 0 3px 1px rgba(255, 215, 0, 0.6)', animation: 'magicSparkle 2.8s ease-in-out infinite 1.6s' }} />
-          <div className="absolute" style={{ left: '88%', top: '68%', width: '1.5px', height: '1.5px', borderRadius: '50%', background: '#FFD700', boxShadow: '0 0 3px 1px rgba(255, 215, 0, 0.6)', animation: 'magicSparkle 2.5s ease-in-out infinite 2.1s' }} />
-        </div>
-
-        {/* ============================== */}
-        {/* 🌟 SHOOTING STARS / COMETS (Fixed) */}
-        {/* ============================== */}
-        <div className="absolute inset-0 pointer-events-none overflow-hidden" style={{ zIndex: 5 }}>
-
-          {/* Shooting Star 1 */}
-          <div
-            className="absolute"
-            style={{
-              top: '10%',
-              left: '-10%',
-              width: '150px',
-              height: '2px',
-              background: 'linear-gradient(to right, transparent, rgba(255, 215, 0, 0), rgba(255, 215, 0, 0.8), #FFFFFF)',
-              transform: 'rotate(-25deg)',
-              animation: 'shootingStar1 8s linear infinite',
-              boxShadow: '0 0 10px 2px rgba(255, 215, 0, 0.6), 0 0 20px 4px rgba(255, 193, 7, 0.3)',
-            }}
-          />
-
-          {/* Shooting Star 2 */}
-          <div
-            className="absolute"
-            style={{
-              top: '25%',
-              left: '-15%',
-              width: '120px',
-              height: '1.5px',
-              background: 'linear-gradient(to right, transparent, rgba(255, 235, 59, 0), rgba(255, 235, 59, 0.7), #FFFACD)',
-              transform: 'rotate(-35deg)',
-              animation: 'shootingStar2 12s linear infinite 3s',
-              boxShadow: '0 0 8px 2px rgba(255, 235, 59, 0.5)',
-            }}
-          />
-
-          {/* Shooting Star 3 */}
-          <div
-            className="absolute"
-            style={{
-              top: '60%',
-              left: '-8%',
-              width: '100px',
-              height: '1px',
-              background: 'linear-gradient(to right, transparent, rgba(255, 152, 0, 0), rgba(255, 152, 0, 0.6), #FFE4B5)',
-              transform: 'rotate(-20deg)',
-              animation: 'shootingStar3 15s linear infinite 7s',
-              boxShadow: '0 0 6px 1px rgba(255, 152, 0, 0.4)',
-            }}
-          />
-        </div>
-
-        {/* ============================== */}
-        {/* 💫 GOLDEN DUST PARTICLES (Client-Side Only!) */}
-        {/* ============================== */}
-        {typeof window !== 'undefined' && (
-          <div className="absolute inset-0 pointer-events-none overflow-hidden" style={{ zIndex: 4 }}>
-            {/* These will only render on client side to avoid hydration mismatch */}
-          </div>
-        )}
-
-        {/* ============================== */}
-        {/* 🔥 MYSTICAL FLAME/WISP EFFECTS (Fixed) */}
-        {/* ============================== */}
-        <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 4 }}>
-
-          {/* Flame Wisp 1 - Top Center */}
-          <div
-            className="absolute"
-            style={{
-              top: '5%',
-              left: '45%',
-              width: '80px',
-              height: '120px',
-              background: 'radial-gradient(ellipse at 50% 100%, rgba(255, 200, 0, 0.4) 0%, rgba(255, 140, 0, 0.2) 40%, transparent 70%)',
-              filter: 'blur(8px)',
-              animation: 'flameWisp1 4s ease-in-out infinite',
-              transformOrigin: 'bottom center',
-            }}
-          />
-
-          {/* Flame Wisp 2 - Right Side */}
-          <div
-            className="absolute"
-            style={{
-              top: '15%',
-              right: '10%',
-              width: '60px',
-              height: '90px',
-              background: 'radial-gradient(ellipse at 50% 100%, rgba(255, 180, 0, 0.35) 0%, rgba(255, 120, 0, 0.15) 50%, transparent 70%)',
-              filter: 'blur(6px)',
-              animation: 'flameWisp2 5s ease-in-out infinite 1.5s',
-              transformOrigin: 'bottom center',
-            }}
-          />
-        </div>
-
-        {/* ============================== */}
-        {/* 🌀 SWIRLING MAGIC ENERGY (Fixed) */}
-        {/* ============================== */}
-        <div className="absolute inset-0 pointer-events-none flex items-center justify-center" style={{ zIndex: 3 }}>
-          <div
-            className="w-[800px] h-[800px] rounded-full"
-            style={{
-              background: 'conic-gradient(from 0deg at 50% 50%, transparent, rgba(255, 215, 0, 0.03), transparent, rgba(255, 193, 7, 0.03), transparent, rgba(255, 152, 0, 0.02), transparent)',
-              animation: 'swirlEnergy 30s linear infinite',
-              filter: 'blur(40px)',
-            }}
-          />
-        </div>
-
-        {/* ============================== */}
-        {/* 🖱️ INTERACTIVE MOUSE GLOW     */}
-        {/* ============================== */}
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            background: 'radial-gradient(400px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(255, 215, 0, 0.08), transparent 40%)',
-            zIndex: 7,
-            transition: 'background 0.3s ease',
-          }}
-          id="mouse-glow-magic"
-        />
-
-        {/* ============================== */}
-        {/* 🎭 VIGNETTE & DEPTH EFFECTS   */}
-        {/* ============================== */}
-
-        {/* Dark Edges Vignette */}
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            background: 'radial-gradient(ellipse at center, transparent 20%, rgba(0, 0, 0, 0.7) 100%)',
-            zIndex: 10,
-          }}
-        />
-
-        {/* Golden Frame Glow */}
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            boxShadow: 'inset 0 0 150px 50px rgba(255, 215, 0, 0.05), inset 0 0 300px 100px rgba(255, 193, 7, 0.03)',
-            zIndex: 11,
-          }}
-        />
-
-        {/* Subtle Noise Texture */}
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
-            opacity: 0.04,
+            background: 'linear-gradient(135deg, rgba(255,255,255,0.08) 0%, transparent 50%, rgba(255,255,255,0.04) 50%)',
             mixBlendMode: 'overlay',
-            zIndex: 12,
+            animation: 'glassShimmer 7s ease-in-out infinite',
           }}
         />
 
+        {/* 🌙 Blue/Purple Gradient Tint - Ambient Lighting */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            zIndex: 4,
+            background: `
+        radial-gradient(ellipse at 85% 15%, rgba(59,130,246, 0.12) 0%, transparent 50%),
+        radial-gradient(ellipse at 15% 80%, rgba(99,102,241, 0.08) 0%, transparent 50%),
+        linear-gradient(180deg, rgba(30,58,138,0.04) 0%, transparent 60%)
+      `,
+            animation: 'ambientGlow 10s ease-in-out infinite',
+          }}
+        />
+
+        {/* 🌙 Moon Glow Spot - Animated Pulse */}
+        <div
+          className="absolute rounded-full pointer-events-none"
+          style={{
+            width: '140px',
+            height: '140px',
+            top: '10%',
+            right: '15%',
+            background: 'radial-gradient(circle, rgba(224, 231, 254, 0.3) 0%, rgba(148, 163, 218, 0.12) 40%, transparent 70%)',
+            filter: 'blur(45px)',
+            animation: 'moonGlowPulse 6s ease-in-out infinite',
+            zIndex: 5,
+          }}
+        />
+
+        {/* ⭐ Floating Particles/Dust Effect (Optional) */}
+        <div
+          className="absolute inset-0 pointer-events-none overflow-hidden"
+          style={{ zIndex: 6 }}
+        >
+          {[...Array(5)].map((_, i) => (
+            <div
+              key={i}
+              className="absolute rounded-full bg-white/20"
+              style={{
+                width: `${2 + Math.random() * 3}px`,
+                height: `${2 + Math.random() * 3}px`,
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`,
+                filter: 'blur(1px)',
+                animation: `particleFloat ${8 + i * 2}s ease-in-out infinite ${i * 1.5}s`,
+                opacity: 0.3 + Math.random() * 0.4,
+              }}
+            />
+          ))}
+        </div>
+
+        {/* 🎬 Vignette Effect - Cinematic Edges */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            zIndex: 7,
+            background: 'radial-gradient(circle at center, transparent 40%, rgba(0,0,0,0.6) 100%)',
+          }}
+        />
       </div>
+
 
       {/* Mobile Overlay */}
       {responsive.isMobile && isMobileSidebarOpen && (
@@ -4799,168 +4664,6 @@ function WeatherDashboardContent() {
             padding-right: 1rem;
           }
         }
-          /* ============================================ */
-/* 🎩✨ MAGIC UI ANIMATIONS                     */
-/* ============================================ */
-
-/* Floating Orbs */
-@keyframes floatOrbMagic1 {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  33% { transform: translate(40px, -30px) scale(1.1); }
-  66% { transform: translate(-20px, 20px) scale(0.95); }
-}
-
-@keyframes floatOrbMagic2 {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  50% { transform: translate(-50px, -40px) scale(1.15); }
-}
-
-@keyframes floatOrbMagic3 {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  33% { transform: translate(-30px, 25px) scale(1.08); }
-  66% { transform: translate(20px, -15px) scale(0.98); }
-}
-
-@keyframes floatOrbMagic4 {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  50% { transform: translate(35px, -25px) scale(1.12); }
-}
-
-/* Magic Aura Pulses */
-@keyframes magicAura1 {
-  0%, 100% { opacity: 0.6; transform: scale(1); }
-  50% { opacity: 1; transform: scale(1.1); }
-}
-
-@keyframes magicAura2 {
-  0%, 100% { opacity: 0.5; transform: scale(1.05); }
-  50% { opacity: 0.9; transform: scale(1.15); }
-}
-
-@keyframes magicAura3 {
-  0%, 100% { opacity: 0.4; transform: scale(1); }
-  50% { opacity: 0.8; transform: scale(1.08); }
-}
-
-/* Magical Sparkle Effect */
-@keyframes magicSparkle {
-  0%, 100% { 
-    opacity: 0;
-    transform: scale(0) rotate(0deg);
-  }
-  50% { 
-    opacity: 1;
-    transform: scale(1.5) rotate(180deg);
-  }
-}
-
-/* Shooting Stars */
-@keyframes shootingStar1 {
-  0% { 
-    transform: translateX(0) translateY(0) rotate(-25deg);
-    opacity: 0;
-  }
-  5% { 
-    opacity: 1;
-  }
-  30% { 
-    transform: translateX(800px) translateY(400px) rotate(-25deg);
-    opacity: 0;
-  }
-  100% { 
-    transform: translateX(800px) translateY(400px) rotate(-25deg);
-    opacity: 0;
-  }
-}
-
-@keyframes shootingStar2 {
-  0% { 
-    transform: translateX(0) translateY(0) rotate(-35deg);
-    opacity: 0;
-  }
-  5% { 
-    opacity: 1;
-  }
-  25% { 
-    transform: translateX(900px) translateY(600px) rotate(-35deg);
-    opacity: 0;
-  }
-  100% { 
-    transform: translateX(900px) translateY(600px) rotate(-35deg);
-    opacity: 0;
-  }
-}
-
-@keyframes shootingStar3 {
-  0% { 
-    transform: translateX(0) translateY(0) rotate(-20deg);
-    opacity: 0;
-  }
-  5% { 
-    opacity: 1;
-  }
-  28% { 
-    transform: translateX(700px) translateY(250px) rotate(-20deg);
-    opacity: 0;
-  }
-  100% { 
-    transform: translateX(700px) translateY(250px) rotate(-20deg);
-    opacity: 0;
-  }
-}
-
-/* Golden Dust Float */
-@keyframes goldenDustFloat {
-  0%, 100% { 
-    transform: translateY(0) translateX(0) scale(1);
-    opacity: 0.4;
-  }
-  25% { 
-    transform: translateY(-20px) translateX(10px) scale(1.2);
-    opacity: 0.8;
-  }
-  50% { 
-    transform: translateY(-35px) translateX(-5px) scale(0.9);
-    opacity: 0.6;
-  }
-  75% { 
-    transform: translateY(-15px) translateX(15px) scale(1.1);
-    opacity: 0.9;
-  }
-}
-
-/* Flame Wisps */
-@keyframes flameWisp1 {
-  0%, 100% { 
-    transform: scaleY(1) scaleX(1);
-    opacity: 0.6;
-  }
-  50% { 
-    transform: scaleY(1.3) scaleX(0.9);
-    opacity: 1;
-  }
-}
-
-@keyframes flameWisp2 {
-  0%, 100% { 
-    transform: scaleY(1) scaleX(1);
-    opacity: 0.5;
-  }
-  50% { 
-    transform: scaleY(1.2) scaleX(1.1);
-    opacity: 0.9;
-  }
-}
-
-/* Swirling Energy */
-@keyframes swirlEnergy {
-  0% { 
-    transform: rotate(0deg);
-  }
-  100% { 
-    transform: rotate(360deg);
-  }
-}
   /* ============================================ */
 /* 🎬 ULTRA PREMIUM WELCOME PAGE - STYLES       */
 /* ============================================ */
@@ -6134,10 +5837,106 @@ function WeatherDashboardContent() {
   0%, 100% { opacity: 0.7; }
   50% { opacity: 1; }
 }
+  /* ============================================ */
+/* 🎬 DOPER BACKGROUND ANIMATIONS           */
+/* ============================================ */
+
+/* Cinematic Slow Zoom */
+@keyframes backgroundZoom {
+  0%, 100% { 
+    transform: scale(1) translateZ(0); 
+    filter: brightness(1) contrast(1);
+  }
+  25% { 
+    transform: scale(1.03) translateZ(0); 
+    filter: brightness(1.05) contrast(1.05);
+  }
+  50% { 
+    transform: scale(1.06) translateZ(0); 
+    filter: brightness(1.03) contrast(1.03);
+  }
+  75% { 
+    transform: scale(1.02) translateZ(0); 
+    filter: brightness(1.07) contrast(1.07);
+  }
+}
+
+/* Ambient Color Shift */
+@keyframes gradientShift {
+  0%, 100% { 
+    opacity: 0.8; 
+    transform: translateX(0) translateY(0);
+  }
+  33% { 
+    opacity: 1; 
+    transform: translateX(10px) translateY(-5px);
+  }
+  66% { 
+    opacity: 0.9; 
+    transform: translateX(-10px) translateY(5px);
+  }
+}
+
+/* Glass Reflection Shimmer */
+@keyframes glassShimmer {
+  0%, 100% { 
+    opacity: 0.6; 
+    background-position: 0% 50%;
+  }
+  50% { 
+    opacity: 0.9; 
+    background-position: 100% 50%;
+  }
+}
+
+/* Ambient Glow Breathing */
+@keyframes ambientGlow {
+  0%, 100% { 
+    opacity: 0.7; 
+    filter: blur(0px);
+  }
+  50% { 
+    opacity: 1; 
+    filter: blur(2px);
+  }
+}
+
+/* Moon Glow Pulse */
+@keyframes moonGlowPulse {
+  0%, 100% { 
+    transform: scale(1); 
+    opacity: 0.3;
+    filter: blur(40px);
+  }
+  50% { 
+    transform: scale(1.15); 
+    opacity: 0.5;
+    filter: blur(50px);
+  }
+}
+
+/* Floating Dust Particles */
+@keyframes particleFloat {
+  0% { 
+    transform: translateY(0) translateX(0); 
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.5;
+  }
+  90% {
+    opacity: 0.3;
+  }
+  100% { 
+    transform: translateY(-100vh) translateX(50px); 
+    opacity: 0;
+  }
+}
       `}</style>
     </div>
-  ); } 
-  
+  );
+}
+
 // ==================== WRAPPER COMPONENT WITH SUSPENSE ====================
 export default function WeatherDashboard() {
   return (
