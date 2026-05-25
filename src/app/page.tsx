@@ -1500,32 +1500,34 @@ const WorldWeatherMap = memo<WorldWeatherMapProps>(({ weatherData, unit }) => {
         <div className="relative bg-white/[0.04] backdrop-blur-xl rounded-2xl md:rounded-3xl p-3 md:p-4 lg:p-6 border border-white/15 hover:border-white/25 transition-all flex-1 flex flex-col">
 
           {/* HEADER */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-3 md:mb-4 gap-2 flex-shrink-0">
-            <div className="flex items-center gap-2 md:gap-3">
-              <div className="relative">
-                <MapPin className="w-4 h-4 md:w-5 md:h-5 lg:w-6 lg:h-6 text-green-400" />
-                <span className="absolute -top-1 -right-1 w-1.5 h-1.5 md:w-2 md:h-2 bg-green-400 rounded-full animate-pulse" />
+          {/* HEADER - SINGLE ROW */}
+          <div className="flex items-center justify-between gap-2 md:gap-3 mb-3 md:mb-4 flex-wrap flex-shrink-0">
+
+            {/* LEFT: Title + Location */}
+            <div className="flex items-center gap-2 md:gap-3 min-w-0 flex-1">
+              <div className="relative flex-shrink-0">
+                <MapPin className="w-4 h-4 md:w-5 md:h-5 text-green-400" />
+                <span className="absolute -top-1 -right-1 w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse" />
               </div>
-              <div>
-                <h3 className="text-sm md:text-base lg:text-xl font-bold text-white drop-shadow">
-                  Interactive World Map
-                </h3>
-                <p className="text-[8px] md:text-[10px] lg:text-xs text-gray-400 flex items-center gap-1">
-                  <Navigation className="w-2.5 h-2.5 md:w-3 md:h-3" />
+              <div className="min-w-0">
+                <h3 className="text-sm md:text-lg lg:text-xl font-bold text-white drop-shadow truncate">Interactive World Map</h3>
+                <p className="text-[8px] md:text-xs text-gray-400 truncate">
+                  <Navigation className="w-2.5 h-2.5 inline mr-1" />
                   {location?.city ? `${location.city}, ${location.country}` : 'Global View'}
                 </p>
               </div>
             </div>
 
-            <div className="flex items-center gap-2 self-end sm:self-auto">
-              {/* Live Tracking Badge */}
-              <div className="flex items-center gap-1 bg-green-500/90 backdrop-blur-sm px-1.5 md:px-2 py-0.5 md:py-1 rounded-full text-[8px] md:text-[10px] font-semibold animate-pulse border border-green-400/40 shadow-md shadow-green-500/20">
+            {/* RIGHT: Both Buttons in Same Row */}
+            <div className="flex items-center gap-2 flex-shrink-0">
+
+              {/* 🟢 LIVE TRACKING Badge */}
+              <div className="flex items-center gap-1 bg-green-500/90 backdrop-blur-sm px-1.5 md:px-2 py-0.5 md:py-1 rounded-full text-[8px] md:text-[10px] font-semibold animate-pulse border border-green-400/40 shadow-md shadow-green-500/20 whitespace-nowrap">
                 <span className="w-1 h-1 md:w-1.5 md:h-1.5 bg-white rounded-full animate-pulse" />
                 LIVE TRACKING
               </div>
 
-              {/* ✅ LOCATE ME BUTTON - SMALLER SIZE */}
-              {/* ✅✅✅ MOBILE-FIXED LOCATE ME BUTTON */}
+              {/* 🔵 Locate Me Button */}
               <button
                 onClick={() => {
                   if (leafletMap && location?.lat && location?.lon) {
@@ -1534,63 +1536,29 @@ const WorldWeatherMap = memo<WorldWeatherMapProps>(({ weatherData, unit }) => {
                 }}
                 className="
     relative flex items-center justify-center gap-1 
-    px-2 py-1.5 
     bg-gradient-to-r from-blue-500 to-cyan-400 
     hover:from-blue-400 hover:to-cyan-300
-    text-white rounded-lg font-bold 
-    border border-blue-300/50 
-    shadow-md shadow-blue-500/40
-    hover:shadow-lg hover:shadow-blue-400/60
-    transition-all duration-200 
-    whitespace-nowrap flex-shrink-0 
-    overflow-hidden group
+    text-white rounded-full font-semibold 
+    border border-blue-300/40 
+    shadow-md shadow-blue-500/20
+    backdrop-blur-sm
     active:scale-95
+    flex-shrink-0 
     
-    /* ✅ MOBILE-SPECIFIC SIZING */
-    text-xs        /* Base size */
-    min-w-[80px]   /* Minimum width */
-    h-8           /* Fixed height: 32px */
+    px-[7px] py-[2px]
+    h-[24px]
+    text-[9px]
+    w-[86px]
+    leading-none
     
-    /* Responsive scaling */
-    sm:px-3 sm:py-2 sm:text-sm sm:min-w-[100px] sm:h-9
-    md:px-4 md:py-2.5 md:text-base md:min-w-[110px] md:h-10
+    sm:w-[96px] sm:h-[26px] sm:text-[10px]
+    md:w-[104px] md:h-[28px] md:text-xs
   "
-                aria-label="Locate me on map"
-                style={{
-                  /* Glow effect - subtle on mobile */
-                  boxShadow: '0 0 12px rgba(59, 130, 246, 0.4), 0 0 24px rgba(59, 130, 246, 0.2)',
-                }}
               >
-                {/* Shimmer overlay */}
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent 
-    opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-xl" />
-
-                {/* Icon - FIXED SIZE */}
-                <Navigation className="
-    w-3.5 h-3.5 
-    sm:w-4 sm:h-4 
-    md:w-5 md:h-5 
-    relative z-10 
-    group-hover:animate-pulse 
-    drop-shadow-[0_0_4px_rgba(255,255,255,0.8)]
-    flex-shrink-0
-  " />
-
-                {/* Text - HIDDEN ON VERY SMALL SCREENS IF NEEDED */}
-                <span className="
-    relative z-10 
-    font-bold tracking-wide
-    hidden xs:inline  /* Hide text on tiny screens if needed */
-    sm:inline
-  ">
-                  Locate Me
-                </span>
-
-                {/* Tiny screen: Show only icon with tooltip */}
-                <span className="xs:hidden relative z-10 font-bold" title="Locate Me">
-                  Locate Me
-                </span>
+                <Navigation className="w-[11px] h-[11px] sm:w-3 sm:h-3" />
+                <span className="font-semibold whitespace-nowrap">Locate Me</span>
               </button>
+
             </div>
           </div>
 
@@ -3014,121 +2982,6 @@ function WeatherDashboardContent() {
       {/* ============================================ */}
       {/* 🌙 DOPER.PNG BACKGROUND - CINEMATIC EDITION */}
       {/* ============================================ */}
-      <div
-        className="fixed inset-0 overflow-hidden"
-        style={{ zIndex: 0 }}
-      >
-        {/* 🖼️ Main Background Image - WITH ANIMATION */}
-        <div
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{
-            backgroundImage: "url('/doper.png')",  // ← YOUR LOCAL IMAGE!
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            opacity: 0.4,  // Slightly increased for better visibility
-            animation: 'backgroundZoom 20s ease-in-out infinite',  // ← CINEMATIC ZOOM
-            transformOrigin: 'center',
-          }}
-        />
-
-        {/* 🌊 Animated Gradient Overlay - Moving Colors */}
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            zIndex: 1,
-            background: `
-        linear-gradient(135deg, 
-          rgba(59,130,246,${0.08 + Math.sin(Date.now() / 5000) * 0.02}) 0%, 
-          transparent 50%,
-          rgba(99,102,241,${0.06 + Math.cos(Date.now() / 7000) * 0.02}) 100%
-        )
-      `,
-            animation: 'gradientShift 8s ease-in-out infinite',
-          }}
-        />
-
-        {/* 🎭 Dark Overlay - For contrast with text */}
-        <div
-          className="absolute inset-0"
-          style={{
-            background: 'linear-gradient(180deg, rgba(0,0,20,0.25) 0%, rgba(0,0,10,0.55) 100%)',
-            zIndex: 2,
-          }}
-        />
-
-        {/* ✨ Frosted Glass Overlay - The magic touch! */}
-        <div
-          className="absolute inset-0 backdrop-blur-[2px] bg-white/[0.03]"
-          style={{
-            zIndex: 3,
-            background: 'linear-gradient(135deg, rgba(255,255,255,0.08) 0%, transparent 50%, rgba(255,255,255,0.04) 50%)',
-            mixBlendMode: 'overlay',
-            animation: 'glassShimmer 7s ease-in-out infinite',
-          }}
-        />
-
-        {/* 🌙 Blue/Purple Gradient Tint - Ambient Lighting */}
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            zIndex: 4,
-            background: `
-        radial-gradient(ellipse at 85% 15%, rgba(59,130,246, 0.12) 0%, transparent 50%),
-        radial-gradient(ellipse at 15% 80%, rgba(99,102,241, 0.08) 0%, transparent 50%),
-        linear-gradient(180deg, rgba(30,58,138,0.04) 0%, transparent 60%)
-      `,
-            animation: 'ambientGlow 10s ease-in-out infinite',
-          }}
-        />
-
-        {/* 🌙 Moon Glow Spot - Animated Pulse */}
-        <div
-          className="absolute rounded-full pointer-events-none"
-          style={{
-            width: '140px',
-            height: '140px',
-            top: '10%',
-            right: '15%',
-            background: 'radial-gradient(circle, rgba(224, 231, 254, 0.3) 0%, rgba(148, 163, 218, 0.12) 40%, transparent 70%)',
-            filter: 'blur(45px)',
-            animation: 'moonGlowPulse 6s ease-in-out infinite',
-            zIndex: 5,
-          }}
-        />
-
-        {/* ⭐ Floating Particles/Dust Effect (Optional) */}
-        <div
-          className="absolute inset-0 pointer-events-none overflow-hidden"
-          style={{ zIndex: 6 }}
-        >
-          {[...Array(5)].map((_, i) => (
-            <div
-              key={i}
-              className="absolute rounded-full bg-white/20"
-              style={{
-                width: `${2 + Math.random() * 3}px`,
-                height: `${2 + Math.random() * 3}px`,
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-                filter: 'blur(1px)',
-                animation: `particleFloat ${8 + i * 2}s ease-in-out infinite ${i * 1.5}s`,
-                opacity: 0.3 + Math.random() * 0.4,
-              }}
-            />
-          ))}
-        </div>
-
-        {/* 🎬 Vignette Effect - Cinematic Edges */}
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            zIndex: 7,
-            background: 'radial-gradient(circle at center, transparent 40%, rgba(0,0,0,0.6) 100%)',
-          }}
-        />
-      </div>
-
-
       {/* Mobile Overlay */}
       {responsive.isMobile && isMobileSidebarOpen && (
         <div
@@ -5836,101 +5689,6 @@ function WeatherDashboardContent() {
 @keyframes pulse {
   0%, 100% { opacity: 0.7; }
   50% { opacity: 1; }
-}
-  /* ============================================ */
-/* 🎬 DOPER BACKGROUND ANIMATIONS           */
-/* ============================================ */
-
-/* Cinematic Slow Zoom */
-@keyframes backgroundZoom {
-  0%, 100% { 
-    transform: scale(1) translateZ(0); 
-    filter: brightness(1) contrast(1);
-  }
-  25% { 
-    transform: scale(1.03) translateZ(0); 
-    filter: brightness(1.05) contrast(1.05);
-  }
-  50% { 
-    transform: scale(1.06) translateZ(0); 
-    filter: brightness(1.03) contrast(1.03);
-  }
-  75% { 
-    transform: scale(1.02) translateZ(0); 
-    filter: brightness(1.07) contrast(1.07);
-  }
-}
-
-/* Ambient Color Shift */
-@keyframes gradientShift {
-  0%, 100% { 
-    opacity: 0.8; 
-    transform: translateX(0) translateY(0);
-  }
-  33% { 
-    opacity: 1; 
-    transform: translateX(10px) translateY(-5px);
-  }
-  66% { 
-    opacity: 0.9; 
-    transform: translateX(-10px) translateY(5px);
-  }
-}
-
-/* Glass Reflection Shimmer */
-@keyframes glassShimmer {
-  0%, 100% { 
-    opacity: 0.6; 
-    background-position: 0% 50%;
-  }
-  50% { 
-    opacity: 0.9; 
-    background-position: 100% 50%;
-  }
-}
-
-/* Ambient Glow Breathing */
-@keyframes ambientGlow {
-  0%, 100% { 
-    opacity: 0.7; 
-    filter: blur(0px);
-  }
-  50% { 
-    opacity: 1; 
-    filter: blur(2px);
-  }
-}
-
-/* Moon Glow Pulse */
-@keyframes moonGlowPulse {
-  0%, 100% { 
-    transform: scale(1); 
-    opacity: 0.3;
-    filter: blur(40px);
-  }
-  50% { 
-    transform: scale(1.15); 
-    opacity: 0.5;
-    filter: blur(50px);
-  }
-}
-
-/* Floating Dust Particles */
-@keyframes particleFloat {
-  0% { 
-    transform: translateY(0) translateX(0); 
-    opacity: 0;
-  }
-  10% {
-    opacity: 0.5;
-  }
-  90% {
-    opacity: 0.3;
-  }
-  100% { 
-    transform: translateY(-100vh) translateX(50px); 
-    opacity: 0;
-  }
 }
       `}</style>
     </div>
