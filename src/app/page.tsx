@@ -210,6 +210,46 @@ function useResponsive() {
     height: windowSize.height,
   }
 }
+// ==================== PERFORMANCE OPTIMIZATION HOOK ====================
+function usePerformanceMode() {
+  const [isLowPerformance, setIsLowPerformance] = useState(false);
+  const [isMobileDevice, setIsMobileDevice] = useState(false);
+
+  useEffect(() => {
+    const checkPerformance = () => {
+      // Check if mobile device
+      const isMobile = window.innerWidth < 768;
+      setIsMobileDevice(isMobile);
+      
+      // Check hardware concurrency (CPU cores)
+      const cores = navigator.hardwareConcurrency || 2;
+      
+      // Check memory (if available)
+      const memory = (navigator as any)?.deviceMemory || 4;
+      
+      // Check user preference for reduced motion
+      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      
+      // Enable low performance mode if:
+      // - Mobile device OR
+      // - Less than 4 CPU cores OR  
+      // - Less than 4GB RAM OR
+      // - User prefers reduced motion
+      if (isMobile || cores < 4 || memory < 4 || prefersReducedMotion) {
+        setIsLowPerformance(true);
+        console.log('🚀 Performance Mode: LOW - Animations disabled');
+      } else {
+        console.log('🚀 Performance Mode: HIGH - Full effects enabled');
+      }
+    };
+
+    checkPerformance();
+    window.addEventListener('resize', checkPerformance);
+    return () => window.removeEventListener('resize', checkPerformance);
+  }, []);
+
+  return { isLowPerformance, isMobileDevice };
+}
 
 // ==================== ENHANCED ANIMATED HOURLY WEATHER ICON COMPONENT ====================
 const AnimatedHourlyWeatherIcon = memo(({ type, size = 'md', className = '' }: { type: string; size?: 'sm' | 'md' | 'lg'; className?: string }) => {
