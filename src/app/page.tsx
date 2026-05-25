@@ -1501,66 +1501,70 @@ const WorldWeatherMap = memo<WorldWeatherMapProps>(({ weatherData, unit }) => {
 
           {/* HEADER */}
           {/* HEADER - SINGLE ROW */}
-          <div className="flex items-center justify-between gap-2 md:gap-3 mb-3 md:mb-4 flex-wrap flex-shrink-0">
+          {/* HEADER - SINGLE ROW */}
+          {/* HEADER - SINGLE ROW - ULTRA COMPACT FOR MOBILE */}
+<div className="flex items-center justify-between gap-1 sm:gap-1.5 md:gap-2 lg:gap-3 mb-3 md:mb-4 flex-shrink-0">
+  
+  {/* LEFT: Title + Location */}
+  <div className="flex items-center gap-1 sm:gap-1.5 min-w-0 flex-1 overflow-hidden">
+    <div className="relative flex-shrink-0">
+      <MapPin className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 md:w-5 md:h-5 text-green-400" />
+      <span className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse" />
+    </div>
+    <div className="min-w-0 flex-1 overflow-hidden">
+      
+      {/* ✅ FIXED: 10px font, no truncate, tight leading */}
+      <h3 className="text-[10px] sm:text-xs md:text-base lg:text-xl font-bold text-white drop-shadow leading-tight">
+        Interactive World Map
+      </h3>
+      
+      <p className="text-[7px] sm:text-[8px] md:text-xs text-gray-400 leading-none mt-0.5">
+        <Navigation className="w-2 h-2 sm:w-2.5 sm:h-2.5 md:w-3 md:h-3 inline mr-0.5" />
+        {location?.city ? `${location?.city}, ${location?.country}` : 'Global View'}
+      </p>
+    </div>
+  </div>
 
-            {/* LEFT: Title + Location */}
-            <div className="flex items-center gap-2 md:gap-3 min-w-0 flex-1">
-              <div className="relative flex-shrink-0">
-                <MapPin className="w-4 h-4 md:w-5 md:h-5 text-green-400" />
-                <span className="absolute -top-1 -right-1 w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse" />
-              </div>
-              <div className="min-w-0">
-                <h3 className="text-sm md:text-lg lg:text-xl font-bold text-white drop-shadow truncate">Interactive World Map</h3>
-                <p className="text-[8px] md:text-xs text-gray-400 truncate">
-                  <Navigation className="w-2.5 h-2.5 inline mr-1" />
-                  {location?.city ? `${location.city}, ${location.country}` : 'Global View'}
-                </p>
-              </div>
-            </div>
-
-            {/* RIGHT: Both Buttons in Same Row */}
-            <div className="flex items-center gap-2 flex-shrink-0">
-
-              {/* 🟢 LIVE TRACKING Badge */}
-              <div className="flex items-center gap-1 bg-green-500/90 backdrop-blur-sm px-1.5 md:px-2 py-0.5 md:py-1 rounded-full text-[8px] md:text-[10px] font-semibold animate-pulse border border-green-400/40 shadow-md shadow-green-500/20 whitespace-nowrap">
-                <span className="w-1 h-1 md:w-1.5 md:h-1.5 bg-white rounded-full animate-pulse" />
-                LIVE TRACKING
-              </div>
-
-              {/* 🔵 Locate Me Button */}
-              <button
-                onClick={() => {
-                  if (leafletMap && location?.lat && location?.lon) {
-                    leafletMap.flyTo([location.lat, location.lon], 14, { duration: 2 })
-                  }
-                }}
-                className="
-    relative flex items-center justify-center gap-1 
-    bg-gradient-to-r from-blue-500 to-cyan-400 
-    hover:from-blue-400 hover:to-cyan-300
-    text-white rounded-full font-semibold 
-    border border-blue-300/40 
-    shadow-md shadow-blue-500/20
-    backdrop-blur-sm
-    active:scale-95
-    flex-shrink-0 
+  {/* RIGHT: Buttons */}
+  <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
     
-    px-[7px] py-[2px]
-    h-[24px]
-    text-[9px]
-    w-[86px]
-    leading-none
-    
-    sm:w-[96px] sm:h-[26px] sm:text-[10px]
-    md:w-[104px] md:h-[28px] md:text-xs
-  "
-              >
-                <Navigation className="w-[11px] h-[11px] sm:w-3 sm:h-3" />
-                <span className="font-semibold whitespace-nowrap">Locate Me</span>
-              </button>
+    {/* 🟢 LIVE TRACKING */}
+    <div className="flex items-center gap-1 bg-green-500/90 backdrop-blur-sm px-1.5 sm:px-2 py-[1px] rounded-full text-[8px] sm:text-[9px] md:text-[10px] font-semibold animate-pulse border border-green-400/40 shadow-md shadow-green-500/20 whitespace-nowrap">
+      <span className="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-white rounded-full animate-pulse" />
+      LIVE TRACKING
+    </div>
 
-            </div>
-          </div>
+    {/* 🔵 Locate Me */}
+    <button
+      onClick={() => {
+        if (leafletMap && location?.lat && location?.lon) {
+          leafletMap.flyTo([location.lat, location.lon], 14, { duration: 2 })
+        }
+      }}
+      className="
+        relative flex items-center justify-center gap-0.5 
+        bg-gradient-to-r from-blue-500 to-cyan-400 
+        hover:from-blue-400 hover:to-cyan-300
+        text-white rounded-full font-semibold 
+        border border-blue-300/40 
+        shadow-sm shadow-blue-500/20
+        backdrop-blur-sm
+        active:scale-95
+        flex-shrink-0
+        
+        px-[6px] py-[1px]
+        h-[22px]
+        text-[8px]
+        w-[82px]
+        leading-none
+      "
+    >
+      <Navigation className="w-[10px] h-[10px] sm:w-3 sm:h-3" />
+      <span className="font-semibold whitespace-nowrap">Locate Me</span>
+    </button>
+
+  </div>
+</div>
 
           {/* LAYER BUTTONS */}
           <div className="flex items-center gap-1.5 md:gap-2 mb-2 md:mb-3 overflow-x-auto overflow-y-hidden pb-1 md:pb-2 flex-shrink-0 snap-x snap-mandatory scrollbar-hide -mx-1 px-1">
