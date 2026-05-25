@@ -3397,7 +3397,7 @@ function WeatherDashboardContent() {
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
                 <MapPin className="w-2.5 h-2.5 sm:w-3 sm:h-3 md:w-4 md:h-4 lg:w-5 lg:h-5 relative z-10 group-hover:animate-pulse flex-shrink-0" />
                 <span className="relative z-10 font-bold hidden xs:inline sm:inline">Live Location</span>
-                <span className="relative z-10 xs:hidden sm:hidden" title="Live Location">Live Location</span>
+                <span className="relative z-10 xs:hidden sm:hidden" title="Live Location"> Live </span>
               </button>
 
               {/* 🌡️ TEMPERATURE TOGGLE - Ultra Compact */}
@@ -3443,7 +3443,7 @@ function WeatherDashboardContent() {
                 </span>
 
                 <span className="relative z-10 font-bold tracking-wide drop-shadow-md hidden sm:inline">Live</span>
-                <span className="relative z-10 sm:hidden">Live</span>
+                <span className="relative z-10 sm:hidden"> Live </span>
 
                 <div className="green-btn-sparkle absolute top-0 left-[-100%] h-full w-[50%] bg-gradient-to-r from-transparent via-white/20 to-transparent skew-x-12"></div>
               </a>
