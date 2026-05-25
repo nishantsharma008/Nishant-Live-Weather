@@ -3764,42 +3764,42 @@ function WeatherDashboardContent() {
 
                 {/* Today's Highlights */}
                 {/* ==================== */}
-{/* ✅ HIGHLIGHTS CARD - ERROR FREE */}
-{/* ==================== */}
-<div id="highlights-section" className="group relative flex-1 flex flex-col">
-  <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/20 to-orange-500/20 rounded-2xl md:rounded-3xl blur-xl opacity=[0.4]" />
-  
-  <div className="relative bg-white/[0.04] backdrop-blur-xl rounded-2xl p-1.5 sm:p-2 md:p-2.5 border border-white/15 hover:border-white/25 transition-all h-full flex flex-col overflow-hidden">
+                {/* ✅ HIGHLIGHTS CARD - ERROR FREE */}
+                {/* ==================== */}
+                <div id="highlights-section" className="group relative flex-1 flex flex-col">
+                  <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/20 to-orange-500/20 rounded-2xl md:rounded-3xl blur-xl opacity=[0.4]" />
 
-    {/* Header */}
-    <h3 className="text-xs sm:text-sm font-bold text-white drop-shadow mb-0.5 sm:mb-1">Today&apos;s Highlights</h3>
+                  <div className="relative bg-white/[0.04] backdrop-blur-xl rounded-2xl p-1.5 sm:p-2 md:p-2.5 border border-white/15 hover:border-white/25 transition-all h-full flex flex-col overflow-hidden">
 
-    {/* List - NO className ON ICONS! */}
-    <div className="space-y-[2px] sm:space-y-[4px] flex-1 flex flex-col justify-evenly overflow-hidden">
-      {(() => {
-        const highlights = weatherData?.highlights
-        const safe = (v: unknown) => (v === null || v === undefined || v === '' ? '--' : String(v))
+                    {/* Header */}
+                    <h3 className="text-xs sm:text-sm font-bold text-white drop-shadow mb-0.5 sm:mb-1">Today&apos;s Highlights</h3>
 
-        return [
-          { Icon: AnimatedSunriseIcon, label: 'Sunrise', val: safe(highlights?.sunrise) },
-          { Icon: AnimatedSunsetIcon, label: 'Sunset', val: safe(highlights?.sunset) },
-          { Icon: AnimatedMoonriseIcon, label: 'Moonrise', val: safe(highlights?.moonrise) },
-          { Icon: AnimatedMoonsetIcon, label: 'Moonset', val: safe(highlights?.moonset) },
-          { Icon: AnimatedMoonPhaseIcon, label: 'Moon Phase', val: safe(highlights?.moonPhaseLabel) }
-        ].map((item, i) => (
-          <div key={i} className="flex items-center justify-between py-[2px] sm:py-[4px] px-1 hover:bg-white/[0.05] rounded transition-colors border-b border-white/5 last:border-0 backdrop-blur-sm">
-            <div className="flex items-center gap-1 min-w-0 flex-1">
-              <item.Icon size="sm"></item.Icon>
-              <span className="text-[10px] sm:text-xs font-medium text-white/90 truncate">{item.label}</span>
-            </div>
-            <span className="text-[10px] sm:text-xs font-semibold text-white drop-shadow ml-1 flex-shrink-0">{item.val}</span>
-          </div>
-        ))
-      })()}
-    </div>
+                    {/* List - NO className ON ICONS! */}
+                    <div className="space-y-[2px] sm:space-y-[4px] flex-1 flex flex-col justify-evenly overflow-hidden">
+                      {(() => {
+                        const highlights = weatherData?.highlights
+                        const safe = (v: unknown) => (v === null || v === undefined || v === '' ? '--' : String(v))
 
-  </div>
-</div>
+                        return [
+                          { Icon: AnimatedSunriseIcon, label: 'Sunrise', val: safe(highlights?.sunrise) },
+                          { Icon: AnimatedSunsetIcon, label: 'Sunset', val: safe(highlights?.sunset) },
+                          { Icon: AnimatedMoonriseIcon, label: 'Moonrise', val: safe(highlights?.moonrise) },
+                          { Icon: AnimatedMoonsetIcon, label: 'Moonset', val: safe(highlights?.moonset) },
+                          { Icon: AnimatedMoonPhaseIcon, label: 'Moon Phase', val: safe(highlights?.moonPhaseLabel) }
+                        ].map((item, i) => (
+                          <div key={i} className="flex items-center justify-between py-[2px] sm:py-[4px] px-1 hover:bg-white/[0.05] rounded transition-colors border-b border-white/5 last:border-0 backdrop-blur-sm">
+                            <div className="flex items-center gap-1 min-w-0 flex-1">
+                              <item.Icon size="sm"></item.Icon>
+                              <span className="text-[10px] sm:text-xs font-medium text-white/90 truncate">{item.label}</span>
+                            </div>
+                            <span className="text-[10px] sm:text-xs font-semibold text-white drop-shadow ml-1 flex-shrink-0">{item.val}</span>
+                          </div>
+                        ))
+                      })()}
+                    </div>
+
+                  </div>
+                </div>
 
               </div>
             </div>
@@ -3809,40 +3809,95 @@ function WeatherDashboardContent() {
 
               {/* Weather Alerts Card */}
 
-              <div id="highlights-section" className="group relative flex-1 flex flex-col">
-                <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/20 to-orange-500/20 rounded-2xl md:rounded-3xl blur-xl opacity=[0.4]" />
+              <div id="weather-alerts-card" className="group relative h-full flex flex-col flex-1">
+                <div className="absolute inset-0 bg-gradient-to-br from-orange-500/20 to-red-500/20 rounded-2xl md:rounded-3xl blur-xl opacity=[0.4]" />
+                <div className="relative bg-white/[0.04] backdrop-blur-xl rounded-2xl md:rounded-3xl p-4 md:p-5 lg:p-6 border border-white/15 hover:border-white/25 transition-all min-h-[250px] md:min-h-[290px] flex-1 h-full">
 
-                {/* ✅ ULTRA COMPACT - NO BUILD ERRORS */}
-                <div className="relative bg-white/[0.04] backdrop-blur-xl rounded-2xl p-1.5 sm:p-2 md:p-2.5 border border-white/15 hover:border-white/25 transition-all h-full flex flex-col overflow-hidden">
+                  {/* Header */}
+                  <div className="flex items-center justify-between mb-3 md:mb-4">
+                    <div className="flex items-center gap-1.5 md:gap-2">
+                      <AlertTriangle className="w-4 h-4 md:w-5 md:h-5 text-orange-400" />
+                      <h3 className="text-sm md:text-base lg:text-lg font-bold text-white drop-shadow">Weather Alerts</h3>
+                    </div>
+                    <button className="text-[10px] md:text-xs text-blue-300 hover:text-blue-200 hover:underline font-medium">View All Alerts </button>
+                  </div>
 
-                  {/* Tiny Header */}
-                  <h3 className="text-xs sm:text-sm font-bold text-white drop-shadow mb-0.5 sm:mb-1">Today&apos;s Highlights</h3>
-
-                  {/* ✅ Ultra Tight List */}
-                  <div className="space-y-[2px] sm:space-y-[4px] flex-1 flex flex-col justify-evenly overflow-hidden">
+                  {/* Alerts Content */}
+                  <div className="space-y-2 md:space-y-3 flex-1">
                     {(() => {
-                      const highlights = weatherData?.highlights
-                      const safe = (v: unknown) => (v === null || v === undefined || v === '' ? '--' : String(v))
+                      const alerts = weatherData?.alerts || []
 
-                      return [
-                        { Icon: AnimatedSunriseIcon, label: 'Sunrise', val: safe(highlights?.sunrise) },
-                        { Icon: AnimatedSunsetIcon, label: 'Sunset', val: safe(highlights?.sunset) },
-                        { Icon: AnimatedMoonriseIcon, label: 'Moonrise', val: safe(highlights?.moonrise) },
-                        { Icon: AnimatedMoonsetIcon, label: 'Moonset', val: safe(highlights?.moonset) },
-                        { Icon: AnimatedMoonPhaseIcon, label: 'Moon Phase', val: safe(highlights?.moonPhaseLabel) }
-                      ].map((item, i) => (
-                        /* ✅ Super Compact Row - NO className on icons */
-                        <div key={i} className="flex items-center justify-between py-[2px] sm:py-[4px] px-1 hover:bg-white/[0.05] rounded transition-colors border-b border-white/5 last:border-0 backdrop-blur-sm">
-                          <div className="flex items-center gap-1 min-w-0 flex-1">
-                            <item.Icon size="sm" />
-                            <span className="text-[10px] sm:text-xs font-medium text-white/90 truncate">{item.label}</span>
+                      if (alerts.length === 0) {
+                        return (
+                          <div className="bg-gradient-to-r from-green-500/15 to-emerald-500/10 rounded-xl md:rounded-2xl p-3 md:p-4 border border-emerald-400/15 hover:border-emerald-400/25 transition-all h-full flex items-center backdrop-blur-sm">
+                            <div className="flex items-start gap-2 md:gap-3 w-full">
+                              <div className="w-8 h-8 md:w-10 md:h-10 bg-emerald-500/25 rounded-lg md:rounded-xl flex items-center justify-center flex-shrink-0">
+                                <AlertTriangle className="w-4 h-4 md:w-5 md:h-5 text-emerald-200" />
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <h4 className="font-bold text-white text-xs md:text-sm mb-1">No Active Alerts</h4>
+                                <p className="text-[10px] md:text-xs text-gray-300 leading-relaxed">
+                                  There are no current weather alerts for your selected location.
+                                </p>
+                                <p className="text-[8px] md:text-[10px] text-gray-400 mt-2 flex items-center gap-1">
+                                  <span>{weatherData?.highlights?.sunrise ? weatherData?.highlights.sunrise : '--'}</span>
+                                </p>
+                              </div>
+                            </div>
                           </div>
-                          <span className="text-[10px] sm:text-xs font-semibold text-white drop-shadow ml-1 flex-shrink-0">{item.val}</span>
+                        )
+                      }
+
+                      const asGradient = (severity: WeatherAlert['severity']) => {
+                        switch (severity) {
+                          case 'warning':
+                            return 'bg-gradient-to-r from-orange-500/20 to-yellow-500/10 border-orange-400/20 hover:border-orange-400/40'
+                          case 'advisory':
+                            return 'bg-gradient-to-r from-blue-500/15 to-cyan-500/10 border-blue-400/15 hover:border-blue-400/30'
+                          default:
+                            return 'bg-gradient-to-r from-green-500/15 to-emerald-500/10 border-emerald-400/15 hover:border-emerald-400/25'
+                        }
+                      }
+
+                      const iconFor = (icon: string, severity: WeatherAlert['severity']) => {
+                        if (icon === '🌧️' || icon === '⚡' || icon === '🔥' || icon === '❄️')
+                          return <AlertTriangle className="w-4 h-4 md:w-5 md:h-5 text-orange-300" />
+                        if (icon === '🌬️')
+                          return <Wind className="w-4 h-4 md:w-5 md:h-5 text-blue-300" />
+                        return severity === 'warning'
+                          ? <AlertTriangle className="w-4 h-4 md:w-5 md:h-5 text-orange-300" />
+                          : <Wind className="w-4 h-4 md:w-5 md:h-5 text-blue-300" />
+                      }
+
+                      const formatAlertTime = (time: string) => {
+                        if (!time) return '--'
+                        const d = new Date(time)
+                        if (isNaN(d.getTime())) return time
+                        try {
+                          return d.toLocaleString('en-US', { hour: 'numeric', minute: '2-digit', day: '2-digit', month: 'short' })
+                        } catch {
+                          return time
+                        }
+                      }
+
+                      return alerts.slice(0, 2).map((a, i) => (
+                        <div key={i} className={`${asGradient(a.severity)} rounded-xl md:rounded-2xl p-3 md:p-4 border transition-all backdrop-blur-sm`}>
+                          <div className="flex items-start gap-2 md:gap-3">
+                            <div className="w-8 h-8 md:w-10 md:h-10 bg-white/[0.08] rounded-lg md:rounded-xl flex items-center justify-center flex-shrink-0">
+                              {a.icon ? iconFor(a.icon, a.severity) : iconFor('', a.severity)}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <h4 className="font-bold text-white text-xs md:text-sm mb-1">{a.title}</h4>
+                              <p className="text-[10px] md:text-xs text-gray-300 leading-relaxed">{a.message}</p>
+                              <p className="text-[8px] md:text-[10px] text-gray-400 mt-2 flex items-center gap-1">
+                                <span>{formatAlertTime(a.time)}</span>
+                              </p>
+                            </div>
+                          </div>
                         </div>
                       ))
                     })()}
                   </div>
-
                 </div>
               </div>
 
