@@ -1503,47 +1503,47 @@ const WorldWeatherMap = memo<WorldWeatherMapProps>(({ weatherData, unit }) => {
           {/* HEADER - SINGLE ROW */}
           {/* HEADER - SINGLE ROW */}
           {/* HEADER - SINGLE ROW - ULTRA COMPACT FOR MOBILE */}
-<div className="flex items-center justify-between gap-1 sm:gap-1.5 md:gap-2 lg:gap-3 mb-3 md:mb-4 flex-shrink-0">
-  
-  {/* LEFT: Title + Location */}
-  <div className="flex items-center gap-1 sm:gap-1.5 min-w-0 flex-1 overflow-hidden">
-    <div className="relative flex-shrink-0">
-      <MapPin className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 md:w-5 md:h-5 text-green-400" />
-      <span className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse" />
-    </div>
-    <div className="min-w-0 flex-1 overflow-hidden">
-      
-      {/* ✅ FIXED: 10px font, no truncate, tight leading */}
-      <h3 className="text-[10px] sm:text-xs md:text-base lg:text-xl font-bold text-white drop-shadow leading-tight">
-        Interactive World Map
-      </h3>
-      
-      <p className="text-[7px] sm:text-[8px] md:text-xs text-gray-400 leading-none mt-0.5">
-        <Navigation className="w-2 h-2 sm:w-2.5 sm:h-2.5 md:w-3 md:h-3 inline mr-0.5" />
-        {location?.city ? `${location?.city}, ${location?.country}` : 'Global View'}
-      </p>
-    </div>
-  </div>
+          <div className="flex items-center justify-between gap-1 sm:gap-1.5 md:gap-2 lg:gap-3 mb-3 md:mb-4 flex-shrink-0">
 
-  {/* RIGHT: Buttons */}
-  <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
-    
-    {/* 🟢 LIVE TRACKING */}
-    <div className="flex items-center gap-1 bg-green-500/90 backdrop-blur-sm px-1.5 sm:px-2 py-[1px] rounded-full text-[8px] sm:text-[9px] md:text-[10px] font-semibold animate-pulse border border-green-400/40 shadow-md shadow-green-500/20 whitespace-nowrap">
-      <span className="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-white rounded-full animate-pulse" />
-      LIVE TRACKING
-    </div>
+            {/* LEFT: Title + Location */}
+            <div className="flex items-center gap-1 sm:gap-1.5 min-w-0 flex-1 overflow-hidden">
+              <div className="relative flex-shrink-0">
+                <MapPin className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 md:w-5 md:h-5 text-green-400" />
+                <span className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse" />
+              </div>
+              <div className="min-w-0 flex-1 overflow-hidden">
 
-    {/* 🔵 Locate Me */}
-    {/* 🔵 Locate Me - BLUE Icon + WHITE Text - NO BOX ANIMATION */}
-    {/* 🔵 Locate Me - BLUE GLOW HOVER EFFECT */}
-<button
-  onClick={() => {
-    if (leafletMap && location?.lat && location?.lon) {
-      leafletMap.flyTo([location.lat, location.lon], 14, { duration: 2 })
-    }
-  }}
-  className="
+                {/* ✅ FIXED: 10px font, no truncate, tight leading */}
+                <h3 className="text-[10px] sm:text-xs md:text-base lg:text-xl font-bold text-white drop-shadow leading-tight">
+                  Interactive World Map
+                </h3>
+
+                <p className="text-[7px] sm:text-[8px] md:text-xs text-gray-400 leading-none mt-0.5">
+                  <Navigation className="w-2 h-2 sm:w-2.5 sm:h-2.5 md:w-3 md:h-3 inline mr-0.5" />
+                  {location?.city ? `${location?.city}, ${location?.country}` : 'Global View'}
+                </p>
+              </div>
+            </div>
+
+            {/* RIGHT: Buttons */}
+            <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
+
+              {/* 🟢 LIVE TRACKING */}
+              <div className="flex items-center gap-1 bg-green-500/90 backdrop-blur-sm px-1.5 sm:px-2 py-[1px] rounded-full text-[8px] sm:text-[9px] md:text-[10px] font-semibold animate-pulse border border-green-400/40 shadow-md shadow-green-500/20 whitespace-nowrap">
+                <span className="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-white rounded-full animate-pulse" />
+                LIVE TRACKING
+              </div>
+
+              {/* 🔵 Locate Me */}
+              {/* 🔵 Locate Me - BLUE Icon + WHITE Text - NO BOX ANIMATION */}
+              {/* 🔵 Locate Me - BLUE GLOW HOVER EFFECT */}
+              <button
+                onClick={() => {
+                  if (leafletMap && location?.lat && location?.lon) {
+                    leafletMap.flyTo([location.lat, location.lon], 14, { duration: 2 })
+                  }
+                }}
+                className="
     bg-transparent
     
     /* ✨ BLUE LIGHT HOVER EFFECT */
@@ -1587,60 +1587,57 @@ const WorldWeatherMap = memo<WorldWeatherMapProps>(({ weatherData, unit }) => {
     -webkit-appearance:none
     -webkit-tap-highlight-color:transparent
   "
->
-  <Navigation className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-blue-400" />
-  <span>Locate Me</span>
-</button>
-  </div>
-</div>
+              >
+                <Navigation className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-blue-400" />
+                <span>Locate Me</span>
+              </button>
+            </div>
+          </div>
 
           {/* LAYER BUTTONS */}
           {/* ✅✅✅ LAYER BUTTONS SECTION - COMPLETE & UNBREAKABLE ✅✅✅ */}
-<div className="flex items-center gap-1 lg:gap-2 mb-2 md:mb-3 overflow-x-auto overflow-y-hidden pb-1 md:pb-2 flex-shrink-0 scrollbar-hide -mx-1 px-1 min-w-0">
-  
-  {/* 🎯 UNBREAKABLE ICON - Always Visible */}
-  <Layers className="w-3.5 h-3.5 md:w-4 md:h-4 text-gray-300" />
-    <span className="text-gray-300 font-semibold ml-1 text-xs md:text-sm">:</span>
+          <div className="flex items-center gap-1 lg:gap-2 mb-2 md:mb-3 overflow-x-auto overflow-y-hidden pb-1 md:pb-2 flex-shrink-0 scrollbar-hide -mx-1 px-1 min-w-0">
 
-  {/* Temperature Button */}
-  <button
-    onClick={() => setActiveLayer('Temperature')}
-    className={`flex items-center gap-1 md:gap-1.5 px-2.5 sm:px-3 md:px-3 lg:px-4 py-1.5 md:py-1.5 lg:py-2 rounded-lg font-medium text-[10px] sm:text-[10px] md:text-xs whitespace-nowrap transition-all duration-300 border snap-start flex-shrink-0 ${
-      activeLayer === 'Temperature'
-        ? 'bg-gradient-to-r from-orange-500/95 to-red-500/95 text-white shadow-lg backdrop-blur-sm border-orange-300/50 font-bold'
-        : 'bg-white/[0.08] text-gray-300 hover:text-white hover:bg-white/[0.15] border-white/15'
-    }`}
-  >
-    <Thermometer className="w-2.5 h-2.5 sm:w-3 sm:h-3 md:w-3 md:h-3 flex-shrink-0" />
-    Temperature
-  </button>
+            {/* 🎯 UNBREAKABLE ICON - Always Visible */}
+            <Layers className="w-3.5 h-3.5 md:w-4 md:h-4 text-gray-300" />
+            <span className="text-gray-300 font-semibold ml-1 text-xs md:text-sm">:</span>
 
-  {/* Precipitation Button */}
-  <button
-    onClick={() => setActiveLayer('Precipitation')}
-    className={`flex items-center gap-1 md:gap-1.5 px-2.5 sm:px-3 md:px-3 lg:px-4 py-1.5 md:py-1.5 lg:py-2 rounded-lg font-medium text-[10px] sm:text-[10px] md:text-xs whitespace-nowrap transition-all duration-300 border snap-start flex-shrink-0 ${
-      activeLayer === 'Precipitation'
-        ? 'bg-gradient-to-r from-orange-500/95 to-red-500/95 text-white shadow-lg backdrop-blur-sm border-orange-300/50 font-bold'
-        : 'bg-white/[0.08] text-gray-300 hover:text-white hover:bg-white/[0.15] border-white/15'
-    }`}
-  >
-    <Droplets className="w-2.5 h-2.5 sm:w-3 sm:h-3 md:w-3 md:h-3 flex-shrink-0" />
-    Precipitation
-  </button>
+            {/* Temperature Button */}
+            <button
+              onClick={() => setActiveLayer('Temperature')}
+              className={`flex items-center gap-1 md:gap-1.5 px-2.5 sm:px-3 md:px-3 lg:px-4 py-1.5 md:py-1.5 lg:py-2 rounded-lg font-medium text-[10px] sm:text-[10px] md:text-xs whitespace-nowrap transition-all duration-300 border snap-start flex-shrink-0 ${activeLayer === 'Temperature'
+                ? 'bg-gradient-to-r from-orange-500/95 to-red-500/95 text-white shadow-lg backdrop-blur-sm border-orange-300/50 font-bold'
+                : 'bg-white/[0.08] text-gray-300 hover:text-white hover:bg-white/[0.15] border-white/15'
+                }`}
+            >
+              <Thermometer className="w-2.5 h-2.5 sm:w-3 sm:h-3 md:w-3 md:h-3 flex-shrink-0" />
+              Temperature
+            </button>
 
-  {/* Wind Speed Button */}
-  <button
-    onClick={() => setActiveLayer('Wind Speed')}
-    className={`flex items-center gap-1 md:gap-1.5 px-2.5 sm:px-3 md:px-3 lg:px-4 py-1.5 md:py-1.5 lg:py-2 rounded-lg font-medium text-[10px] sm:text-[10px] md:text-xs whitespace-nowrap transition-all duration-300 border snap-start flex-shrink-0 ${
-      activeLayer === 'Wind Speed'
-        ? 'bg-gradient-to-r from-orange-500/95 to-red-500/95 text-white shadow-lg backdrop-blur-sm border-orange-300/50 font-bold'
-        : 'bg-white/[0.08] text-gray-300 hover:text-white hover:bg-white/[0.15] border-white/15'
-    }`}
-  >
-    <Wind className="w-2.5 h-2.5 sm:w-3 sm:h-3 md:w-3 md:h-3 flex-shrink-0" />
-    Wind Speed
-  </button>
-</div>
+            {/* Precipitation Button */}
+            <button
+              onClick={() => setActiveLayer('Precipitation')}
+              className={`flex items-center gap-1 md:gap-1.5 px-2.5 sm:px-3 md:px-3 lg:px-4 py-1.5 md:py-1.5 lg:py-2 rounded-lg font-medium text-[10px] sm:text-[10px] md:text-xs whitespace-nowrap transition-all duration-300 border snap-start flex-shrink-0 ${activeLayer === 'Precipitation'
+                ? 'bg-gradient-to-r from-orange-500/95 to-red-500/95 text-white shadow-lg backdrop-blur-sm border-orange-300/50 font-bold'
+                : 'bg-white/[0.08] text-gray-300 hover:text-white hover:bg-white/[0.15] border-white/15'
+                }`}
+            >
+              <Droplets className="w-2.5 h-2.5 sm:w-3 sm:h-3 md:w-3 md:h-3 flex-shrink-0" />
+              Precipitation
+            </button>
+
+            {/* Wind Speed Button */}
+            <button
+              onClick={() => setActiveLayer('Wind Speed')}
+              className={`flex items-center gap-1 md:gap-1.5 px-2.5 sm:px-3 md:px-3 lg:px-4 py-1.5 md:py-1.5 lg:py-2 rounded-lg font-medium text-[10px] sm:text-[10px] md:text-xs whitespace-nowrap transition-all duration-300 border snap-start flex-shrink-0 ${activeLayer === 'Wind Speed'
+                ? 'bg-gradient-to-r from-orange-500/95 to-red-500/95 text-white shadow-lg backdrop-blur-sm border-orange-300/50 font-bold'
+                : 'bg-white/[0.08] text-gray-300 hover:text-white hover:bg-white/[0.15] border-white/15'
+                }`}
+            >
+              <Wind className="w-2.5 h-2.5 sm:w-3 sm:h-3 md:w-3 md:h-3 flex-shrink-0" />
+              Wind Speed
+            </button>
+          </div>
 
           {/* MAP CONTAINER WITH ALL OVERLAYS */}
           <div className="relative w-full flex-1 min-h-[250px] sm:min-h-[300px] md:min-h-[350px] lg:min-h-[400px] aspect-video max-h-[50vh] lg:max-h-none rounded-xl md:rounded-2xl overflow-hidden border border-white/20 z-0">
@@ -3631,153 +3628,153 @@ function WeatherDashboardContent() {
                 {/* Air Quality */}
                 {/* ✅ BEFORE (Broken): */}
                 {/* ✅✅✅ LIVE AIR QUALITY - FULLY WORKING ✅✅✅ */}
-<div className="group relative flex-shrink-0">
-  <div id="air-quality-section"></div>
-  
-  {/* Background Glow */}
-  <div className="absolute inset-0 bg-gradient-to-br from-green-500/20 to-emerald-500/20 rounded-2xl md:rounded-3xl blur-xl opacity-[0.4]" />
-  
-  {/* Main Card */}
-  <div className="relative bg-white/[0.04] backdrop-blur-xl rounded-2xl md:rounded-3xl p-3 md:p-4 lg:p-5 border border-white/15 hover:border-white/25 transition-all">
+                <div className="group relative flex-shrink-0">
+                  <div id="air-quality-section"></div>
 
-    {/* Header with LIVE Badge */}
-    <div className="flex items-center justify-between mb-2 md:mb-3">
-      <div className="flex items-center gap-1.5 md:gap-2">
-        <Wind className="w-4 h-4 md:w-5 md:h-5 text-green-400" />
-        <h3 className="text-sm md:text-base font-bold text-white drop-shadow">Air Quality</h3>
-        <span className="flex items-center gap-1 bg-green-500/20 backdrop-blur-sm px-1.5 py-0.5 rounded-full text-[8px] text-green-300 font-semibold animate-pulse border border-green-400/30 shadow-sm">
-          <span className="w-1 h-1 bg-green-400 rounded-full animate-pulse"></span>
-          LIVE
-        </span>
-      </div>
-      <button className="text-[10px] md:text-xs text-blue-300 hover:text-blue-200 hover:underline font-medium">Details Here </button>
-    </div>
+                  {/* Background Glow */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-green-500/20 to-emerald-500/20 rounded-2xl md:rounded-3xl blur-xl opacity-[0.4]" />
 
-    {/* AQI Circle with Live Data */}
-    <div className="flex justify-center mb-2 md:mb-3">
-      <div className="relative w-28 h-28 md:w-36 md:h-36 lg:w-40 lg:h-40">
-        <svg className="w-full h-full" viewBox="0 0 120 120" style={{ overflow: 'visible' }}>
-          <defs>
-            <linearGradient id="liveAqiGradFixed" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#10b981" stopOpacity="1" />
-              <stop offset="35%" stopColor="#fbbf24" stopOpacity="1" />
-              <stop offset="70%" stopColor="#f97316" stopOpacity="1" />
-              <stop offset="100%" stopColor="#ef4444" stopOpacity="1" />
-            </linearGradient>
-            <filter id="liveAqiGlowFixed" x="-50%" y="-50%" width="200%" height="200%">
-              <feGaussianBlur in="SourceAlpha" stdDeviation="2" result="blur" />
-              <feFlood floodColor="#10b981" floodOpacity="0.3" result="color" />
-              <feComposite in="color" in2="blur" operator="in" result="shadow" />
-              <feOffset dx="0" dy="0" in="shadow" result="shadow" />
-              <feMerge>
-                <feMergeNode in="shadow" />
-                <feMergeNode in="SourceGraphic" />
-              </feMerge>
-            </filter>
-          </defs>
+                  {/* Main Card */}
+                  <div className="relative bg-white/[0.04] backdrop-blur-xl rounded-2xl md:rounded-3xl p-3 md:p-4 lg:p-5 border border-white/15 hover:border-white/25 transition-all">
 
-          {/* Background Track */}
-          <circle cx="60" cy="60" r="48" fill="none" stroke="rgba(255, 255, 255, 0.08)" strokeWidth="10" strokeLinecap="round" />
+                    {/* Header with LIVE Badge */}
+                    <div className="flex items-center justify-between mb-2 md:mb-3">
+                      <div className="flex items-center gap-1.5 md:gap-2">
+                        <Wind className="w-4 h-4 md:w-5 md:h-5 text-green-400" />
+                        <h3 className="text-sm md:text-base font-bold text-white drop-shadow">Air Quality</h3>
+                        <span className="flex items-center gap-1 bg-green-500/20 backdrop-blur-sm px-1.5 py-0.5 rounded-full text-[8px] text-green-300 font-semibold animate-pulse border border-green-400/30 shadow-sm">
+                          <span className="w-1 h-1 bg-green-400 rounded-full animate-pulse"></span>
+                          LIVE
+                        </span>
+                      </div>
+                      <button className="text-[10px] md:text-xs text-blue-300 hover:text-blue-200 hover:underline font-medium">Details Here </button>
+                    </div>
 
-          {/* Progress Circle - PROPERLY CALCULATED */}
-          <circle 
-            cx="60" cy="60" r="48" 
-            fill="none" 
-            stroke="url(#liveAqiGradFixed)" 
-            strokeWidth="10" 
-            strokeLinecap="round" 
-            strokeDasharray={`${Math.min((65 / 300) * 301.59, 301.59)} 301.59`}
-            strokeDashoffset="0" 
-            transform="rotate(-90 60 60)" 
-            filter="url(#liveAqiGlowFixed)"
-            style={{ filter: 'drop-shadow(0 0 8px rgba(16, 185, 129, 0.4))' }}
-          >
-            <animate 
-              attributeName="stroke-dasharray" 
-              from="0 301.59" 
-              to={`${Math.min((65 / 300) * 301.59, 301.59)} 301.59`} 
-              dur="1.5s" 
-              fill="freeze" 
-            />
-            <animate 
-              attributeName="stroke-width" 
-              values="10;11;10" 
-              dur="3s" 
-              repeatCount="indefinite" 
-            />
-          </circle>
+                    {/* AQI Circle with Live Data */}
+                    <div className="flex justify-center mb-2 md:mb-3">
+                      <div className="relative w-28 h-28 md:w-36 md:h-36 lg:w-40 lg:h-40">
+                        <svg className="w-full h-full" viewBox="0 0 120 120" style={{ overflow: 'visible' }}>
+                          <defs>
+                            <linearGradient id="liveAqiGradFixed" x1="0%" y1="0%" x2="100%" y2="100%">
+                              <stop offset="0%" stopColor="#10b981" stopOpacity="1" />
+                              <stop offset="35%" stopColor="#fbbf24" stopOpacity="1" />
+                              <stop offset="70%" stopColor="#f97316" stopOpacity="1" />
+                              <stop offset="100%" stopColor="#ef4444" stopOpacity="1" />
+                            </linearGradient>
+                            <filter id="liveAqiGlowFixed" x="-50%" y="-50%" width="200%" height="200%">
+                              <feGaussianBlur in="SourceAlpha" stdDeviation="2" result="blur" />
+                              <feFlood floodColor="#10b981" floodOpacity="0.3" result="color" />
+                              <feComposite in="color" in2="blur" operator="in" result="shadow" />
+                              <feOffset dx="0" dy="0" in="shadow" result="shadow" />
+                              <feMerge>
+                                <feMergeNode in="shadow" />
+                                <feMergeNode in="SourceGraphic" />
+                              </feMerge>
+                            </filter>
+                          </defs>
 
-          {/* Center Text - SHOWS ACTUAL NUMBER */}
-          <text x="60" y="58" textAnchor="middle" dominantBaseline="middle" className="select-none" style={{ fontFamily: 'system-ui, sans-serif' }}>
-            <tspan x="60" dy="0" className="font-black fill-white" style={{ fontSize: '36px', fontWeight: '900', filter: 'drop-shadow(0 2px 6px rgba(0,0,0,0.6))' }}>
-              65
-              <animate attributeName="opacity" values="0;1" dur="0.5s" fill="freeze" />
-            </tspan>
-            <tspan x="60" dy="22" className="font-bold" style={{ fontSize: '13px', fontWeight: '700', filter: 'drop-shadow(0 1px 3px rgba(16, 185, 129, 0.4))' }}>
-              <tspan fill="#fbbf24">Moderate</tspan>
-              <animate attributeName="opacity" values="0;1" dur="0.8s" begin="0.3s" fill="freeze" />
-            </tspan>
-          </text>
-        </svg>
-      </div>
-    </div>
+                          {/* Background Track */}
+                          <circle cx="60" cy="60" r="48" fill="none" stroke="rgba(255, 255, 255, 0.08)" strokeWidth="10" strokeLinecap="round" />
 
-    {/* Dynamic Stats Grid - REAL DATA */}
-    <div className="grid grid-cols-2 gap-1 md:gap-1.5">
-      {
-        [
-          { name: 'PM2.5', value: 28, status: 'Moderate', color: 'yellow' },
-          { name: 'PM10', value: 61, status: 'Moderate', color: 'yellow' },
-          { name: 'O₃', value: 37, status: 'Good', color: 'green' },
-          { name: 'NO₂', value: 16, status: 'Good', color: 'green' }
-        ].map((item, idx) => (
-          <div key={idx} className="bg-white/[0.06] rounded-lg p-1.5 md:p-2 text-center hover:bg-white/[0.1] transition-all border border-white/10 min-w-0 backdrop-blur-sm group">
-            <p className="text-[9px] md:text-[10px] text-gray-400 mb-0.5 truncate">{item.name}</p>
-            <p className={`text-sm md:text-base lg:text-lg font-bold ${
-              item.color === 'green' ? 'text-green-400' :
-              item.color === 'yellow' ? 'text-yellow-400' :
-              item.color === 'orange' ? 'text-orange-400' : 'text-red-400'
-            } group-hover:scale-105 transition-transform`}>
-              {item.value}
-            </p>
-            <p className={`text-[8px] md:text-[10px] font-semibold ${
-              item.color === 'green' ? 'text-green-400/80' :
-              item.color === 'yellow' ? 'text-yellow-400/80' :
-              item.color === 'orange' ? 'text-orange-400/80' : 'text-red-400/80'
-            }`}>
-              {item.status}
-            </p>
-          </div>
-        ))
-      }
-    </div>
+                          {/* Progress Circle - PROPERLY CALCULATED */}
+                          <circle
+                            cx="60" cy="60" r="48"
+                            fill="none"
+                            stroke="url(#liveAqiGradFixed)"
+                            strokeWidth="10"
+                            strokeLinecap="round"
+                            strokeDasharray={`${Math.min((65 / 300) * 301.59, 301.59)} 301.59`}
+                            strokeDashoffset="0"
+                            transform="rotate(-90 60 60)"
+                            filter="url(#liveAqiGlowFixed)"
+                            style={{ filter: 'drop-shadow(0 0 8px rgba(16, 185, 129, 0.4))' }}
+                          >
+                            <animate
+                              attributeName="stroke-dasharray"
+                              from="0 301.59"
+                              to={`${Math.min((65 / 300) * 301.59, 301.59)} 301.59`}
+                              dur="1.5s"
+                              fill="freeze"
+                            />
+                            <animate
+                              attributeName="stroke-width"
+                              values="10;11;10"
+                              dur="3s"
+                              repeatCount="indefinite"
+                            />
+                          </circle>
 
-    {/* Location Footer with Timestamp */}
-    <div className="mt-2 pt-2 border-t border-white/10 text-center space-y-1">
-      <p className="text-[9px] text-gray-500 flex items-center justify-center gap-1">
-        <MapPin className="w-2 h-2" />
-        Data for: <span className="text-gray-300 font-medium">{location?.city || 'Current Location'}</span>
-      </p>
-      <p className="text-[8px] text-gray-600 flex items-center justify-center gap-1">
-        <span className="w-1 h-1 bg-green-400 rounded-full animate-pulse"></span>
-        Updated just now • Real-time monitoring
-      </p>
-    </div>
+                          {/* Center Text - SHOWS ACTUAL NUMBER */}
+                          <text x="60" y="58" textAnchor="middle" dominantBaseline="middle" className="select-none" style={{ fontFamily: 'system-ui, sans-serif' }}>
+                            <tspan x="60" dy="0" className="font-black fill-white" style={{ fontSize: '36px', fontWeight: '900', filter: 'drop-shadow(0 2px 6px rgba(0,0,0,0.6))' }}>
+                              65
+                              <animate attributeName="opacity" values="0;1" dur="0.5s" fill="freeze" />
+                            </tspan>
+                            <tspan x="60" dy="22" className="font-bold" style={{ fontSize: '13px', fontWeight: '700', filter: 'drop-shadow(0 1px 3px rgba(16, 185, 129, 0.4))' }}>
+                              <tspan fill="#fbbf24">Moderate</tspan>
+                              <animate attributeName="opacity" values="0;1" dur="0.8s" begin="0.3s" fill="freeze" />
+                            </tspan>
+                          </text>
+                        </svg>
+                      </div>
+                    </div>
 
-  </div>
-</div>
+                    {/* Dynamic Stats Grid - REAL DATA */}
+                    <div className="grid grid-cols-2 gap-1 md:gap-1.5">
+                      {
+                        [
+                          { name: 'PM2.5', value: 28, status: 'Moderate', color: 'yellow' },
+                          { name: 'PM10', value: 61, status: 'Moderate', color: 'yellow' },
+                          { name: 'O₃', value: 37, status: 'Good', color: 'green' },
+                          { name: 'NO₂', value: 16, status: 'Good', color: 'green' }
+                        ].map((item, idx) => (
+                          <div key={idx} className="bg-white/[0.06] rounded-lg p-1.5 md:p-2 text-center hover:bg-white/[0.1] transition-all border border-white/10 min-w-0 backdrop-blur-sm group">
+                            <p className="text-[9px] md:text-[10px] text-gray-400 mb-0.5 truncate">{item.name}</p>
+                            <p className={`text-sm md:text-base lg:text-lg font-bold ${item.color === 'green' ? 'text-green-400' :
+                              item.color === 'yellow' ? 'text-yellow-400' :
+                                item.color === 'orange' ? 'text-orange-400' : 'text-red-400'
+                              } group-hover:scale-105 transition-transform`}>
+                              {item.value}
+                            </p>
+                            <p className={`text-[8px] md:text-[10px] font-semibold ${item.color === 'green' ? 'text-green-400/80' :
+                              item.color === 'yellow' ? 'text-yellow-400/80' :
+                                item.color === 'orange' ? 'text-orange-400/80' : 'text-red-400/80'
+                              }`}>
+                              {item.status}
+                            </p>
+                          </div>
+                        ))
+                      }
+                    </div>
+
+                    {/* Location Footer with Timestamp */}
+                    <div className="mt-2 pt-2 border-t border-white/10 text-center space-y-1">
+                      <p className="text-[9px] text-gray-500 flex items-center justify-center gap-1">
+                        <MapPin className="w-2 h-2" />
+                        Data for: <span className="text-gray-300 font-medium">{location?.city || 'Current Location'}</span>
+                      </p>
+                      <p className="text-[8px] text-gray-600 flex items-center justify-center gap-1">
+                        <span className="w-1 h-1 bg-green-400 rounded-full animate-pulse"></span>
+                        Updated just now • Real-time monitoring
+                      </p>
+                    </div>
+
+                  </div>
+                </div>
 
                 {/* Today's Highlights */}
-                <div id="highlights-section" className="group relative flex-1 flex flex-col">
+                {/* ==================== */}
+{/* ✅ HIGHLIGHTS CARD - ERROR FREE */}
+{/* ==================== */}
+<div id="highlights-section" className="group relative flex-1 flex flex-col">
   <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/20 to-orange-500/20 rounded-2xl md:rounded-3xl blur-xl opacity=[0.4]" />
   
-  {/* ✅ ORIGINAL STYLE - ULTRA COMPACT HEIGHT */}
   <div className="relative bg-white/[0.04] backdrop-blur-xl rounded-2xl p-1.5 sm:p-2 md:p-2.5 border border-white/15 hover:border-white/25 transition-all h-full flex flex-col overflow-hidden">
 
-    {/* Tiny Header */}
+    {/* Header */}
     <h3 className="text-xs sm:text-sm font-bold text-white drop-shadow mb-0.5 sm:mb-1">Today&apos;s Highlights</h3>
 
-    {/* ✅ Ultra Tight List */}
+    {/* List - NO className ON ICONS! */}
     <div className="space-y-[2px] sm:space-y-[4px] flex-1 flex flex-col justify-evenly overflow-hidden">
       {(() => {
         const highlights = weatherData?.highlights
@@ -3790,10 +3787,9 @@ function WeatherDashboardContent() {
           { Icon: AnimatedMoonsetIcon, label: 'Moonset', val: safe(highlights?.moonset) },
           { Icon: AnimatedMoonPhaseIcon, label: 'Moon Phase', val: safe(highlights?.moonPhaseLabel) }
         ].map((item, i) => (
-          /* ✅ Super Compact Row */
           <div key={i} className="flex items-center justify-between py-[2px] sm:py-[4px] px-1 hover:bg-white/[0.05] rounded transition-colors border-b border-white/5 last:border-0 backdrop-blur-sm">
             <div className="flex items-center gap-1 min-w-0 flex-1">
-              <item.Icon size="sm" className="w-6 h-6 sm:w-7 sm:h-7" />
+              <item.Icon size="sm"></item.Icon>
               <span className="text-[10px] sm:text-xs font-medium text-white/90 truncate">{item.label}</span>
             </div>
             <span className="text-[10px] sm:text-xs font-semibold text-white drop-shadow ml-1 flex-shrink-0">{item.val}</span>
@@ -3804,7 +3800,7 @@ function WeatherDashboardContent() {
 
   </div>
 </div>
-                
+
               </div>
             </div>
 
@@ -3813,95 +3809,40 @@ function WeatherDashboardContent() {
 
               {/* Weather Alerts Card */}
 
-              <div id="weather-alerts-card" className="group relative h-full flex flex-col flex-1">
-                <div className="absolute inset-0 bg-gradient-to-br from-orange-500/20 to-red-500/20 rounded-2xl md:rounded-3xl blur-xl opacity=[0.4]" />
-                <div className="relative bg-white/[0.04] backdrop-blur-xl rounded-2xl md:rounded-3xl p-4 md:p-5 lg:p-6 border border-white/15 hover:border-white/25 transition-all min-h-[250px] md:min-h-[290px] flex-1 h-full">
+              <div id="highlights-section" className="group relative flex-1 flex flex-col">
+                <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/20 to-orange-500/20 rounded-2xl md:rounded-3xl blur-xl opacity=[0.4]" />
 
-                  {/* Header */}
-                  <div className="flex items-center justify-between mb-3 md:mb-4">
-                    <div className="flex items-center gap-1.5 md:gap-2">
-                      <AlertTriangle className="w-4 h-4 md:w-5 md:h-5 text-orange-400" />
-                      <h3 className="text-sm md:text-base lg:text-lg font-bold text-white drop-shadow">Weather Alerts</h3>
-                    </div>
-                    <button className="text-[10px] md:text-xs text-blue-300 hover:text-blue-200 hover:underline font-medium">View All Alerts </button>
-                  </div>
+                {/* ✅ ULTRA COMPACT - NO BUILD ERRORS */}
+                <div className="relative bg-white/[0.04] backdrop-blur-xl rounded-2xl p-1.5 sm:p-2 md:p-2.5 border border-white/15 hover:border-white/25 transition-all h-full flex flex-col overflow-hidden">
 
-                  {/* Alerts Content */}
-                  <div className="space-y-2 md:space-y-3 flex-1">
+                  {/* Tiny Header */}
+                  <h3 className="text-xs sm:text-sm font-bold text-white drop-shadow mb-0.5 sm:mb-1">Today&apos;s Highlights</h3>
+
+                  {/* ✅ Ultra Tight List */}
+                  <div className="space-y-[2px] sm:space-y-[4px] flex-1 flex flex-col justify-evenly overflow-hidden">
                     {(() => {
-                      const alerts = weatherData?.alerts || []
+                      const highlights = weatherData?.highlights
+                      const safe = (v: unknown) => (v === null || v === undefined || v === '' ? '--' : String(v))
 
-                      if (alerts.length === 0) {
-                        return (
-                          <div className="bg-gradient-to-r from-green-500/15 to-emerald-500/10 rounded-xl md:rounded-2xl p-3 md:p-4 border border-emerald-400/15 hover:border-emerald-400/25 transition-all h-full flex items-center backdrop-blur-sm">
-                            <div className="flex items-start gap-2 md:gap-3 w-full">
-                              <div className="w-8 h-8 md:w-10 md:h-10 bg-emerald-500/25 rounded-lg md:rounded-xl flex items-center justify-center flex-shrink-0">
-                                <AlertTriangle className="w-4 h-4 md:w-5 md:h-5 text-emerald-200" />
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                <h4 className="font-bold text-white text-xs md:text-sm mb-1">No Active Alerts</h4>
-                                <p className="text-[10px] md:text-xs text-gray-300 leading-relaxed">
-                                  There are no current weather alerts for your selected location.
-                                </p>
-                                <p className="text-[8px] md:text-[10px] text-gray-400 mt-2 flex items-center gap-1">
-                                  <span>{weatherData?.highlights?.sunrise ? weatherData?.highlights.sunrise : '--'}</span>
-                                </p>
-                              </div>
-                            </div>
+                      return [
+                        { Icon: AnimatedSunriseIcon, label: 'Sunrise', val: safe(highlights?.sunrise) },
+                        { Icon: AnimatedSunsetIcon, label: 'Sunset', val: safe(highlights?.sunset) },
+                        { Icon: AnimatedMoonriseIcon, label: 'Moonrise', val: safe(highlights?.moonrise) },
+                        { Icon: AnimatedMoonsetIcon, label: 'Moonset', val: safe(highlights?.moonset) },
+                        { Icon: AnimatedMoonPhaseIcon, label: 'Moon Phase', val: safe(highlights?.moonPhaseLabel) }
+                      ].map((item, i) => (
+                        /* ✅ Super Compact Row - NO className on icons */
+                        <div key={i} className="flex items-center justify-between py-[2px] sm:py-[4px] px-1 hover:bg-white/[0.05] rounded transition-colors border-b border-white/5 last:border-0 backdrop-blur-sm">
+                          <div className="flex items-center gap-1 min-w-0 flex-1">
+                            <item.Icon size="sm" />
+                            <span className="text-[10px] sm:text-xs font-medium text-white/90 truncate">{item.label}</span>
                           </div>
-                        )
-                      }
-
-                      const asGradient = (severity: WeatherAlert['severity']) => {
-                        switch (severity) {
-                          case 'warning':
-                            return 'bg-gradient-to-r from-orange-500/20 to-yellow-500/10 border-orange-400/20 hover:border-orange-400/40'
-                          case 'advisory':
-                            return 'bg-gradient-to-r from-blue-500/15 to-cyan-500/10 border-blue-400/15 hover:border-blue-400/30'
-                          default:
-                            return 'bg-gradient-to-r from-green-500/15 to-emerald-500/10 border-emerald-400/15 hover:border-emerald-400/25'
-                        }
-                      }
-
-                      const iconFor = (icon: string, severity: WeatherAlert['severity']) => {
-                        if (icon === '🌧️' || icon === '⚡' || icon === '🔥' || icon === '❄️')
-                          return <AlertTriangle className="w-4 h-4 md:w-5 md:h-5 text-orange-300" />
-                        if (icon === '🌬️')
-                          return <Wind className="w-4 h-4 md:w-5 md:h-5 text-blue-300" />
-                        return severity === 'warning'
-                          ? <AlertTriangle className="w-4 h-4 md:w-5 md:h-5 text-orange-300" />
-                          : <Wind className="w-4 h-4 md:w-5 md:h-5 text-blue-300" />
-                      }
-
-                      const formatAlertTime = (time: string) => {
-                        if (!time) return '--'
-                        const d = new Date(time)
-                        if (isNaN(d.getTime())) return time
-                        try {
-                          return d.toLocaleString('en-US', { hour: 'numeric', minute: '2-digit', day: '2-digit', month: 'short' })
-                        } catch {
-                          return time
-                        }
-                      }
-
-                      return alerts.slice(0, 2).map((a, i) => (
-                        <div key={i} className={`${asGradient(a.severity)} rounded-xl md:rounded-2xl p-3 md:p-4 border transition-all backdrop-blur-sm`}>
-                          <div className="flex items-start gap-2 md:gap-3">
-                            <div className="w-8 h-8 md:w-10 md:h-10 bg-white/[0.08] rounded-lg md:rounded-xl flex items-center justify-center flex-shrink-0">
-                              {a.icon ? iconFor(a.icon, a.severity) : iconFor('', a.severity)}
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <h4 className="font-bold text-white text-xs md:text-sm mb-1">{a.title}</h4>
-                              <p className="text-[10px] md:text-xs text-gray-300 leading-relaxed">{a.message}</p>
-                              <p className="text-[8px] md:text-[10px] text-gray-400 mt-2 flex items-center gap-1">
-                                <span>{formatAlertTime(a.time)}</span>
-                              </p>
-                            </div>
-                          </div>
+                          <span className="text-[10px] sm:text-xs font-semibold text-white drop-shadow ml-1 flex-shrink-0">{item.val}</span>
                         </div>
                       ))
                     })()}
                   </div>
+
                 </div>
               </div>
 
